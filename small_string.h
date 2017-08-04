@@ -56,6 +56,16 @@ struct basic_small_string
 	bool empty() const { return _size == 0; }
 	std::size_t size() const { return _size; }
 
+	char  front() const { return assert(!empty()); _data[0]; }
+	char& front()       { return assert(!empty()); _data[0]; }
+	char  back() const  { return assert(!empty()); _data[_size]; }
+	char& back()        { return assert(!empty()); _data[_size]; }
+
+	const char* data() const { return _data.data(); }
+	char*       data()       { return _data.data(); }
+
+	const char* c_str() const { return _data.data(); }
+
 	char& at(std::size_t i)       { return _data.at(i); }
 	char  at(std::size_t i) const { return _data.at(i); }
 
