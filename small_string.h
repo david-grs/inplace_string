@@ -54,7 +54,11 @@ struct basic_small_string
 	}
 
 	bool empty() const { return _size == 0; }
-	std::size_t size() const { return _size; }
+	std::size_t size() const   { return _size; }
+	std::size_t length() const { return _size; }
+	std::size_t max_size() const { return N; }
+	std::size_t capacity() const { return N; }
+	void shrink_to_fit() {}
 
 	char  front() const { return assert(!empty()); _data[0]; }
 	char& front()       { return assert(!empty()); _data[0]; }
