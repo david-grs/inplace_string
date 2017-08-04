@@ -5,10 +5,29 @@
 #include <algorithm>
 #include <cstring>
 
+#if defined _NO_EXCEPTIONS
+#include <iostream>
+#endif
+
 #include <experimental/string_view>
 
-namespace cxx { namespace detail
+namespace cxx { namespace detail {
+
+namespace
 {
+
+template <typename T>
+inline void throw_helper(const std::string& msg)
+{
+#ifndef _NO_EXCEPTIONS
+	throw T(msg);
+#else
+	std::cerr << msg.c_str() << "\n";
+	std::abort();
+#endif
+}
+
+}
 
 template <std::size_t N, typename CharT = char>
 struct basic_small_string_t
@@ -34,7 +53,7 @@ struct basic_small_string_t
 	basic_small_string_t(std::size_t count, value_type ch)
 	{
 		if (count > N)
-			throw std::out_of_range("basic_small_string_t::basic_small_string_t");
+			throw_helper<std::out_of_range>("basic_small_string_t::basic_small_string_t: out of range");
 
 		std::fill_n(std::begin(_data), count, ch);
 		_size = count;
@@ -98,7 +117,7 @@ private:
 	void init(const value_type* str, std::size_t count)
 	{
 		if (count > N)
-			throw std::out_of_range("basic_small_string_t::init");
+			throw_helper<std::out_of_range>("basic_small_string_t::init: out of range");
 
 		std::copy(str, str + count, std::begin(_data));
 		_size = count;
@@ -109,7 +128,7 @@ private:
 	{
 		const std::size_t count = std::distance(first, last);
 		if (count > N)
-			throw std::out_of_range("basic_small_string_t::init");
+			throw_helper<std::out_of_range>("basic_small_string_t::init: out of range");
 
 		std::copy(first, last, std::begin(_data));
 		_size = count;
