@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <cstring>
 
+#include <experimental/string_view>
+
 namespace cxx { namespace detail
 {
 
@@ -68,6 +70,8 @@ struct basic_small_string
 	char*       data()       { return _data.data(); }
 
 	const char* c_str() const { return _data.data(); }
+
+	operator std::experimental::string_view() const noexcept { return {_data.data(), _size}; }
 
 	bool empty() const { return _size == 0; }
 	std::size_t size() const   { return _size; }
