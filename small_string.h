@@ -10,9 +10,23 @@
 namespace cxx { namespace detail
 {
 
-template <std::size_t N>
+template <std::size_t N, typename CharT = char>
 struct basic_small_string
 {
+	using value_type = CharT;
+	using reference = value_type&;
+	using const_reference = const value_type&;
+	using pointer = value_type*;
+	using const_pointer = const value_type*;
+	using size_type = std::size_t;
+	using difference_type = std::size_t;
+	using iterator = pointer;
+	using const_iterator = const_pointer;
+	using reverse_iterator = std::reverse_iterator<iterator>;
+	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
+
+	static_assert(std::is_pod<value_type>::value, "CharT type of basic_small_string must be a POD");
+
 	basic_small_string() :
 		_size(0)
 	{}
