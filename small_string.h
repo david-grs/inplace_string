@@ -11,7 +11,7 @@ namespace cxx { namespace detail
 {
 
 template <std::size_t N, typename CharT = char>
-struct basic_small_string
+struct basic_small_string_t
 {
 	using value_type = CharT;
 	using reference = value_type&;
@@ -25,46 +25,46 @@ struct basic_small_string
 	using reverse_iterator = std::reverse_iterator<iterator>;
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-	static_assert(std::is_pod<value_type>::value, "CharT type of basic_small_string must be a POD");
+	static_assert(std::is_pod<value_type>::value, "CharT type of basic_small_string_t must be a POD");
 
-	basic_small_string() :
+	basic_small_string_t() :
 		_size(0)
 	{}
 
-	basic_small_string(std::size_t count, value_type ch)
+	basic_small_string_t(std::size_t count, value_type ch)
 	{
 		if (count > N)
-			throw std::out_of_range("basic_small_string::basic_small_string");
+			throw std::out_of_range("basic_small_string_t::basic_small_string_t");
 
 		std::fill_n(std::begin(_data), count, ch);
 		_size = count;
 	}
 
-	// T can be another basic_small_string, std::string, std::vector, std::array, ...
+	// T can be another basic_small_string_t, std::string, std::vector, std::array, ...
 	template <typename T>
-	basic_small_string(const T& other, std::size_t pos)
+	basic_small_string_t(const T& other, std::size_t pos)
 	{
 		init(other.data() + pos, other.size() - pos);
 	}
 
 	template <typename T>
-	basic_small_string(const T& other, std::size_t pos, std::size_t count)
+	basic_small_string_t(const T& other, std::size_t pos, std::size_t count)
 	{
 		init(other.data() + pos, count);
 	}
 
-	basic_small_string(const value_type* str, std::size_t count)
+	basic_small_string_t(const value_type* str, std::size_t count)
 	{
 		init(str, count);
 	}
 
-	basic_small_string(const value_type* str)
+	basic_small_string_t(const value_type* str)
 	{
 		init(str, std::strlen(str));
 	}
 
 	template <typename InputIt>
-	basic_small_string(InputIt first, InputIt last)
+	basic_small_string_t(InputIt first, InputIt last)
 	{
 		init(first, last);
 	}
@@ -98,7 +98,7 @@ private:
 	void init(const value_type* str, std::size_t count)
 	{
 		if (count > N)
-			throw std::out_of_range("basic_small_string::init");
+			throw std::out_of_range("basic_small_string_t::init");
 
 		std::copy(str, str + count, std::begin(_data));
 		_size = count;
@@ -109,7 +109,7 @@ private:
 	{
 		const std::size_t count = std::distance(first, last);
 		if (count > N)
-			throw std::out_of_range("basic_small_string::init");
+			throw std::out_of_range("basic_small_string_t::init");
 
 		std::copy(first, last, std::begin(_data));
 		_size = count;
@@ -122,10 +122,15 @@ private:
 
 } }
 
-template <std::size_t N>
-using basic_small_string = cxx::detail::basic_small_string<N>;
+template <std::size_t N> using small_string_t = cxx::detail::basic_small_string_t<N, char>;
+template <std::size_t N> using small_wstring_t = cxx::detail::basic_small_string_t<N, wchar_t>;
+template <std::size_t N> using small_u16string_t = cxx::detail::basic_small_string_t<N, char16_t>;
+template <std::size_t N> using small_u32string_t = cxx::detail::basic_small_string_t<N, char32_t>;
 
-using small_string = basic_small_string<31>;
+using small_string = small_string_t<31>;
+using small_wstring = small_string_t<31>;
+using small_u16string = small_string_t<31>;
+using small_u32string = small_string_t<31>;
 
 
 
