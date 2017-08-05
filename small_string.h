@@ -2,8 +2,6 @@
 
 #include <array>
 #include <cassert>
-#include <algorithm>
-#include <cstring>
 
 #if defined _NO_EXCEPTIONS
 #include <iostream>
@@ -94,7 +92,7 @@ not_eof - checks whether a character is eof value
 
 	basic_small_string_t(const value_type* str)
 	{
-		init(str, std::strlen(str));
+		init(str, traits_type::length(str));
 	}
 
 	template <typename InputIt>
