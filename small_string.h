@@ -105,27 +105,27 @@ not_eof - checks whether a character is eof value
 	reference   at(std::size_t i)       { return _data.at(i); }
 	value_type  at(std::size_t i) const { return _data.at(i); }
 
-	reference operator[](std::size_t i)         { return assert(i < _size); _data[i]; }
-	value_type  operator[](std::size_t i) const { return assert(i < _size); _data[i]; }
+	reference operator[](std::size_t i)         { return assert(i < size()); _data[i]; }
+	value_type  operator[](std::size_t i) const { return assert(i < size()); _data[i]; }
 
 	value_type front() const { return assert(!empty()); _data[0]; }
 	reference  front()       { return assert(!empty()); _data[0]; }
-	value_type back() const  { return assert(!empty()); _data[_size]; }
-	reference  back()        { return assert(!empty()); _data[_size]; }
+	value_type back() const  { return assert(!empty()); _data[size() - 1]; }
+	reference  back()        { return assert(!empty()); _data[size() - 1]; }
 
 	const value_type* data() const { return _data.data(); }
 	char* data() { return _data.data(); }
 
 	const value_type* c_str() const { return _data.data(); }
 
-	operator std::experimental::string_view() const noexcept { return {_data.data(), _size}; }
+	operator std::experimental::string_view() const noexcept { return {_data.data(), size()}; }
 
-	bool empty() const           { return size() == 0; }
-	std::size_t length() const   { return size(); }
-	std::size_t size() const     { return _size; }
-	std::size_t max_size() const { return N; }
-	std::size_t capacity() const { return N; }
-	void shrink_to_fit()         {}
+	bool      empty() const    { return size() == 0; }
+	size_type length() const   { return size(); }
+	size_type size() const     { return get_size(); }
+	size_type max_size() const { return N; }
+	size_type capacity() const { return N; }
+	void      shrink_to_fit()  {}
 
 private:
 	void init(value_type ch, std::size_t count)
@@ -134,7 +134,7 @@ private:
 			throw_helper<std::out_of_range>("basic_small_string_t::init: out of range");
 
 		traits_type::assign(std::begin(_data), count, ch);
-		_size = count;
+		set_size(count);
 	}
 
 	void init(const value_type* str, std::size_t count)
@@ -145,8 +145,9 @@ private:
 			throw_helper<std::out_of_range>("basic_small_string_t::init: out of range");
 
 		traits_type::copy(std::begin(_data), str, count);
-		_size = count;
-		_data[_size] = value_type{};
+		_data[count] = value_type{};
+
+		set_size(count);
 	}
 
 	template <typename InputIt>
@@ -160,18 +161,28 @@ private:
 		for (auto it = first; it != last; ++it, ++p)
 			traits_type::assign(*p, *it);
 		*p = value_type{};
-		_size = count;
+
+		set_size(count);
 	}
 
 	void zero()
 	{
 		_data[0] = value_type{};
-		_size = 0;
+		set_size(0);
 	}
 
-	// TODO move size as last element of _data
+	void set_size(size_type size)
+	{
+		assert(size <= N - 1);
+		_data[N - 1] = N - 1 - size;
+	}
+
+	size_type get_size() const
+	{
+		return N - 1 - _data[N - 1];
+	}
+
 	std::array<value_type, N> _data;
-	char _size;
 };
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -187,10 +198,10 @@ template <std::size_t N> using small_wstring_t = cxx::detail::basic_small_string
 template <std::size_t N> using small_u16string_t = cxx::detail::basic_small_string_t<N, char16_t>;
 template <std::size_t N> using small_u32string_t = cxx::detail::basic_small_string_t<N, char32_t>;
 
-using small_string = small_string_t<31>;
-using small_wstring = small_wstring_t<31>;
-using small_u16string = small_u16string_t<31>;
-using small_u32string = small_u32string_t<31>;
+using small_string = small_string_t<32>;
+using small_wstring = small_wstring_t<32>;
+using small_u16string = small_u16string_t<32>;
+using small_u32string = small_u32string_t<32>;
 
 #define SMALL_STRING_HASH_DEF(x) \
 	template <> \
