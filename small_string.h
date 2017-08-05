@@ -184,14 +184,14 @@ not_eof - checks whether a character is eof value
 	template <typename InputIt>
 	iterator insert(const_iterator pos, InputIt first, InputIt last)
 	{
-		// TODO
+		insert(pos, first, last);
 		return pos;
 	}
 
 	iterator insert( const_iterator pos, std::initializer_list<CharT> ilist);
-	basic_small_string_t& insert( size_type pos, std::experimental::basic_string_view<value_type, traits_type> sv)
+	basic_small_string_t& insert(size_type pos, std::experimental::basic_string_view<value_type, traits_type> sv)
 	{
-		// TODO
+		insert(pos, sv.data(), sv.size());
 		return *this;
 	}
 
@@ -200,6 +200,16 @@ not_eof - checks whether a character is eof value
 	{
 		// TODO
 		return *this;
+	}
+
+	void push_back(value_type ch)
+	{
+		insert(end(), ch);
+	}
+
+	void pop_back()
+	{
+		erase(size() - 1, 1);
 	}
 
 private:
