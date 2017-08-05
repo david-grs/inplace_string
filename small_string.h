@@ -62,6 +62,7 @@ eof - returns an eof value
 not_eof - checks whether a character is eof value
 */
 	static_assert(std::is_pod<value_type>::value, "CharT type of basic_small_string_t must be a POD");
+	static_assert(std::is_same<value_type, typename traits_type::char_type>::value, "ChartT type must be the same type as Traits::char_type");
 
 	basic_small_string_t()
 	{
