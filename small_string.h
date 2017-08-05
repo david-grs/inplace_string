@@ -139,11 +139,14 @@ private:
 
 	void init(const value_type* str, std::size_t count)
 	{
+		assert(str != nullptr);
+
 		if (count > N)
 			throw_helper<std::out_of_range>("basic_small_string_t::init: out of range");
 
 		traits_type::copy(std::begin(_data), str, count);
 		_size = count;
+		_data[_size] = value_type{};
 	}
 
 	template <typename InputIt>
@@ -170,6 +173,12 @@ private:
 	std::array<value_type, N> _data;
 	char _size;
 };
+
+template <std::size_t N, typename CharT, typename Traits>
+inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, const basic_small_string_t<N, CharT, Traits>& str)
+{
+	return os.write(str.data(), str.size());
+}
 
 } }
 
