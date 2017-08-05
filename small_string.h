@@ -147,10 +147,35 @@ template <std::size_t N> using small_u16string_t = cxx::detail::basic_small_stri
 template <std::size_t N> using small_u32string_t = cxx::detail::basic_small_string_t<N, char32_t>;
 
 using small_string = small_string_t<31>;
-using small_wstring = small_string_t<31>;
-using small_u16string = small_string_t<31>;
-using small_u32string = small_string_t<31>;
+using small_wstring = small_wstring_t<31>;
+using small_u16string = small_u16string_t<31>;
+using small_u32string = small_u32string_t<31>;
 
+#define SMALL_STRING_HASH_DEF(x) \
+	template <> \
+	struct hash<x> \
+	{ \
+		size_t operator()(const x& str) const \
+		{ \
+			using view = typename std::experimental::basic_string_view<x::value_type>; \
+			view v(str.data(), str.size()); \
+			return std::hash<view>()(v); \
+		} \
+	}; \
 
+#define SMALL_STRING_HASH \
+	SMALL_STRING_HASH_DEF(small_string) \
+	SMALL_STRING_HASH_DEF(small_wstring) \
+	SMALL_STRING_HASH_DEF(small_u16string) \
+	SMALL_STRING_HASH_DEF(small_u32string)
 
+namespace std
+{
+
+SMALL_STRING_HASH
+
+}
+
+#undef SMALL_STRING_HASH
+#undef SMALL_STRING_HASH_DEF
 
