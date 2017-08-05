@@ -120,6 +120,13 @@ not_eof - checks whether a character is eof value
 
 	operator std::experimental::string_view() const noexcept { return {_data.data(), size()}; }
 
+	const_iterator begin() const  { return std::begin(_data); }
+	const_iterator end() const    { return std::begin(_data) + size() + 1; }
+	iterator begin()              { return std::begin(_data); }
+	iterator end()                { return std::begin(_data) + size() + 1; }
+	const_iterator cbegin() const { return begin(); }
+	const_iterator cend() const   { return end(); }
+
 	bool      empty() const    { return size() == 0; }
 	size_type length() const   { return size(); }
 	size_type size() const     { return get_size(); }
