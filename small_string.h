@@ -46,6 +46,8 @@ struct basic_small_string_t
 	using reverse_iterator = std::reverse_iterator<iterator>;
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
+	static const size_type npos = std::basic_string<value_type, traits_type>::npos;
+
 /*assign - assigns a character
 eq lt - compares two characters
 move - moves one character sequence onto another
@@ -134,6 +136,72 @@ not_eof - checks whether a character is eof value
 	size_type capacity() const { return N; }
 	void      shrink_to_fit()  {}
 
+	void clear() { zero(); }
+
+	basic_small_string_t& insert(size_type index, size_type count, value_type ch)
+	{
+		_insert(index, count, ch);
+		return *this;
+	}
+
+	basic_small_string_t& insert(size_type index, const value_type* str)
+	{
+		_insert(index, str, traits_type::length(str));
+		return *this;
+	}
+
+	basic_small_string_t& insert(size_type index, const value_type* str, size_type count)
+	{
+		_insert(index, str, count);
+		return *this;
+	}
+
+	basic_small_string_t& insert(size_type index, const basic_small_string_t& str)
+	{
+		_insert(index, str.data(), str.size());
+		return *this;
+	}
+
+	basic_small_string_t& insert(size_type index, const basic_small_string_t& str, size_type index_str, size_type count = npos)
+	{
+		basic_small_string_t subs = str.substr(index_str, count);
+		_insert(index, subs.data(), subs.size());
+		return *this;
+	}
+
+	iterator insert(const_iterator pos, value_type ch)
+	{
+		_insert(pos - begin(), 1, ch);
+		return pos - begin();
+	}
+
+	iterator insert(const_iterator pos, size_type count, value_type ch)
+	{
+		_insert(pos - begin(), count, ch);
+		return pos - begin();
+	}
+
+	template <typename InputIt>
+	iterator insert(const_iterator pos, InputIt first, InputIt last)
+	{
+		// TODO
+		return pos;
+	}
+
+	iterator insert( const_iterator pos, std::initializer_list<CharT> ilist);
+	basic_small_string_t& insert( size_type pos, std::experimental::basic_string_view<value_type, traits_type> sv)
+	{
+		// TODO
+		return *this;
+	}
+
+	template <typename T>
+	basic_small_string_t& insert(size_type index, const T& t, size_type index_str, size_type count = npos)
+	{
+		// TODO
+		return *this;
+	}
+
 private:
 	void init(value_type ch, std::size_t count)
 	{
@@ -167,7 +235,7 @@ private:
 		pointer p = _data.data();
 		for (auto it = first; it != last; ++it, ++p)
 			traits_type::assign(*p, *it);
-		*p = value_type{};
+		traits_type::assign(*p, value_type{});
 
 		set_size(count);
 	}
@@ -176,6 +244,24 @@ private:
 	{
 		_data[0] = value_type{};
 		set_size(0);
+	}
+
+	void _insert(size_type index, size_type count, value_type ch)
+	{
+		traits_type::move(_data.data() + index + count, _data.data() + index, count);
+		for (size_type i = 0; i != count; ++i)
+			traits_type::assign(_data[index + i], ch);
+
+		set_size(size() + count);
+	}
+
+	void _insert(size_type index, const value_type* str, size_type count)
+	{
+		traits_type::move(_data.data() + index + count, _data.data() + index, count);
+		for (size_type i = 0; i != count; ++i)
+			traits_type::assign(_data[index + i], str[i]);
+
+		set_size(size() + count);
 	}
 
 	void set_size(size_type size)
