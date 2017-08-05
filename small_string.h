@@ -212,6 +212,12 @@ not_eof - checks whether a character is eof value
 		erase(size() - 1, 1);
 	}
 
+	basic_small_string_t substr(size_type pos = 0, size_type count = npos)
+	{
+		size_type sz = count == npos ? size() - pos : count;
+		return basic_small_string_t(data() + pos, sz);
+	}
+
 private:
 	void init(value_type ch, std::size_t count)
 	{
