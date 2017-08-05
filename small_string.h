@@ -218,6 +218,18 @@ not_eof - checks whether a character is eof value
 		return basic_small_string_t(data() + pos, sz);
 	}
 
+	bool operator==(const basic_small_string_t& str) const
+	{
+		if (size() != str.size())
+			return false;
+		return traits_type::compare(c_str(), str.c_str(), size()) == 0;
+	}
+
+	bool operator!=(const basic_small_string_t& str) const
+	{
+		return !operator==(str);
+	}
+
 private:
 	void init(value_type ch, std::size_t count)
 	{
