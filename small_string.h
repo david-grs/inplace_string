@@ -161,21 +161,17 @@ using small_u32string = small_u32string_t<31>;
 			view v(str.data(), str.size()); \
 			return std::hash<view>()(v); \
 		} \
-	}; \
-
-#define SMALL_STRING_HASH \
-	SMALL_STRING_HASH_DEF(small_string) \
-	SMALL_STRING_HASH_DEF(small_wstring) \
-	SMALL_STRING_HASH_DEF(small_u16string) \
-	SMALL_STRING_HASH_DEF(small_u32string)
+	};
 
 namespace std
 {
 
-SMALL_STRING_HASH
+SMALL_STRING_HASH_DEF(small_string)
+SMALL_STRING_HASH_DEF(small_wstring)
+SMALL_STRING_HASH_DEF(small_u16string)
+SMALL_STRING_HASH_DEF(small_u32string)
 
 }
 
-#undef SMALL_STRING_HASH
 #undef SMALL_STRING_HASH_DEF
 
