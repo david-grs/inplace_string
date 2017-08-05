@@ -135,7 +135,7 @@ private:
 	}
 
 	// TODO compressed pair, alignement
-	std::array<char, N> _data;
+	std::array<value_type, N> _data;
 	char _size;
 };
 
