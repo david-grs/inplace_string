@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cassert>
+#include <algorithm>
 
 #if defined _NO_EXCEPTIONS
 #include <iostream>
@@ -218,6 +219,13 @@ not_eof - checks whether a character is eof value
 		return basic_small_string_t(data() + pos, sz);
 	}
 
+	int compare(const basic_small_string_t& str) const
+	{
+		size_type sz = std::min(size(), str.size());
+		const int cmp = traits_type::compare(data(), str.data(), sz);
+		return cmp != 0 ? cmp : size() - str.size();
+	}
+
 private:
 	void init(value_type ch, std::size_t count)
 	{
@@ -312,6 +320,34 @@ inline bool operator!=(const basic_small_string_t<N, CharT, Traits>& lhs,
 					   const basic_small_string_t<M, CharT, Traits>& rhs)
 {
 	return !(lhs == rhs);
+}
+
+template <std::size_t N, std::size_t M, typename CharT, typename Traits>
+inline bool operator<(const basic_small_string_t<N, CharT, Traits>& lhs,
+					  const basic_small_string_t<M, CharT, Traits>& rhs)
+{
+	return lhs.compare(rhs) < 0;
+}
+
+template <std::size_t N, std::size_t M, typename CharT, typename Traits>
+inline bool operator>(const basic_small_string_t<N, CharT, Traits>& lhs,
+					  const basic_small_string_t<M, CharT, Traits>& rhs)
+{
+	return rhs < lhs;
+}
+
+template <std::size_t N, std::size_t M, typename CharT, typename Traits>
+inline bool operator<=(const basic_small_string_t<N, CharT, Traits>& lhs,
+					   const basic_small_string_t<M, CharT, Traits>& rhs)
+{
+	return !(rhs < lhs);
+}
+
+template <std::size_t N, std::size_t M, typename CharT, typename Traits>
+inline bool operator>=(const basic_small_string_t<N, CharT, Traits>& lhs,
+					   const basic_small_string_t<M, CharT, Traits>& rhs)
+{
+	return !(lhs < rhs);
 }
 
 } }

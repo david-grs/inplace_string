@@ -43,3 +43,71 @@ TEST(small_string, iterator)
 	EXPECT_EQ(int('1') * 6 + 15, sum);
 }
 
+TEST(small_string, compare_eq)
+{
+	small_string s1("123456");
+	small_string s2("123456");
+	EXPECT_TRUE(s1 == s2);
+	EXPECT_EQ(s1.compare(s2), 0);
+}
+
+TEST(small_string, compare_ne)
+{
+	small_string s1("123456");
+	small_string s2("123356");
+	EXPECT_TRUE(s1 != s2);
+	EXPECT_NE(s1.compare(s2), 0);
+}
+
+TEST(small_string, compare_lt)
+{
+	small_string s1("123456");
+	small_string s2("123456789");
+	EXPECT_TRUE(s1 < s2);
+	EXPECT_LT(s1.compare(s2), 0);
+
+	s1 = "123456";
+	s2 = "123466";
+	EXPECT_TRUE(s1 < s2);
+	EXPECT_LT(s1.compare(s2), 0);
+}
+
+TEST(small_string, compare_lte)
+{
+	small_string s1("123456");
+	small_string s2("123456789");
+	EXPECT_TRUE(s1 <= s2);
+	EXPECT_LE(s1.compare(s2), 0);
+
+	s1 = "123456";
+	s2 = "123456";
+	EXPECT_TRUE(s1 <= s2);
+	EXPECT_LE(s1.compare(s2), 0);
+}
+
+TEST(small_string, compare_gt)
+{
+	small_string s1("123356789");
+	small_string s2("123356");
+	EXPECT_TRUE(s1 > s2);
+	EXPECT_GT(s1.compare(s2), 0);
+
+	s1 = "123466";
+	s2 = "123456";
+	EXPECT_TRUE(s1 > s2);
+	EXPECT_GT(s1.compare(s2), 0);
+}
+
+TEST(small_string, compare_gte)
+{
+	small_string s1("123356789");
+	small_string s2("123356");
+	EXPECT_TRUE(s1 >= s2);
+	EXPECT_GE(s1.compare(s2), 0);
+
+	s1 = "123456";
+	s2 = "123456";
+	EXPECT_TRUE(s1 >= s2);
+	EXPECT_GE(s1.compare(s2), 0);
+}
+
