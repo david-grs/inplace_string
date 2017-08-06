@@ -218,18 +218,6 @@ not_eof - checks whether a character is eof value
 		return basic_small_string_t(data() + pos, sz);
 	}
 
-	bool operator==(const basic_small_string_t& str) const
-	{
-		if (size() != str.size())
-			return false;
-		return traits_type::compare(c_str(), str.c_str(), size()) == 0;
-	}
-
-	bool operator!=(const basic_small_string_t& str) const
-	{
-		return !operator==(str);
-	}
-
 private:
 	void init(value_type ch, std::size_t count)
 	{
@@ -310,6 +298,20 @@ template <std::size_t N, typename CharT, typename Traits>
 inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, const basic_small_string_t<N, CharT, Traits>& str)
 {
 	return os.write(str.data(), str.size());
+}
+
+template <std::size_t N, std::size_t M, typename CharT, typename Traits>
+inline bool operator==(const basic_small_string_t<N, CharT, Traits>& lhs,
+					   const basic_small_string_t<M, CharT, Traits>& rhs)
+{
+	return lhs.size() == rhs.size() && Traits::compare(lhs.data(), rhs.data(), lhs.size()) == 0;
+}
+
+template <std::size_t N, std::size_t M, typename CharT, typename Traits>
+inline bool operator!=(const basic_small_string_t<N, CharT, Traits>& lhs,
+					   const basic_small_string_t<M, CharT, Traits>& rhs)
+{
+	return !(lhs == rhs);
 }
 
 } }
