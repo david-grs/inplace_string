@@ -221,10 +221,58 @@ not_eof - checks whether a character is eof value
 
 	int compare(const basic_small_string_t& str) const
 	{
-		size_type sz = std::min(size(), str.size());
-		const int cmp = traits_type::compare(data(), str.data(), sz);
-		return cmp != 0 ? cmp : size() - str.size();
+		return _compare(0, size(), str.data(), str.size());
 	}
+
+	int compare(size_type pos1, size_type count1, const basic_small_string_t& str) const
+	{
+		return _compare(pos1, count1, str.data(), str.size());
+	}
+
+	int compare(size_type pos1, size_type count1, const basic_small_string_t& str, size_type pos2, size_type count2) const // TODO adding npos
+	{
+		return _compare(pos1, count1, str.data() + pos2, count2 - pos2);
+	}
+
+	int compare(const value_type* str) const
+	{
+		return _compare(0, size(), str, traits_type::length(str));
+	}
+
+	int compare(size_type pos1, size_type count1, const value_type* str) const
+	{
+		return _compare(pos1, count1, str, traits_type::length(str));
+	}
+
+	int compare(size_type pos1, size_type count1, const value_type* str, size_type count2) const
+	{
+		return _compare(pos1, count1, str, count2);
+	}
+
+	int compare(std::experimental::basic_string_view<CharT, Traits> sv) const
+	{
+		return _compare(0, size(), sv.data(), sv.size());
+	}
+
+	int compare(size_type pos1, size_type count1, std::experimental::basic_string_view<CharT, Traits> sv) const
+	{
+		return _compare(pos1, count1, sv.data(), sv.size());
+	}
+
+	// adding template < class T >
+	//int compare( size_type pos1, size_type count1,
+	  //           const T& t,
+		//         size_type pos2, size_type count2 = npos) const;
+
+private:
+	int _compare(size_type pos1, size_type count1, const value_type* str, size_type count2) const
+	{
+		size_type sz = std::min(count1, count2);
+		const int cmp = traits_type::compare(data() + pos1, str, sz);
+		return cmp != 0 ? cmp : count1 - pos1 - count2;
+	}
+
+public:
 
 private:
 	void init(value_type ch, std::size_t count)
