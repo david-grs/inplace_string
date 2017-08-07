@@ -99,6 +99,11 @@ not_eof - checks whether a character is eof value
 		init(str, traits_type::length(str));
 	}
 
+	basic_small_string_t(const std::basic_string<CharT>& str)
+	{
+		init(str.data(), str.size());
+	}
+
 	template <typename InputIt>
 	basic_small_string_t(InputIt first, InputIt last)
 	{
