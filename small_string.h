@@ -285,6 +285,23 @@ private:
 	}
 
 public:
+	basic_small_string_t& append(const std::basic_string<CharT, Traits>& str)
+	{
+		return *this;
+	}
+	basic_small_string_t& append(const std::experimental::basic_string_view<CharT, Traits>& v)
+	{
+		return *this;
+	}
+	basic_small_string_t& append(const value_type* str)
+	{
+		return *this;
+	}
+	basic_small_string_t& append(value_type str)
+	{
+		return *this;
+	}
+
 
 private:
 	void init(value_type ch, std::size_t count)
