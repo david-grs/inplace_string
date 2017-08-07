@@ -15,6 +15,16 @@ TEST(small_string, init)
 	printf("%s\n", s.c_str());
 }
 
+TEST(small_string, init_basic_string)
+{
+	std::string str = "foo";
+	small_string ss(str);
+
+	ASSERT_FALSE(ss.empty());
+	ASSERT_EQ(ss.size(), 3);
+	ASSERT_TRUE(ss == "foo");
+}
+
 TEST(small_string, substr)
 {
 	small_string s("123456");
