@@ -363,11 +363,41 @@ inline bool operator==(const basic_small_string_t<N, CharT, Traits>& lhs,
 	return lhs.size() == rhs.size() && Traits::compare(lhs.data(), rhs.data(), lhs.size()) == 0;
 }
 
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator==(const basic_small_string_t<N, CharT, Traits>& lhs,
+					   const CharT* rhs)
+{
+	assert(rhs != nullptr);
+	return lhs.size() == Traits::length(rhs) && Traits::compare(lhs.data(), rhs, lhs.size()) == 0;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator==(const CharT* lhs,
+					   const basic_small_string_t<N, CharT, Traits>& rhs)
+{
+	return rhs == lhs;
+}
+
 template <std::size_t N, std::size_t M, typename CharT, typename Traits>
 inline bool operator!=(const basic_small_string_t<N, CharT, Traits>& lhs,
 					   const basic_small_string_t<M, CharT, Traits>& rhs)
 {
 	return !(lhs == rhs);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator!=(const basic_small_string_t<N, CharT, Traits>& lhs,
+					   const CharT* rhs)
+{
+	assert(rhs != nullptr);
+	return lhs.size() != Traits::length(rhs) || Traits::compare(lhs.data(), rhs, lhs.size()) != 0;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator!=(const CharT* lhs,
+					   const basic_small_string_t<N, CharT, Traits>& rhs)
+{
+	return rhs != lhs;
 }
 
 template <std::size_t N, std::size_t M, typename CharT, typename Traits>

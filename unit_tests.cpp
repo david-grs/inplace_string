@@ -49,6 +49,8 @@ TEST(small_string, compare_eq)
 	small_string s2("123456");
 	EXPECT_TRUE(s1 == s2);
 	EXPECT_EQ(s1.compare(s2), 0);
+	EXPECT_TRUE(s1 == "123456");
+	EXPECT_TRUE("123456" == s1);
 }
 
 TEST(small_string, compare_ne)
@@ -110,4 +112,3 @@ TEST(small_string, compare_gte)
 	EXPECT_TRUE(s1 >= s2);
 	EXPECT_GE(s1.compare(s2), 0);
 }
-
