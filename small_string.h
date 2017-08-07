@@ -81,14 +81,14 @@ not_eof - checks whether a character is eof value
 	}
 
 	template <typename StringT,
-			  typename = typename std::enable_if_t<std::is_same<StringT, basic_small_string_t>::value || std::is_same<StringT, std::basic_string<CharT>>::value>>
+			  typename = typename std::enable_if_t<std::is_same<StringT, basic_small_string_t>::value || std::is_same<StringT, std::basic_string<CharT, Traits>>::value>>
 	basic_small_string_t(const StringT& other, std::size_t pos)
 	{
 		init(other.data() + pos, other.size() - pos);
 	}
 
 	template <typename StringT,
-			  typename = typename std::enable_if_t<std::is_same<StringT, basic_small_string_t>::value || std::is_same<StringT, std::basic_string<CharT>>::value>>
+			  typename = typename std::enable_if_t<std::is_same<StringT, basic_small_string_t>::value || std::is_same<StringT, std::basic_string<CharT, Traits>>::value>>
 	basic_small_string_t(const StringT& other, std::size_t pos, std::size_t count)
 	{
 		init(other.data() + pos, count);
@@ -104,7 +104,7 @@ not_eof - checks whether a character is eof value
 		init(str, traits_type::length(str));
 	}
 
-	basic_small_string_t(const std::basic_string<CharT>& str)
+	basic_small_string_t(const std::basic_string<CharT, Traits>& str)
 	{
 		init(str.data(), str.size());
 	}
@@ -200,7 +200,7 @@ not_eof - checks whether a character is eof value
 	}
 
 	iterator insert( const_iterator pos, std::initializer_list<CharT> ilist);
-	basic_small_string_t& insert(size_type pos, std::experimental::basic_string_view<value_type, traits_type> sv)
+	basic_small_string_t& insert(size_type pos, std::experimental::basic_string_view<CharT, Traits> sv)
 	{
 		insert(pos, sv.data(), sv.size());
 		return *this;
@@ -475,7 +475,7 @@ using small_u32string = small_u32string_t<32>;
 	{ \
 		size_t operator()(const x& str) const \
 		{ \
-			using view = typename std::experimental::basic_string_view<x::value_type>; \
+			using view = typename std::experimental::basic_string_view<x::value_type, x::traits_type>; \
 			view v(str.data(), str.size()); \
 			return std::hash<view>()(v); \
 		} \
