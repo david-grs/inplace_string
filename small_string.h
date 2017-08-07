@@ -121,7 +121,7 @@ not_eof - checks whether a character is eof value
 
 	const value_type* c_str() const { return _data.data(); }
 
-	operator std::experimental::string_view() const noexcept { return {_data.data(), size()}; }
+	operator std::experimental::basic_string_view<CharT, Traits>() const noexcept { return {_data.data(), size()}; }
 
 	const_iterator begin() const  { return std::begin(_data); }
 	const_iterator end() const    { return std::begin(_data) + size() + 1; }
