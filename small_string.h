@@ -3,6 +3,7 @@
 #include <array>
 #include <cassert>
 #include <algorithm>
+#include <limits>
 
 #if defined _NO_EXCEPTIONS
 #include <iostream>
@@ -47,6 +48,9 @@ struct basic_small_string_t
 	using reverse_iterator = std::reverse_iterator<iterator>;
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
+	using small_size_type = std::make_unsigned_t<value_type>;
+	static const auto max_small_size = std::numeric_limits<small_size_type>::max();
+
 	static const size_type npos = std::basic_string<value_type, traits_type>::npos;
 
 /*assign - assigns a character
@@ -63,7 +67,8 @@ eof - returns an eof value
 not_eof - checks whether a character is eof value
 */
 	static_assert(std::is_pod<value_type>::value, "CharT type of basic_small_string_t must be a POD");
-	static_assert(std::is_same<value_type, typename traits_type::char_type>::value, "ChartT type must be the same type as Traits::char_type");
+	static_assert(std::is_same<value_type, typename traits_type::char_type>::value, "CharT type must be the same type as Traits::char_type");
+	static_assert(N <= max_small_size, "N must be smaller than the maximum small_size possible with this CharT type");
 
 	basic_small_string_t()
 	{
@@ -274,7 +279,9 @@ private:
 	{
 		size_type sz = std::min(count1, count2);
 		const int cmp = traits_type::compare(data() + pos1, str, sz);
-		return cmp != 0 ? cmp : count1 - pos1 - count2;
+		if (cmp != 0)
+			return cmp;
+		return count1 - pos1 > count2 ? 1 : (count1 - pos1 == count2 ? 0 : -1);
 	}
 
 public:
@@ -286,7 +293,7 @@ private:
 			throw_helper<std::out_of_range>("basic_small_string_t::init: out of range");
 
 		traits_type::assign(std::begin(_data), count, ch);
-		set_size(count);
+		set_size(static_cast<small_size_type>(count));
 	}
 
 	void init(const value_type* str, std::size_t count)
@@ -299,7 +306,7 @@ private:
 		traits_type::copy(std::begin(_data), str, count);
 		_data[count] = value_type{};
 
-		set_size(count);
+		set_size(static_cast<small_size_type>(count));
 	}
 
 	template <typename InputIt>
@@ -341,10 +348,10 @@ private:
 		set_size(size() + count);
 	}
 
-	void set_size(size_type size)
+	void set_size(small_size_type sz)
 	{
-		assert(size <= N - 1);
-		_data[N - 1] = N - 1 - size;
+		assert(sz <= N - 1);
+		_data[N - 1] = static_cast<small_size_type>(N - 1 - sz);
 	}
 
 	size_type get_size() const
