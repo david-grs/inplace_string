@@ -76,14 +76,14 @@ not_eof - checks whether a character is eof value
 	}
 
 	template <typename StringT,
-			  typename = typename std::enable_if_t<std::is_same<StringT, basic_small_string_t>::value || std::is_same<StringT, std::string>::value>>
+			  typename = typename std::enable_if_t<std::is_same<StringT, basic_small_string_t>::value || std::is_same<StringT, std::basic_string<CharT>>::value>>
 	basic_small_string_t(const StringT& other, std::size_t pos)
 	{
 		init(other.data() + pos, other.size() - pos);
 	}
 
 	template <typename StringT,
-			  typename = typename std::enable_if_t<std::is_same<StringT, basic_small_string_t>::value || std::is_same<StringT, std::string>::value>>
+			  typename = typename std::enable_if_t<std::is_same<StringT, basic_small_string_t>::value || std::is_same<StringT, std::basic_string<CharT>>::value>>
 	basic_small_string_t(const StringT& other, std::size_t pos, std::size_t count)
 	{
 		init(other.data() + pos, count);
