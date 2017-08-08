@@ -373,12 +373,9 @@ not_eof - checks whether a character is eof value
 			throw_helper<std::length_error>("basic_small_string_t::resize: exceed maximum string length");
 
 		const size_type sz = size();
-		const size_type count = new_size - sz;
+		const std::make_signed<size_type>::type count = new_size - sz;
 		if (count > 0)
-		{
-			assert(get_remaining_size() > count);
 			traits_type::assign(std::begin(_data) + size(), count, ch);
-		}
 
 		set_size(static_cast<small_size_type>(new_size));
 		_data[new_size] = value_type{};

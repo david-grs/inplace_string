@@ -164,9 +164,9 @@ TEST(small_string, resize)
 	s.resize(2);
 	EXPECT_EQ("fo", s);
 
-	s.resize(6);
-	EXPECT_EQ("fo", s);
+	s.resize(6, 'z');
+	EXPECT_EQ("fozzzz", s);
 
 	s.resize(6, 'o');
-	EXPECT_EQ("foooooo", s);
+	EXPECT_EQ("fozzzz", s);
 }
