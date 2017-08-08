@@ -199,10 +199,15 @@ not_eof - checks whether a character is eof value
 		return pos;
 	}
 
-	iterator insert( const_iterator pos, std::initializer_list<CharT> ilist);
-	basic_small_string_t& insert(size_type pos, std::experimental::basic_string_view<CharT, Traits> sv)
+	iterator insert(const_iterator pos, std::initializer_list<CharT> ilist)
 	{
-		insert(pos, sv.data(), sv.size());
+		insert(pos, ilist.begin(), ilist.size());
+		return pos;
+	}
+
+	basic_small_string_t& insert(size_type pos, std::experimental::basic_string_view<CharT, Traits> view)
+	{
+		insert(pos, view.data(), view.size());
 		return *this;
 	}
 
