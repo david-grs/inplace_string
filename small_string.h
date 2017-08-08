@@ -353,10 +353,14 @@ not_eof - checks whether a character is eof value
 		return _compare(pos1, count1, sv.data(), sv.size());
 	}
 
-	// adding template < class T >
-	//int compare( size_type pos1, size_type count1,
-	  //           const T& t,
-		//         size_type pos2, size_type count2 = npos) const;
+	template <typename T,
+			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
+												   && !std::is_convertible<const T&, const CharT*>::value>::type>
+	basic_small_string_t& compare(size_type pos1, size_type count1, const T& t, size_type pos2, size_type count2 = npos)
+	{
+		std::experimental::basic_string_view<CharT, Traits> view = t;
+		return _compare(pos1, count1, view.data() + pos2, count2 == npos ? view.size() : count2);
+	}
 
 private:
 	int _compare(size_type pos1, size_type count1, const value_type* str, size_type count2) const
