@@ -223,6 +223,80 @@ not_eof - checks whether a character is eof value
 		erase(size() - 1, 1);
 	}
 
+	basic_small_string_t& append(size_type count, value_type ch)
+	{
+		return _append(ch, count);
+	}
+
+	basic_small_string_t& append(const std::basic_string<CharT, Traits>& str)
+	{
+		return append(str.data(), str.size());
+	}
+
+	basic_small_string_t& append(const std::basic_string<CharT, Traits>& str, size_type pos, size_type count = npos)
+	{
+		return append(str.data() + pos, count == npos ? str.size() - pos : count);
+	}
+
+	basic_small_string_t& append(const value_type* str, size_type count)
+	{
+		return _append(str, count);
+	}
+
+	basic_small_string_t& append(const value_type* str)
+	{
+		size_type sz = traits_type::length(str);
+		return append(str, sz);
+	}
+
+	template <typename InputIt>
+	basic_small_string_t& append(InputIt first, InputIt last)
+	{
+		return _append(first, last);
+	}
+
+	basic_small_string_t& append(std::initializer_list<value_type> ilist)
+	{
+		return append(ilist.begin(), ilist.size());
+	}
+
+	basic_small_string_t& append(const std::experimental::basic_string_view<CharT, Traits>& view)
+	{
+		return append(view.data(), view.size());
+	}
+
+	template <typename T>
+	basic_small_string_t& append(const T& t, size_type pos, size_type count = npos)
+	{
+		return *this;
+	}
+
+	basic_small_string_t& operator+=(const std::basic_string<CharT, Traits>& str)
+	{
+		return append(str);
+	}
+
+	basic_small_string_t& operator+=(value_type ch)
+	{
+		push_back(ch);
+		return *this;
+	}
+
+	basic_small_string_t& operator+=(const value_type* str)
+	{
+		return append(str);
+	}
+
+	basic_small_string_t& operator+=(std::initializer_list<value_type> ilist)
+	{
+		return append(ilist);
+	}
+
+	basic_small_string_t& operator+=(std::experimental::basic_string_view<CharT, Traits> view)
+	{
+		return append(view);
+	}
+
 	basic_small_string_t substr(size_type pos = 0, size_type count = npos)
 	{
 		size_type sz = count == npos ? size() - pos : count;
@@ -284,24 +358,6 @@ private:
 		return count1 - pos1 > count2 ? 1 : (count1 - pos1 == count2 ? 0 : -1);
 	}
 
-public:
-	basic_small_string_t& append(const std::basic_string<CharT, Traits>& str)
-	{
-		return *this;
-	}
-	basic_small_string_t& append(const std::experimental::basic_string_view<CharT, Traits>& v)
-	{
-		return *this;
-	}
-	basic_small_string_t& append(const value_type* str)
-	{
-		return *this;
-	}
-	basic_small_string_t& append(value_type str)
-	{
-		return *this;
-	}
-
 
 private:
 	void init(value_type ch, std::size_t count)
@@ -353,6 +409,7 @@ private:
 		for (size_type i = 0; i != count; ++i)
 			traits_type::assign(_data[index + i], ch);
 
+		// TODO set null char
 		set_size(size() + count);
 	}
 
@@ -362,6 +419,43 @@ private:
 		for (size_type i = 0; i != count; ++i)
 			traits_type::assign(_data[index + i], str[i]);
 
+		// TODO set null char
+		set_size(size() + count);
+	}
+
+	basic_small_string_t& _append(const value_type* str, size_type count)
+	{
+		if (get_remaining_size() < count)
+			throw_helper<std::length_error>("basic_small_string_t::append: exceed maximum string length");
+
+		size_type sz = size();
+		for (size_type i = 0; i != count; ++i)
+			traits_type::assign(_data[sz + i], str[i]);
+
+		// TODO set null char
+		set_size(size() + count);
+	}
+
+	template <typename InputIt>
+	basic_small_string_t& _append(InputIt first, InputIt last)
+	{
+		const std::size_t count = std::distance(first, last);
+		if (get_remaining_size() < count)
+			throw_helper<std::length_error>("basic_small_string_t::append: exceed maximum string length");
+
+		pointer p = _data.data() + size();
+		for (auto it = first; it != last; ++it, ++p)
+			traits_type::assign(*p, *it);
+
+		set_size(size() + count);
+	}
+
+	basic_small_string_t& _append(size_type count, value_type ch)
+	{
+		if (get_remaining_size() < count)
+			throw_helper<std::length_error>("basic_small_string_t::append: exceed maximum string length");
+
+		traits_type::assign(_data.data() + size(), count, ch);
 		set_size(size() + count);
 	}
 
@@ -374,6 +468,11 @@ private:
 	size_type get_size() const
 	{
 		return N - 1 - _data[N - 1];
+	}
+
+	size_type get_remaining_size() const
+	{
+		return _data[N - 1];
 	}
 
 	std::array<value_type, N> _data;
