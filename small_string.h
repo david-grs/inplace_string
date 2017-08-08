@@ -206,11 +206,13 @@ not_eof - checks whether a character is eof value
 		return *this;
 	}
 
-	template <typename T>
-	basic_small_string_t& insert(size_type index, const T& t, size_type index_str, size_type count = npos)
+	template <typename T,
+			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
+												   && !std::is_convertible<const T&, const CharT*>::value>::type>
+	basic_small_string_t& insert(size_type pos, const T& t, size_type index_str, size_type count = npos)
 	{
-		// TODO
-		return *this;
+		std::experimental::basic_string_view<CharT, Traits> view = t;
+		return insert(pos, view.data(), count == npos ? view.size() - index_str : count);
 	}
 
 	void push_back(value_type ch)
