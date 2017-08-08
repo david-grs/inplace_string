@@ -143,7 +143,7 @@ not_eof - checks whether a character is eof value
 	bool      empty() const    { return size() == 0; }
 	size_type length() const   { return size(); }
 	size_type size() const     { return get_size(); }
-	size_type max_size() const { return N; }
+	size_type max_size() const { return N - 1; }
 	size_type capacity() const { return N; }
 	void      shrink_to_fit()  {}
 
@@ -362,16 +362,27 @@ not_eof - checks whether a character is eof value
 		return _compare(pos1, count1, view.data() + pos2, count2 == npos ? view.size() : count2);
 	}
 
-private:
-	int _compare(size_type pos1, size_type count1, const value_type* str, size_type count2) const
+	void resize(size_type sz)
 	{
-		size_type sz = std::min(count1, count2);
-		const int cmp = traits_type::compare(data() + pos1, str, sz);
-		if (cmp != 0)
-			return cmp;
-		return count1 - pos1 > count2 ? 1 : (count1 - pos1 == count2 ? 0 : -1);
+		resize(sz, value_type{});
 	}
 
+	void resize(size_type new_size, value_type ch)
+	{
+		if (new_size > max_size())
+			throw_helper<std::length_error>("basic_small_string_t::resize: exceed maximum string length");
+
+		const size_type sz = size();
+		const size_type count = new_size - sz;
+		if (count > 0)
+		{
+			assert(get_remaining_size() > count);
+			traits_type::assign(std::begin(_data) + size(), count, ch);
+		}
+
+		set_size(static_cast<small_size_type>(new_size));
+		_data[new_size] = value_type{};
+	}
 
 private:
 	void init(value_type ch, std::size_t count)
@@ -474,6 +485,15 @@ private:
 		traits_type::assign(_data.data() + size(), count, ch);
 		set_size(static_cast<small_size_type>(size() + count));
 		return *this;
+	}
+
+	int _compare(size_type pos1, size_type count1, const value_type* str, size_type count2) const
+	{
+		size_type sz = std::min(count1, count2);
+		const int cmp = traits_type::compare(data() + pos1, str, sz);
+		if (cmp != 0)
+			return cmp;
+		return count1 - pos1 > count2 ? 1 : (count1 - pos1 == count2 ? 0 : -1);
 	}
 
 	void set_size(small_size_type sz)

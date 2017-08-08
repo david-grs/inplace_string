@@ -150,3 +150,23 @@ TEST(small_string, append)
 	s.append(a, 0);
 	EXPECT_EQ("foobarbazburbuzzzzfoo", s);
 }
+
+
+TEST(small_string, resize)
+{
+	small_string s("foo");
+	s.resize(3, 'z');
+	EXPECT_EQ("foo", s);
+
+	s.resize(6, 'z');
+	EXPECT_EQ("foozzz", s);
+
+	s.resize(2);
+	EXPECT_EQ("fo", s);
+
+	s.resize(6);
+	EXPECT_EQ("fo", s);
+
+	s.resize(6, 'o');
+	EXPECT_EQ("foooooo", s);
+}
