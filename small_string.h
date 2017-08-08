@@ -225,7 +225,7 @@ not_eof - checks whether a character is eof value
 
 	basic_small_string_t& append(size_type count, value_type ch)
 	{
-		return _append(ch, count);
+		return _append(count, ch);
 	}
 
 	basic_small_string_t& append(const std::basic_string<CharT, Traits>& str)
@@ -265,10 +265,13 @@ not_eof - checks whether a character is eof value
 		return append(view.data(), view.size());
 	}
 
-	template <typename T>
+	template <typename T,
+			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
+												   && !std::is_convertible<const T&, const CharT*>::value>::type>
 	basic_small_string_t& append(const T& t, size_type pos, size_type count = npos)
 	{
-		return *this;
+		std::experimental::basic_string_view<CharT, Traits> view = t;
+		return append(view.data() + pos, count == npos ? view.size() - pos : count);
 	}
 
 	basic_small_string_t& operator+=(const std::basic_string<CharT, Traits>& str)
@@ -433,7 +436,8 @@ private:
 			traits_type::assign(_data[sz + i], str[i]);
 
 		// TODO set null char
-		set_size(size() + count);
+		set_size(static_cast<small_size_type>(size() + count));
+		return *this;
 	}
 
 	template <typename InputIt>
@@ -447,7 +451,8 @@ private:
 		for (auto it = first; it != last; ++it, ++p)
 			traits_type::assign(*p, *it);
 
-		set_size(size() + count);
+		set_size(static_cast<small_size_type>(size() + count));
+		return *this;
 	}
 
 	basic_small_string_t& _append(size_type count, value_type ch)
@@ -456,7 +461,8 @@ private:
 			throw_helper<std::length_error>("basic_small_string_t::append: exceed maximum string length");
 
 		traits_type::assign(_data.data() + size(), count, ch);
-		set_size(size() + count);
+		set_size(static_cast<small_size_type>(size() + count));
+		return *this;
 	}
 
 	void set_size(small_size_type sz)

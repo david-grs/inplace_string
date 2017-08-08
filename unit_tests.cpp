@@ -30,7 +30,7 @@ TEST(small_string, substr)
 	small_string s("123456");
 	small_string ss = s.substr();
 
-	EXPECT_TRUE(s == ss);
+	EXPECT_EQ(s, ss);
 
 	ss = s.substr(4);
 	EXPECT_EQ(2, int(ss.size()));
@@ -121,4 +121,32 @@ TEST(small_string, compare_gte)
 	s2 = "123456";
 	EXPECT_TRUE(s1 >= s2);
 	EXPECT_GE(s1.compare(s2), 0);
+}
+
+struct A : std::experimental::string_view
+{
+	A() : std::experimental::string_view("foo") { }
+};
+
+TEST(small_string, append)
+{
+	small_string s("foo");
+	s.append("bar");
+	EXPECT_EQ("foobar", s);
+
+	s.append(std::string("baz"));
+	EXPECT_EQ("foobarbaz", s);
+
+	s.append("burbur", 3);
+	EXPECT_EQ("foobarbazbur", s);
+
+	s.append(std::experimental::string_view("buz"));
+	EXPECT_EQ("foobarbazburbuz", s);
+
+	s.append(3, 'z');
+	EXPECT_EQ("foobarbazburbuzzzz", s);
+
+	A a;
+	s.append(a, 0);
+	EXPECT_EQ("foobarbazburbuzzzzfoo", s);
 }
