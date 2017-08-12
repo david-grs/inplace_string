@@ -262,7 +262,7 @@ not_eof - checks whether a character is eof value
 
 	void push_back(value_type ch)
 	{
-		insert(end(), ch);
+		_append(1, ch);
 	}
 
 	void pop_back()

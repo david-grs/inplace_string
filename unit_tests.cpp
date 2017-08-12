@@ -165,6 +165,35 @@ TEST(small_string, append)
 	EXPECT_EQ("foobar", s);
 }
 
+TEST(small_string, append_operator)
+{
+	small_string s("foo");
+	s += "bar";
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("foobar", s);
+	EXPECT_EQ("foobar", std::string(s.c_str()));
+
+	s = "foo";
+	s += std::string("baz");
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("foobaz", s);
+
+	s = "foo";
+	s += 'b';
+	EXPECT_EQ(4, s.size());
+	EXPECT_EQ("foob", s);
+
+	s = "foo";
+	s += std::experimental::string_view("buz");
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("foobuz", s);
+
+	s = "foo";
+	s += {'b', 'a', 'r'};
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("foobar", s);
+}
+
 TEST(small_string, resize)
 {
 	small_string s("foo");
