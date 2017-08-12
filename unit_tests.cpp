@@ -125,35 +125,45 @@ TEST(small_string, compare_gte)
 	EXPECT_GE(s1.compare(s2), 0);
 }
 
-struct A : std::experimental::string_view
-{
-	A() : std::experimental::string_view("foo") { }
-};
-
 TEST(small_string, append)
 {
 	small_string s("foo");
 	s.append("bar");
+	EXPECT_EQ(6, s.size());
 	EXPECT_EQ("foobar", s);
 	EXPECT_EQ("foobar", std::string(s.c_str()));
 
+	s = "foo";
 	s.append(std::string("baz"));
-	EXPECT_EQ("foobarbaz", s);
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("foobaz", s);
 
-	s.append("burbur", 3);
-	EXPECT_EQ("foobarbazbur", s);
+	s = "foo";
+	s.append("burbar", 3);
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("foobur", s);
 
+	s = "foo";
 	s.append(std::experimental::string_view("buz"));
-	EXPECT_EQ("foobarbazburbuz", s);
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("foobuz", s);
 
+	s = "foo";
 	s.append(3, 'z');
-	EXPECT_EQ("foobarbazburbuzzzz", s);
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("foozzz", s);
 
+	s = "foo";
+
+	struct A : std::experimental::string_view
+	{
+		A() : std::experimental::string_view("bar") { }
+	};
 	A a;
 	s.append(a, 0);
-	EXPECT_EQ("foobarbazburbuzzzzfoo", s);
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("foobar", s);
 }
-
 
 TEST(small_string, resize)
 {
