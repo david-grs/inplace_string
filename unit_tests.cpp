@@ -22,7 +22,8 @@ TEST(small_string, init_basic_string)
 
 	ASSERT_FALSE(ss.empty());
 	ASSERT_EQ(ss.size(), 3);
-	ASSERT_TRUE(ss == "foo");
+	ASSERT_EQ("foo", ss);
+	ASSERT_EQ("foo", std::string(ss.c_str()));
 }
 
 TEST(small_string, substr)
@@ -133,6 +134,7 @@ TEST(small_string, append)
 	small_string s("foo");
 	s.append("bar");
 	EXPECT_EQ("foobar", s);
+	EXPECT_EQ("foobar", std::string(s.c_str()));
 
 	s.append(std::string("baz"));
 	EXPECT_EQ("foobarbaz", s);
