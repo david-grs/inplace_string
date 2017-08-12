@@ -490,11 +490,11 @@ private:
 		if (get_remaining_size() < count)
 			throw_helper<std::length_error>("basic_small_string_t::append: exceed maximum string length");
 
-		size_type sz = size();
+		const size_type sz = size();
 		for (size_type i = 0; i != count; ++i)
 			traits_type::assign(_data[sz + i], str[i]);
 
-		// TODO set null char
+		_data[sz + count] = value_type{};
 		set_size(static_cast<small_size_type>(size() + count));
 		return *this;
 	}
@@ -506,11 +506,14 @@ private:
 		if (get_remaining_size() < count)
 			throw_helper<std::length_error>("basic_small_string_t::append: exceed maximum string length");
 
-		pointer p = _data.data() + size();
+		const size_type sz = size();
+		const pointer p = _data.data() + sz;
+
 		for (auto it = first; it != last; ++it, ++p)
 			traits_type::assign(*p, *it);
 
-		set_size(static_cast<small_size_type>(size() + count));
+		*p = value_type{};
+		set_size(static_cast<small_size_type>(sz + count));
 		return *this;
 	}
 
@@ -519,8 +522,11 @@ private:
 		if (get_remaining_size() < count)
 			throw_helper<std::length_error>("basic_small_string_t::append: exceed maximum string length");
 
-		traits_type::assign(_data.data() + size(), count, ch);
-		set_size(static_cast<small_size_type>(size() + count));
+		const size_type sz = size();
+		traits_type::assign(_data.data() + sz, count, ch);
+		_data[sz + count] = value_type{};
+
+		set_size(static_cast<small_size_type>(sz + count));
 		return *this;
 	}
 
