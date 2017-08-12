@@ -1,3 +1,4 @@
+#define SMALL_STRING_SANITY_CHECKS
 #include "small_string.h"
 
 #include <boost/noncopyable.hpp>

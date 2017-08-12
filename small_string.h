@@ -72,11 +72,21 @@ not_eof - checks whether a character is eof value
 
 	basic_small_string_t()
 	{
+#ifdef SMALL_STRING_SANITY_CHECKS
+		for (size_type i = 0; i < N; ++i)
+			_data[i] = 'a';
+#endif
+
 		zero();
 	}
 
 	basic_small_string_t(std::size_t count, value_type ch)
 	{
+#ifdef SMALL_STRING_SANITY_CHECKS
+		for (size_type i = 0; i < N; ++i)
+			_data[i] = 'a';
+#endif
+
 		init(ch, count);
 	}
 
@@ -84,6 +94,11 @@ not_eof - checks whether a character is eof value
 			  typename = typename std::enable_if_t<std::is_same<StringT, basic_small_string_t>::value || std::is_same<StringT, std::basic_string<CharT, Traits>>::value>>
 	basic_small_string_t(const StringT& other, std::size_t pos)
 	{
+#ifdef SMALL_STRING_SANITY_CHECKS
+		for (size_type i = 0; i < N; ++i)
+			_data[i] = 'a';
+#endif
+
 		init(other.data() + pos, other.size() - pos);
 	}
 
@@ -91,27 +106,52 @@ not_eof - checks whether a character is eof value
 			  typename = typename std::enable_if_t<std::is_same<StringT, basic_small_string_t>::value || std::is_same<StringT, std::basic_string<CharT, Traits>>::value>>
 	basic_small_string_t(const StringT& other, std::size_t pos, std::size_t count)
 	{
+#ifdef SMALL_STRING_SANITY_CHECKS
+		for (size_type i = 0; i < N; ++i)
+			_data[i] = 'a';
+#endif
+
 		init(other.data() + pos, count);
 	}
 
 	basic_small_string_t(const value_type* str, std::size_t count)
 	{
+#ifdef SMALL_STRING_SANITY_CHECKS
+		for (size_type i = 0; i < N; ++i)
+			_data[i] = 'a';
+#endif
+
 		init(str, count);
 	}
 
 	basic_small_string_t(const value_type* str)
 	{
+#ifdef SMALL_STRING_SANITY_CHECKS
+		for (size_type i = 0; i < N; ++i)
+			_data[i] = 'a';
+#endif
+
 		init(str, traits_type::length(str));
 	}
 
 	basic_small_string_t(const std::basic_string<CharT, Traits>& str)
 	{
+#ifdef SMALL_STRING_SANITY_CHECKS
+		for (size_type i = 0; i < N; ++i)
+			_data[i] = 'a';
+#endif
+
 		init(str.data(), str.size());
 	}
 
 	template <typename InputIt>
 	basic_small_string_t(InputIt first, InputIt last)
 	{
+#ifdef SMALL_STRING_SANITY_CHECKS
+		for (size_type i = 0; i < N; ++i)
+			_data[i] = 'a';
+#endif
+
 		init(first, last);
 	}
 
