@@ -493,8 +493,8 @@ private:
 		const size_type sz = size();
 		for (size_type i = 0; i != count; ++i)
 			traits_type::assign(_data[sz + i], str[i]);
-
 		_data[sz + count] = value_type{};
+
 		set_size(static_cast<small_size_type>(size() + count));
 		return *this;
 	}
@@ -511,8 +511,8 @@ private:
 
 		for (auto it = first; it != last; ++it, ++p)
 			traits_type::assign(*p, *it);
-
 		*p = value_type{};
+
 		set_size(static_cast<small_size_type>(sz + count));
 		return *this;
 	}
@@ -532,7 +532,7 @@ private:
 
 	int _compare(size_type pos1, size_type count1, const value_type* str, size_type count2) const
 	{
-		size_type sz = std::min(count1, count2);
+		const size_type sz = std::min(count1, count2);
 		const int cmp = traits_type::compare(data() + pos1, str, sz);
 		if (cmp != 0)
 			return cmp;
