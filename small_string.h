@@ -118,13 +118,13 @@ not_eof - checks whether a character is eof value
 	reference   at(std::size_t i)       { return _data.at(i); }
 	value_type  at(std::size_t i) const { return _data.at(i); }
 
-	reference operator[](std::size_t i)         { return assert(i < size()); _data[i]; }
-	value_type  operator[](std::size_t i) const { return assert(i < size()); _data[i]; }
+	reference operator[](std::size_t i)         { assert(i < size()); return _data[i]; }
+	value_type  operator[](std::size_t i) const { assert(i < size()); return _data[i]; }
 
-	value_type front() const { return assert(!empty()); _data[0]; }
-	reference  front()       { return assert(!empty()); _data[0]; }
-	value_type back() const  { return assert(!empty()); _data[size() - 1]; }
-	reference  back()        { return assert(!empty()); _data[size() - 1]; }
+	value_type front() const { assert(!empty()); return _data[0]; }
+	reference  front()       { assert(!empty()); return _data[0]; }
+	value_type back() const  { assert(!empty()); return _data[size() - 1]; }
+	reference  back()        { assert(!empty()); return _data[size() - 1]; }
 
 	const value_type* data() const { return _data.data(); }
 	char* data() { return _data.data(); }
