@@ -98,32 +98,32 @@ not_eof - checks whether a character is eof value
 		zero();
 	}
 
-	basic_small_string_t(std::size_t count, value_type ch)
+	basic_small_string_t(size_type count, value_type ch)
 	{
 		init(count, ch);
 	}
 
-	basic_small_string_t(const std::basic_string<CharT, Traits>& other, std::size_t pos)
+	basic_small_string_t(const std::basic_string<CharT, Traits>& other, size_type pos)
 	{
 		init(other.data() + pos, other.size() - pos);
 	}
 
-	basic_small_string_t(const basic_small_string_t& other, std::size_t pos)
+	basic_small_string_t(const basic_small_string_t& other, size_type pos)
 	{
 		init(other.data() + pos, other.size() - pos);
 	}
 
-	basic_small_string_t(const std::basic_string<CharT, Traits>& other, std::size_t pos, std::size_t count)
+	basic_small_string_t(const std::basic_string<CharT, Traits>& other, size_type pos, size_type count)
 	{
 		init(other.data() + pos, std::min(other.size() - pos, count));
 	}
 
-	basic_small_string_t(const basic_small_string_t& other, std::size_t pos, std::size_t count)
+	basic_small_string_t(const basic_small_string_t& other, size_type pos, size_type count)
 	{
 		init(other.data() + pos, std::min(other.size() - pos, count));
 	}
 
-	basic_small_string_t(const value_type* str, std::size_t count)
+	basic_small_string_t(const value_type* str, size_type count)
 	{
 		init(str, count);
 	}
@@ -163,11 +163,11 @@ not_eof - checks whether a character is eof value
 		init(sv.data(), sv.size());
 	}
 
-	reference   at(std::size_t i)       { return _data.at(i); }
-	value_type  at(std::size_t i) const { return _data.at(i); }
+	reference   at(size_type i)       { return _data.at(i); }
+	value_type  at(size_type i) const { return _data.at(i); }
 
-	reference operator[](std::size_t i)         { assert(i < size()); return _data[i]; }
-	value_type  operator[](std::size_t i) const { assert(i < size()); return _data[i]; }
+	reference   operator[](size_type i)       { assert(i < size()); return _data[i]; }
+	value_type  operator[](size_type i) const { assert(i < size()); return _data[i]; }
 
 	value_type front() const { assert(!empty()); return _data[0]; }
 	reference  front()       { assert(!empty()); return _data[0]; }
@@ -563,7 +563,7 @@ private:
 		set_size(static_cast<small_size_type>(count));
 	}
 
-	void init(const value_type* str, std::size_t count)
+	void init(const value_type* str, size_type count)
 	{
 		assert(str != nullptr);
 
@@ -590,7 +590,7 @@ private:
 			_data[i] = 'a';
 #endif
 
-		const std::size_t count = std::distance(first, last);
+		const size_type count = std::distance(first, last);
 		if (count > N)
 			throw_helper<std::out_of_range>("basic_small_string_t::init: out of range");
 
@@ -678,7 +678,7 @@ private:
 	template <typename InputIt>
 	basic_small_string_t& _append(InputIt first, InputIt last)
 	{
-		const std::size_t count = std::distance(first, last);
+		const size_type count = std::distance(first, last);
 		if (get_remaining_size() < count)
 			throw_helper<std::length_error>("basic_small_string_t::append: exceed maximum string length");
 
