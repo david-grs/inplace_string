@@ -637,6 +637,21 @@ private:
 		return *this;
 	}
 
+	basic_small_string_t& _replace(size_type pos1, size_type count1, size_type count2, value_type ch)
+	{
+		const std::make_signed<size_type>::type count = count2 - count1;
+
+		if (count > 0 && get_remaining_size() < size_type(count))
+			throw_helper<std::length_error>("basic_small_string_t::replace: exceed maximum string length");
+
+		traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, size() - pos1 - count1);
+		traits_type::assign(_data.data() + pos1, count2, ch);
+
+		set_size(static_cast<small_size_type>(size() + count));
+		_data[size()] = value_type{};
+		return *this;
+	}
+
 	template <typename InputIt>
 	basic_small_string_t& _replace(size_type pos1, size_type count1, InputIt first, InputIt last)
 	{
