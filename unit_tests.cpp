@@ -213,6 +213,58 @@ TEST(small_string, string_view)
 	EXPECT_EQ("foobar", std::string(sv));
 }
 
+TEST(small_string, criterator)
+{
+	small_string s("foobar");
+	std::string str("foobar");
+
+	auto sit = str.rbegin();
+	small_string::size_type count = 0;
+	for (auto it = s.crbegin(); it != s.crend(); ++it, ++sit, ++count)
+		EXPECT_EQ(*sit, *it);
+
+	EXPECT_EQ(s.size(), count);
+}
+
+TEST(small_string, riterator)
+{
+	small_string s("foobar");
+	std::string str("foobar");
+
+	auto sit = str.rbegin();
+	small_string::size_type count = 0;
+	for (auto it = s.rbegin(); it != s.rend(); ++it, ++sit, ++count)
+		EXPECT_EQ(*sit, *it);
+
+	EXPECT_EQ(s.size(), count);
+}
+
+TEST(small_string, iterator)
+{
+	small_string s("foobar");
+	std::string str("foobar");
+
+	auto sit = str.begin();
+	small_string::size_type count = 0;
+	for (auto it = s.begin(); it != s.end(); ++it, ++sit, ++count)
+		EXPECT_EQ(*sit, *it);
+
+	EXPECT_EQ(s.size(), count);
+}
+
+TEST(small_string, citerator)
+{
+	small_string s("foobar");
+	std::string str("foobar");
+
+	auto sit = str.begin();
+	small_string::size_type count = 0;
+	for (auto it = s.cbegin(); it != s.cend(); ++it, ++sit, ++count)
+		EXPECT_EQ(*sit, *it);
+
+	EXPECT_EQ(s.size(), count);
+}
+
 TEST(small_string, substr)
 {
 	small_string s("123456");
@@ -228,17 +280,6 @@ TEST(small_string, substr)
 	ss = s.substr(4, 1);
 	EXPECT_EQ(1, int(ss.size()));
 	EXPECT_EQ('5', ss.at(0));
-}
-
-TEST(small_string, iterator)
-{
-	small_string s("123456");
-	small_string::size_type sum = 0;
-
-	for (const char ch : s)
-		sum += ch;
-
-	EXPECT_EQ(int('1') * 6 + 15, sum);
 }
 
 TEST(small_string, compare_eq)

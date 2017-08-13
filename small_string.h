@@ -175,6 +175,14 @@ struct basic_small_string_t
 	const_iterator cbegin() const { return begin(); }
 	const_iterator cend() const   { return end(); }
 
+	reverse_iterator rbegin()              { return reverse_iterator(end()); }
+	const_reverse_iterator rbegin() const  { return const_reverse_iterator(cend()); }
+	const_reverse_iterator crbegin() const { return const_reverse_iterator(cend()); }
+
+	reverse_iterator rend()                { return reverse_iterator(begin()); }
+	const_reverse_iterator rend() const    { return const_reverse_iterator(cbegin()); }
+	const_reverse_iterator crend() const   { return const_reverse_iterator(cbegin()); }
+
 	bool      empty() const    { return get_remaining_size() == max_size(); }
 	size_type length() const   { return size(); }
 	size_type size() const     { return get_size(); }
