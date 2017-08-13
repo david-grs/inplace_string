@@ -237,8 +237,62 @@ TEST(small_string, replace_basic)
 	EXPECT_EQ(9, s.size());
 	EXPECT_EQ("foobarBUZ", std::string(s.c_str()));
 
-	s.replace(0, 9, "foo");
+	s.replace(0, 6, "FOO");
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("FOOBUZ", std::string(s.c_str()));
+
+	s.replace(0, 6, "foo");
 	EXPECT_EQ(3, s.size());
 	EXPECT_EQ("foo", std::string(s.c_str()));
+
+	s.replace(0, 3, "foobarbuzbaz");
+	EXPECT_EQ(12, s.size());
+	EXPECT_EQ("foobarbuzbaz", std::string(s.c_str()));
+
+	s.replace(0, 1, "FOOBARf");
+	EXPECT_EQ(18, s.size());
+	EXPECT_EQ("FOOBARfoobarbuzbaz", std::string(s.c_str()));
+
+	s.replace(0, 7, "f");
+	EXPECT_EQ(12, s.size());
+	EXPECT_EQ("foobarbuzbaz", std::string(s.c_str()));
 }
 
+
+#if 0
+basic_small_string_t& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str)
+basic_small_string_t& replace(size_type pos, size_type count, const basic_small_string_t& str)
+basic_small_string_t& replace(const_iterator first, const_iterator last, const std::basic_string<CharT, Traits>& str)
+basic_small_string_t& replace(const_iterator first, const_iterator last, const basic_small_string_t& str)
+basic_small_string_t& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str, size_type pos2, size_type count2 = npos)
+basic_small_string_t& replace(size_type pos, size_type count, const basic_small_string_t& str, size_type pos2, size_type count2 = npos)
+template <class InputIt>
+basic_small_string_t& replace(const_iterator first, const_iterator last, InputIt first2, InputIt last2)
+basic_small_string_t& replace(size_type pos, size_type count, const CharT* str, size_type count2)
+basic_small_string_t& replace(const_iterator first, const_iterator last, const CharT* str, size_type count2)
+basic_small_string_t& replace(size_type pos, size_type count, const CharT* str)
+basic_small_string_t& replace(const_iterator first, const_iterator last, const CharT* str)
+basic_small_string_t& replace(size_type pos, size_type count, size_type count2, value_type ch)
+basic_small_string_t& replace(const_iterator first, const_iterator last, size_type count2, value_type ch)
+basic_small_string_t& replace(const_iterator first, const_iterator last, std::initializer_list<value_type> ilist)
+basic_small_string_t& replace(size_type pos, size_type count, std::experimental::basic_string_view<CharT, Traits> sv)
+basic_small_string_t& replace(const_iterator first, const_iterator last, std::experimental::basic_string_view<CharT, Traits> sv)
+#endif
+
+TEST(small_string, replace)
+{
+	small_string s("fooFOOBAR");
+
+	s.replace(3, 6, small_string("bar"));
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("foobar", std::string(s.c_str()));
+
+
+	s.replace(s.begin(), s.begin() + 3, std::string("FOOBAR"));
+	EXPECT_EQ(9, s.size());
+	EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
+
+	s.replace(s.begin(), s.begin() + 6, small_string("foo"));
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("foobar", std::string(s.c_str()));
+}

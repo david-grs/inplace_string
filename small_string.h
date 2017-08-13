@@ -414,12 +414,12 @@ not_eof - checks whether a character is eof value
 
 	basic_small_string_t& replace(const_iterator first, const_iterator last, const std::basic_string<CharT, Traits>& str)
 	{
-		return _replace(first, last - first, str.c_str(), str.size());
+		return _replace(first - _data.data(), std::distance(first, last), str.c_str(), str.size());
 	}
 
 	basic_small_string_t& replace(const_iterator first, const_iterator last, const basic_small_string_t& str)
 	{
-		return _replace(first, last - first, str.c_str(), str.size());
+		return _replace(first - _data.data(), std::distance(first, last), str.c_str(), str.size());
 	}
 
 	basic_small_string_t& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str, size_type pos2, size_type count2 = npos)
@@ -624,21 +624,16 @@ private:
 	{
 		const std::make_signed<size_type>::type count = count2 - count1;
 
-		if (count > 0)
-		{
-			if (get_remaining_size() < size_type(count))
-				throw_helper<std::length_error>("basic_small_string_t::replace: exceed maximum string length");
+		if (count > 0 && get_remaining_size() < size_type(count))
+			throw_helper<std::length_error>("basic_small_string_t::replace: exceed maximum string length");
 
-			traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, count);
-		}
+		traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, size() - pos1 - count1);
 
 		for (size_type i = 0; i != count2; ++i)
 			traits_type::assign(_data[pos1 + i], str[i]);
 
-		if (pos1 + count1 == size())
-			_data[pos1 + count2] = value_type{};
-
 		set_size(static_cast<small_size_type>(size() + count));
+		_data[size()] = value_type{};
 		return *this;
 	}
 
