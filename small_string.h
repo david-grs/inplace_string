@@ -76,19 +76,6 @@ struct basic_small_string_t
 
 	static const size_type npos = std::basic_string<value_type, traits_type>::npos;
 
-/*assign - assigns a character
-eq lt - compares two characters
-move - moves one character sequence onto another
-copy - copies a character sequence
-compare - lexicographically compares two character sequences
-length - returns the length of a character sequence
-find - finds a character in a character sequence
-to_char_type - converts int_type to equivalent char_type
-to_int_type - converts char_type to equivalent int_type
-eq_int_type - compares two int_type values
-eof - returns an eof value
-not_eof - checks whether a character is eof value
-*/
 	static_assert(std::is_pod<value_type>::value, "CharT type of basic_small_string_t must be a POD");
 	static_assert(std::is_same<value_type, typename traits_type::char_type>::value, "CharT type must be the same type as Traits::char_type");
 	static_assert(N <= max_small_size, "N must be smaller than the maximum small_size possible with this CharT type");
@@ -175,7 +162,7 @@ not_eof - checks whether a character is eof value
 	reference  back()        { assert(!empty()); return _data[size() - 1]; }
 
 	const value_type* data() const { return _data.data(); }
-	char* data() { return _data.data(); }
+	value_type* data() { return _data.data(); }
 
 	const value_type* c_str() const { return _data.data(); }
 
