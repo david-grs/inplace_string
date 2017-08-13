@@ -4,6 +4,100 @@
 #include <boost/noncopyable.hpp>
 #include <gtest/gtest.h>
 
+#include <fstream>
+
+TEST(small_string, constructor)
+{
+	{
+		small_string s;
+		ASSERT_TRUE(s.empty());
+		ASSERT_EQ(0, s.size());
+		EXPECT_EQ("", std::string(s.c_str()));
+	}
+
+	{
+		small_string s(6, 'a');
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ(std::string(6, 'a'), std::string(s.c_str()));
+	}
+
+	{
+		std::string str("ZZZfoobar");
+		small_string s(str, 3);
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		std::string str("ZZZfoobar");
+		small_string s(str, 3, small_string::npos);
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		std::string str("ZZZfoobar");
+		small_string s(str, 3, 2);
+		ASSERT_EQ(2, s.size());
+		EXPECT_EQ("fo", std::string(s.c_str()));
+	}
+
+	{
+		small_string str("ZZZfoobar");
+		small_string s(str, 3);
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		small_string str("ZZZfoobar");
+		small_string s(str, 3, small_string::npos);
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		small_string str("ZZZfoobar");
+		small_string s(str, 3, 2);
+		ASSERT_EQ(2, s.size());
+		EXPECT_EQ("fo", std::string(s.c_str()));
+	}
+
+	{
+		small_string s("foobarfoo", 6);
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		small_string s("foobar", 6);
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		std::string str("foobarfoo");
+		small_string s(str.cbegin(), str.cbegin() + 6);
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		std::string tmp = std::tmpnam(nullptr);
+		std::ofstream ofs(tmp);
+		ofs << "foobar";
+		ofs.close();
+
+		std::ifstream file(tmp);
+		small_string s(
+			std::istreambuf_iterator<char>(file),
+			(std::istreambuf_iterator<char>())
+		);
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+}
+
 TEST(small_string, init)
 {
 	small_string s;
