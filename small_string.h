@@ -402,6 +402,96 @@ not_eof - checks whether a character is eof value
 		return _compare(pos1, count1, view.data() + pos2, count2 == npos ? view.size() : count2);
 	}
 
+	basic_small_string_t& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str)
+	{
+		return _replace(pos, count, str.c_str(), str.size());
+	}
+
+	basic_small_string_t& replace(size_type pos, size_type count, const basic_small_string_t& str)
+	{
+		return _replace(pos, count, str.c_str(), str.size());
+	}
+
+	basic_small_string_t& replace(const_iterator first, const_iterator last, const std::basic_string<CharT, Traits>& str)
+	{
+		return _replace(first, last - first, str.c_str(), str.size());
+	}
+
+	basic_small_string_t& replace(const_iterator first, const_iterator last, const basic_small_string_t& str)
+	{
+		return _replace(first, last - first, str.c_str(), str.size());
+	}
+
+	basic_small_string_t& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str, size_type pos2, size_type count2 = npos)
+	{
+		return _replace(pos, count, str.c_str() + pos2, std::min(str.size(), count2));
+	}
+
+	basic_small_string_t& replace(size_type pos, size_type count, const basic_small_string_t& str, size_type pos2, size_type count2 = npos)
+	{
+		return _replace(pos, count, str.c_str() + pos2, std::min(str.size(), count2));
+	}
+
+	template <class InputIt>
+	basic_small_string_t& replace(const_iterator first, const_iterator last, InputIt first2, InputIt last2)
+	{
+		return _replace(first, last - first, first2, last2);
+	}
+
+	basic_small_string_t& replace(size_type pos, size_type count, const CharT* str, size_type count2)
+	{
+		return _replace(pos, count, str, count2);
+	}
+
+	basic_small_string_t& replace(const_iterator first, const_iterator last, const CharT* str, size_type count2)
+	{
+		return _replace(first, last - first, str, count2);
+	}
+
+	basic_small_string_t& replace(size_type pos, size_type count, const CharT* str)
+	{
+		return _replace(pos, count, str, traits_type::length(str));
+	}
+
+	basic_small_string_t& replace(const_iterator first, const_iterator last, const CharT* str)
+	{
+		return _replace(first, last - first, str, traits_type::length(str));
+	}
+
+	basic_small_string_t& replace(size_type pos, size_type count, size_type count2, value_type ch)
+	{
+		return _replace(pos, count, count2, ch);
+	}
+
+	basic_small_string_t& replace(const_iterator first, const_iterator last, size_type count2, value_type ch)
+	{
+		return _replace(first, last - first, count2, ch);
+	}
+
+	basic_small_string_t& replace(const_iterator first, const_iterator last, std::initializer_list<value_type> ilist)
+	{
+		return _replace(first, last - first, ilist.begin(), ilist.size());
+	}
+
+	basic_small_string_t& replace(size_type pos, size_type count, std::experimental::basic_string_view<CharT, Traits> sv)
+	{
+		return _replace(pos, count, sv.data(), sv.size());
+	}
+
+	basic_small_string_t& replace(const_iterator first, const_iterator last, std::experimental::basic_string_view<CharT, Traits> sv)
+	{
+		return _replace(first, last - first, sv.data(), sv.size());
+	}
+
+	template <typename T,
+			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
+												   && !std::is_convertible<const T&, const CharT*>::value>::type>
+	basic_small_string_t& replace(size_type pos, size_type count, const T& t, size_type pos2, size_type count2 = npos)
+	{
+		std::experimental::basic_string_view<CharT, Traits> view = t;
+		return _replace(pos, count, view.data() + pos2, std::min(view.size(), count2));
+	}
+
 	void resize(size_type sz)
 	{
 		resize(sz, value_type{});
@@ -527,6 +617,28 @@ private:
 		_data[sz + count] = value_type{};
 
 		set_size(static_cast<small_size_type>(sz + count));
+		return *this;
+	}
+
+	basic_small_string_t& _replace(size_type pos1, size_type count1, const value_type* str, size_type count2)
+	{
+		const std::make_signed<size_type>::type count = count2 - count1;
+
+		if (count > 0)
+		{
+			if (get_remaining_size() < size_type(count))
+				throw_helper<std::length_error>("basic_small_string_t::replace: exceed maximum string length");
+
+			traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, count);
+		}
+
+		for (size_type i = 0; i != count2; ++i)
+			traits_type::assign(_data[pos1 + i], str[i]);
+
+		if (pos1 + count1 == size())
+			_data[pos1 + count2] = value_type{};
+
+		set_size(static_cast<small_size_type>(size() + count));
 		return *this;
 	}
 

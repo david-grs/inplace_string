@@ -212,3 +212,33 @@ TEST(small_string, resize)
 	s.resize(6, 'o');
 	EXPECT_EQ("fozzzz", s);
 }
+
+TEST(small_string, replace_basic)
+{
+	small_string s("fooFOO");
+
+	s.replace(3, 3, "bar");
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("foobar", std::string(s.c_str()));
+
+	s.replace(0, 3, "FOO");
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("FOObar", std::string(s.c_str()));
+
+	s.replace(3, 3, "BARFOO");
+	EXPECT_EQ(9, s.size());
+	EXPECT_EQ("FOOBARFOO", std::string(s.c_str()));
+
+	s.replace(3, 6, "BUZ");
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("FOOBUZ", std::string(s.c_str()));
+
+	s.replace(0, 3, "foobar");
+	EXPECT_EQ(9, s.size());
+	EXPECT_EQ("foobarBUZ", std::string(s.c_str()));
+
+	s.replace(0, 9, "foo");
+	EXPECT_EQ(3, s.size());
+	EXPECT_EQ("foo", std::string(s.c_str()));
+}
+
