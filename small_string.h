@@ -538,6 +538,13 @@ public:
 		_data[new_size] = value_type{};
 	}
 
+	void swap(basic_small_string_t& other) noexcept
+	{
+		basic_small_string_t s(other);
+		other = *this;
+		*this = s;
+	}
+
 private:
 	void init(size_type count, value_type ch)
 	{

@@ -344,6 +344,17 @@ TEST(small_string, shrink_to_fit)
 	EXPECT_EQ("foobar", std::string(s.c_str()));
 }
 
+TEST(small_string, clear)
+{
+	small_string s("foobar");
+	s.clear();
+
+	EXPECT_EQ(0, s.size());
+	EXPECT_EQ(0, *s.c_str());
+	EXPECT_EQ("", std::string(s.c_str()));
+	EXPECT_TRUE(s.empty());
+}
+
 TEST(small_string, substr)
 {
 	small_string s("123456");
@@ -650,3 +661,14 @@ TEST(small_string, copy)
 	EXPECT_EQ(3, bytes);
 	EXPECT_EQ("barbar", std::string(str));
 }
+
+TEST(small_string, swap)
+{
+	small_string s("foobar");
+	small_string ss("FOOBAR");
+
+	s.swap(ss);
+	EXPECT_EQ("foobar", std::string(ss.c_str()));
+	EXPECT_EQ("FOOBAR", std::string(s.c_str()));
+}
+
