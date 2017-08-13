@@ -329,3 +329,18 @@ TEST(small_string, replace)
 	EXPECT_EQ(6, s.size());
 	EXPECT_EQ("foobar", std::string(s.c_str()));
 }
+
+
+TEST(small_string, copy)
+{
+	small_string s("foobar");
+
+	char str[10];
+	small_string::size_type bytes = s.copy(str, small_string::npos, 0);
+	EXPECT_EQ(6, bytes);
+	EXPECT_EQ("foobar", std::string(str));
+
+	bytes = s.copy(str, 10, 3);
+	EXPECT_EQ(3, bytes);
+	EXPECT_EQ("barbar", std::string(str));
+}

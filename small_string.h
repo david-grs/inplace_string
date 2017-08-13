@@ -424,12 +424,12 @@ not_eof - checks whether a character is eof value
 
 	basic_small_string_t& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str, size_type pos2, size_type count2 = npos)
 	{
-		return _replace(pos, count, str.c_str() + pos2, std::min(str.size(), count2));
+		return _replace(pos, count, str.c_str() + pos2, std::min(str.size() - pos2, count2));
 	}
 
 	basic_small_string_t& replace(size_type pos, size_type count, const basic_small_string_t& str, size_type pos2, size_type count2 = npos)
 	{
-		return _replace(pos, count, str.c_str() + pos2, std::min(str.size(), count2));
+		return _replace(pos, count, str.c_str() + pos2, std::min(str.size() - pos2, count2));
 	}
 
 	template <class InputIt>
@@ -489,7 +489,19 @@ not_eof - checks whether a character is eof value
 	basic_small_string_t& replace(size_type pos, size_type count, const T& t, size_type pos2, size_type count2 = npos)
 	{
 		std::experimental::basic_string_view<CharT, Traits> view = t;
-		return _replace(pos, count, view.data() + pos2, std::min(view.size(), count2));
+		return _replace(pos, count, view.data() + pos2, std::min(view.size() - pos2, count2));
+	}
+
+	size_type copy(value_type* dest, size_type count, size_type pos = 0) const
+	{
+		if (pos > N)
+			throw_helper<std::out_of_range>("basic_small_string_t::copy: out of range");
+
+		size_type i = pos;
+		for (; i != pos + std::min(size() - pos, count); ++i, ++dest)
+			traits_type::assign(*dest, _data[i]);
+
+		return i - pos;
 	}
 
 	void resize(size_type sz)
