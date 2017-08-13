@@ -145,6 +145,74 @@ TEST(small_string, empty)
 	EXPECT_TRUE(s.empty());
 }
 
+TEST(small_string, at)
+{
+	small_string s("foobar");
+	std::string str("foobar");
+
+	for (std::size_t i = 0;i < s.size(); ++i)
+		EXPECT_EQ(str.at(i), s.at(i));
+
+	EXPECT_THROW(s.at(6), std::out_of_range);
+}
+
+TEST(small_string, sqbck)
+{
+	small_string s("foobar");
+	std::string str("foobar");
+
+	for (std::size_t i = 0;i < s.size(); ++i)
+		EXPECT_EQ(str[i], s[i]);
+
+	EXPECT_NO_THROW((void)s[6]);
+}
+
+TEST(small_string, front)
+{
+	small_string s("foobar");
+	EXPECT_EQ('f', s.front());
+
+	s[0] = 'z';
+	EXPECT_EQ('z', s.front());
+}
+
+TEST(small_string, back)
+{
+	small_string s("foobar");
+	EXPECT_EQ('r', s.back());
+
+	s.push_back('z');
+	EXPECT_EQ('z', s.back());
+
+	s.pop_back();
+	EXPECT_EQ('r', s.back());
+}
+
+TEST(small_string, c_str)
+{
+	small_string s("foobar");
+	EXPECT_EQ("foobar", std::string(s.c_str()));
+
+	s.clear();
+	EXPECT_EQ("", std::string(s.c_str()));
+}
+
+TEST(small_string, data)
+{
+	small_string s("foobar");
+	EXPECT_EQ("foobar", std::string(s.data()));
+
+	s.clear();
+	EXPECT_EQ("", std::string(s.data()));
+}
+
+TEST(small_string, string_view)
+{
+	small_string s("foobar");
+	std::experimental::string_view sv = s;
+	EXPECT_EQ("foobar", std::string(sv));
+}
+
 TEST(small_string, substr)
 {
 	small_string s("123456");

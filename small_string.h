@@ -150,11 +150,11 @@ struct basic_small_string_t
 		init(sv.data(), sv.size());
 	}
 
-	reference   at(size_type i)       { return _data.at(i); }
-	value_type  at(size_type i) const { return _data.at(i); }
+	reference   at(size_type i)       { return _at(i); }
+	value_type  at(size_type i) const { return _at(i); }
 
-	reference   operator[](size_type i)       { assert(i < size()); return _data[i]; }
-	value_type  operator[](size_type i) const { assert(i < size()); return _data[i]; }
+	reference   operator[](size_type i)       { assert(i <= size()); return _data[i]; }
+	value_type  operator[](size_type i) const { assert(i <= size()); return _data[i]; }
 
 	value_type front() const { assert(!empty()); return _data[0]; }
 	reference  front()       { assert(!empty()); return _data[0]; }
@@ -175,7 +175,7 @@ struct basic_small_string_t
 	const_iterator cbegin() const { return begin(); }
 	const_iterator cend() const   { return end(); }
 
-	bool      empty() const    { return size() == 0; }
+	bool      empty() const    { return get_remaining_size() == max_size(); }
 	size_type length() const   { return size(); }
 	size_type size() const     { return get_size(); }
 	size_type max_size() const { return N - 1; }
@@ -529,7 +529,7 @@ struct basic_small_string_t
 		if (count > 0)
 			traits_type::assign(std::begin(_data) + size(), count, ch);
 
-		set_size(static_cast<small_size_type>(new_size));
+		set_size(new_size);
 		_data[new_size] = value_type{};
 	}
 
@@ -547,7 +547,7 @@ private:
 		traits_type::assign(std::begin(_data), count, ch);
 		_data[count] = value_type{};
 
-		set_size(static_cast<small_size_type>(count));
+		set_size(count);
 	}
 
 	void init(const value_type* str, size_type count)
@@ -565,7 +565,7 @@ private:
 		traits_type::copy(std::begin(_data), str, count);
 		_data[count] = value_type{};
 
-		set_size(static_cast<small_size_type>(count));
+		set_size(count);
 	}
 
 	template <typename InputIt>
@@ -586,7 +586,7 @@ private:
 			traits_type::assign(*p, *it);
 		traits_type::assign(*p, value_type{});
 
-		set_size(static_cast<small_size_type>(count));
+		set_size(count);
 	}
 
 	template <typename InputIt>
@@ -609,7 +609,15 @@ private:
 		}
 		traits_type::assign(*p, value_type{});
 
-		set_size(static_cast<small_size_type>(count));
+		set_size(count);
+	}
+
+	reference _at(size_type i)
+	{
+		if (i >= size())
+			throw_helper<std::out_of_range>("basic_small_string_t::at: out of range");
+
+		return _data[i];
 	}
 
 	void zero()
@@ -676,7 +684,7 @@ private:
 			traits_type::assign(*p, *it);
 		*p = value_type{};
 
-		set_size(static_cast<small_size_type>(sz + count));
+		set_size(sz + count);
 		return *this;
 	}
 
@@ -689,7 +697,7 @@ private:
 		traits_type::assign(_data.data() + sz, count, ch);
 		_data[sz + count] = value_type{};
 
-		set_size(static_cast<small_size_type>(sz + count));
+		set_size(sz + count);
 		return *this;
 	}
 
@@ -705,7 +713,7 @@ private:
 		for (size_type i = 0; i != count2; ++i)
 			traits_type::assign(_data[pos1 + i], str[i]);
 
-		set_size(static_cast<small_size_type>(size() + count));
+		set_size(size() + count);
 		_data[size()] = value_type{};
 		return *this;
 	}
@@ -720,7 +728,7 @@ private:
 		traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, size() - pos1 - count1);
 		traits_type::assign(_data.data() + pos1, count2, ch);
 
-		set_size(static_cast<small_size_type>(size() + count));
+		set_size(size() + count);
 		_data[size()] = value_type{};
 		return *this;
 	}
@@ -740,7 +748,7 @@ private:
 		for (auto it = first; it != last; ++it, ++p)
 			traits_type::assign(*p, *it);
 
-		set_size(static_cast<small_size_type>(size() + count));
+		set_size(size() + count);
 		_data[size()] = value_type{};
 		return *this;
 	}
@@ -754,7 +762,7 @@ private:
 		return count1 - pos1 > count2 ? 1 : (count1 - pos1 == count2 ? 0 : -1);
 	}
 
-	void set_size(small_size_type sz)
+	void set_size(size_type sz)
 	{
 		assert(sz <= N - 1);
 		_data[N - 1] = static_cast<small_size_type>(N - 1 - sz);
