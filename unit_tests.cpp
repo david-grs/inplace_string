@@ -258,27 +258,6 @@ TEST(small_string, replace_basic)
 	EXPECT_EQ("foobarbuzbaz", std::string(s.c_str()));
 }
 
-
-#if 0
-basic_small_string_t& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str)
-basic_small_string_t& replace(size_type pos, size_type count, const basic_small_string_t& str)
-basic_small_string_t& replace(const_iterator first, const_iterator last, const std::basic_string<CharT, Traits>& str)
-basic_small_string_t& replace(const_iterator first, const_iterator last, const basic_small_string_t& str)
-basic_small_string_t& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str, size_type pos2, size_type count2 = npos)
-basic_small_string_t& replace(size_type pos, size_type count, const basic_small_string_t& str, size_type pos2, size_type count2 = npos)
-template <class InputIt>
-basic_small_string_t& replace(const_iterator first, const_iterator last, InputIt first2, InputIt last2)
-basic_small_string_t& replace(size_type pos, size_type count, const CharT* str, size_type count2)
-basic_small_string_t& replace(const_iterator first, const_iterator last, const CharT* str, size_type count2)
-basic_small_string_t& replace(size_type pos, size_type count, const CharT* str)
-basic_small_string_t& replace(const_iterator first, const_iterator last, const CharT* str)
-basic_small_string_t& replace(size_type pos, size_type count, size_type count2, value_type ch)
-basic_small_string_t& replace(const_iterator first, const_iterator last, size_type count2, value_type ch)
-basic_small_string_t& replace(const_iterator first, const_iterator last, std::initializer_list<value_type> ilist)
-basic_small_string_t& replace(size_type pos, size_type count, std::experimental::basic_string_view<CharT, Traits> sv)
-basic_small_string_t& replace(const_iterator first, const_iterator last, std::experimental::basic_string_view<CharT, Traits> sv)
-#endif
-
 TEST(small_string, replace)
 {
 	small_string s("fooFOOBAR");
@@ -287,6 +266,9 @@ TEST(small_string, replace)
 	EXPECT_EQ(6, s.size());
 	EXPECT_EQ("foobar", std::string(s.c_str()));
 
+	s.replace(0, 6, std::string("FOObar"));
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("FOObar", std::string(s.c_str()));
 
 	s.replace(s.begin(), s.begin() + 3, std::string("FOOBAR"));
 	EXPECT_EQ(9, s.size());
@@ -295,4 +277,48 @@ TEST(small_string, replace)
 	s.replace(s.begin(), s.begin() + 6, small_string("foo"));
 	EXPECT_EQ(6, s.size());
 	EXPECT_EQ("foobar", std::string(s.c_str()));
+
+	s.replace(3, 3, std::string("BARFOO"), 0, 3);
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("fooBAR", std::string(s.c_str()));
+
+	s.replace(0, 3, small_string("BARFOO"), 3, 3);
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("FOOBAR", std::string(s.c_str()));
+
+	std::string str("foobarfoo");
+	s.replace(s.begin(), s.end(), str.begin(), str.end());
+	EXPECT_EQ(9, s.size());
+	EXPECT_EQ("foobarfoo", std::string(s.c_str()));
+
+	s.replace(3, 6, "foobar", 3);
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("foofoo", std::string(s.c_str()));
+
+	s.replace(s.begin() + 3, s.end(), "FOOBARfoo", 6);
+	EXPECT_EQ(9, s.size());
+	EXPECT_EQ("fooFOOBAR", std::string(s.c_str()));
+
+	s = small_string(31, 'a');
+	s.replace(s.begin(), s.end(), "foo");
+	EXPECT_EQ(3, s.size());
+	EXPECT_EQ("foo", std::string(s.c_str()));
+
+
+#if 0
+basic_small_string_t& replace(size_type pos, size_type count, size_type count2, value_type ch)
+basic_small_string_t& replace(const_iterator first, const_iterator last, size_type count2, value_type ch)
+basic_small_string_t& replace(const_iterator first, const_iterator last, std::initializer_list<value_type> ilist)
+basic_small_string_t& replace(size_type pos, size_type count, std::experimental::basic_string_view<CharT, Traits> sv)
+basic_small_string_t& replace(const_iterator first, const_iterator last, std::experimental::basic_string_view<CharT, Traits> sv)
+#endif
+
+
+	s.replace(1, 2, "OOBAR");
+	EXPECT_EQ(6, s.size());
+	EXPECT_EQ("fOOBAR", std::string(s.c_str()));
+
+	s.replace(3, 3, s.max_size() - 3, 'z');
+	EXPECT_EQ(s.max_size(), s.size());
+	EXPECT_EQ("foo" + std::string(s.max_size() - 3, 'z'), std::string(s.c_str()));
 }
