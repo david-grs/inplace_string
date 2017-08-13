@@ -435,7 +435,7 @@ not_eof - checks whether a character is eof value
 	template <class InputIt>
 	basic_small_string_t& replace(const_iterator first, const_iterator last, InputIt first2, InputIt last2)
 	{
-		return _replace(first, last - first, first2, last2);
+		return _replace(first - _data.data(), std::distance(first, last), first2, last2);
 	}
 
 	basic_small_string_t& replace(size_type pos, size_type count, const CharT* str, size_type count2)
@@ -445,7 +445,7 @@ not_eof - checks whether a character is eof value
 
 	basic_small_string_t& replace(const_iterator first, const_iterator last, const CharT* str, size_type count2)
 	{
-		return _replace(first, last - first, str, count2);
+		return _replace(first - _data.data(), std::distance(first, last), str, count2);
 	}
 
 	basic_small_string_t& replace(size_type pos, size_type count, const CharT* str)
@@ -455,7 +455,7 @@ not_eof - checks whether a character is eof value
 
 	basic_small_string_t& replace(const_iterator first, const_iterator last, const CharT* str)
 	{
-		return _replace(first, last - first, str, traits_type::length(str));
+		return _replace(first - _data.data(), std::distance(first, last), str, traits_type::length(str));
 	}
 
 	basic_small_string_t& replace(size_type pos, size_type count, size_type count2, value_type ch)
@@ -465,12 +465,12 @@ not_eof - checks whether a character is eof value
 
 	basic_small_string_t& replace(const_iterator first, const_iterator last, size_type count2, value_type ch)
 	{
-		return _replace(first, last - first, count2, ch);
+		return _replace(first - _data.data(), std::distance(first, last), count2, ch);
 	}
 
 	basic_small_string_t& replace(const_iterator first, const_iterator last, std::initializer_list<value_type> ilist)
 	{
-		return _replace(first, last - first, ilist.begin(), ilist.size());
+		return _replace(first - _data.data(), std::distance(first, last), ilist.begin(), ilist.size());
 	}
 
 	basic_small_string_t& replace(size_type pos, size_type count, std::experimental::basic_string_view<CharT, Traits> sv)
@@ -480,7 +480,7 @@ not_eof - checks whether a character is eof value
 
 	basic_small_string_t& replace(const_iterator first, const_iterator last, std::experimental::basic_string_view<CharT, Traits> sv)
 	{
-		return _replace(first, last - first, sv.data(), sv.size());
+		return _replace(first - _data.data(), std::distance(first, last), sv.data(), sv.size());
 	}
 
 	template <typename T,
@@ -631,6 +631,26 @@ private:
 
 		for (size_type i = 0; i != count2; ++i)
 			traits_type::assign(_data[pos1 + i], str[i]);
+
+		set_size(static_cast<small_size_type>(size() + count));
+		_data[size()] = value_type{};
+		return *this;
+	}
+
+	template <typename InputIt>
+	basic_small_string_t& _replace(size_type pos1, size_type count1, InputIt first, InputIt last)
+	{
+		const size_type count2 = std::distance(first, last);
+		const std::make_signed<size_type>::type count = count2 - count1;
+
+		if (count > 0 && get_remaining_size() < size_type(count))
+			throw_helper<std::length_error>("basic_small_string_t::replace: exceed maximum string length");
+
+		traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, size() - pos1 - count1);
+
+		pointer p = _data.data() + pos1;
+		for (auto it = first; it != last; ++it, ++p)
+			traits_type::assign(*p, *it);
 
 		set_size(static_cast<small_size_type>(size() + count));
 		_data[size()] = value_type{};
