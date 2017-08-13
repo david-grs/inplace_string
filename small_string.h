@@ -71,14 +71,15 @@ struct basic_small_string_t
 	using reverse_iterator = std::reverse_iterator<iterator>;
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
+private:
 	using small_size_type = std::make_unsigned_t<value_type>;
-	static const auto max_small_size = std::numeric_limits<small_size_type>::max();
 
+public:
 	static const size_type npos = std::basic_string<value_type, traits_type>::npos;
 
 	static_assert(std::is_pod<value_type>::value, "CharT type of basic_small_string_t must be a POD");
 	static_assert(std::is_same<value_type, typename traits_type::char_type>::value, "CharT type must be the same type as Traits::char_type");
-	static_assert(N <= max_small_size, "N must be smaller than the maximum small_size possible with this CharT type");
+	static_assert(N <= std::numeric_limits<small_size_type>::max(), "N must be smaller than the maximum small_size possible with this CharT type");
 
 	explicit basic_small_string_t() noexcept
 	{
@@ -184,43 +185,40 @@ struct basic_small_string_t
 	const_reverse_iterator crend() const   { return const_reverse_iterator(cbegin()); }
 
 	bool      empty() const    { return get_remaining_size() == max_size(); }
-	size_type length() const   { return size(); }
-	size_type size() const     { return get_size(); }
-	size_type max_size() const { return N - 1; }
-	size_type capacity() const { return N; }
+
+	constexpr size_type length() const   { return size(); }
+	constexpr size_type size() const     { return get_size(); }
+	constexpr size_type max_size() const { return N - 1; }
+	constexpr size_type capacity() const { return N; }
+
 	void      shrink_to_fit()  {}
 
 	void clear() { zero(); }
 
 	basic_small_string_t& insert(size_type index, size_type count, value_type ch)
 	{
-		_insert(index, count, ch);
-		return *this;
+		return _insert(index, count, ch);
 	}
 
 	basic_small_string_t& insert(size_type index, const value_type* str)
 	{
-		_insert(index, str, traits_type::length(str));
-		return *this;
+		return _insert(index, str, traits_type::length(str));
 	}
 
 	basic_small_string_t& insert(size_type index, const value_type* str, size_type count)
 	{
-		_insert(index, str, count);
-		return *this;
+		return _insert(index, str, count);
 	}
 
 	basic_small_string_t& insert(size_type index, const basic_small_string_t& str)
 	{
-		_insert(index, str.data(), str.size());
-		return *this;
+		return _insert(index, str.data(), str.size());
 	}
 
 	basic_small_string_t& insert(size_type index, const basic_small_string_t& str, size_type index_str, size_type count = npos)
 	{
 		basic_small_string_t subs = str.substr(index_str, count);
-		_insert(index, subs.data(), subs.size());
-		return *this;
+		return _insert(index, subs.data(), subs.size());
 	}
 
 	iterator insert(const_iterator pos, value_type ch)
@@ -250,8 +248,7 @@ struct basic_small_string_t
 
 	basic_small_string_t& insert(size_type pos, std::experimental::basic_string_view<CharT, Traits> view)
 	{
-		insert(pos, view.data(), view.size());
-		return *this;
+		return insert(pos, view.data(), view.size());
 	}
 
 	template <typename T,
@@ -634,7 +631,7 @@ private:
 		set_size(0);
 	}
 
-	void _insert(size_type index, size_type count, value_type ch)
+	basic_small_string_t& _insert(size_type index, size_type count, value_type ch)
 	{
 		traits_type::move(_data.data() + index + count, _data.data() + index, count);
 		for (size_type i = 0; i != count; ++i)
@@ -642,9 +639,10 @@ private:
 
 		// TODO set null char
 		set_size(size() + count);
+		return *this;
 	}
 
-	void _insert(size_type index, const value_type* str, size_type count)
+	basic_small_string_t& _insert(size_type index, const value_type* str, size_type count)
 	{
 		traits_type::move(_data.data() + index + count, _data.data() + index, count);
 		for (size_type i = 0; i != count; ++i)
@@ -652,6 +650,7 @@ private:
 
 		// TODO set null char
 		set_size(size() + count);
+		return *this;
 	}
 
 	basic_small_string_t& _erase(size_type pos, size_type count)
@@ -660,7 +659,7 @@ private:
 			throw_helper<std::out_of_range>("basic_small_string_t::erase: out of range");
 
 		traits_type::move(_data.data() + pos, _data.data() + pos + count, count);
-		set_size(static_cast<small_size_type>(size() - count));
+		set_size(size() - count);
 		return *this;
 	}
 
@@ -674,7 +673,7 @@ private:
 			traits_type::assign(_data[sz + i], str[i]);
 		_data[sz + count] = value_type{};
 
-		set_size(static_cast<small_size_type>(size() + count));
+		set_size(size() + count);
 		return *this;
 	}
 

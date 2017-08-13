@@ -124,27 +124,6 @@ TEST(small_string, constructor)
 	}
 }
 
-TEST(small_string, empty)
-{
-	small_string s;
-	EXPECT_TRUE(s.empty());
-
-	s.push_back(1);
-	EXPECT_FALSE(s.empty());
-
-	s.pop_back();
-	EXPECT_TRUE(s.empty());
-
-	s = "foo";
-	EXPECT_FALSE(s.empty());
-
-	s.clear();
-	EXPECT_TRUE(s.empty());
-
-	s = small_string{};
-	EXPECT_TRUE(s.empty());
-}
-
 TEST(small_string, at)
 {
 	small_string s("foobar");
@@ -263,6 +242,106 @@ TEST(small_string, citerator)
 		EXPECT_EQ(*sit, *it);
 
 	EXPECT_EQ(s.size(), count);
+}
+
+TEST(small_string, empty)
+{
+	small_string s;
+	EXPECT_TRUE(s.empty());
+
+	s.push_back(1);
+	EXPECT_FALSE(s.empty());
+
+	s.pop_back();
+	EXPECT_TRUE(s.empty());
+
+	s = "foo";
+	EXPECT_FALSE(s.empty());
+
+	s.clear();
+	EXPECT_TRUE(s.empty());
+
+	s = small_string{};
+	EXPECT_TRUE(s.empty());
+}
+
+TEST(small_string, length)
+{
+	small_string s;
+	EXPECT_EQ(0, s.length());
+
+	s.push_back('f');
+	EXPECT_EQ(1, s.length());
+
+	s.pop_back();
+	EXPECT_EQ(0, s.length());
+
+	s.append("foobar");
+	EXPECT_EQ(6, s.length());
+
+	s.erase(4, 1);
+	EXPECT_EQ(5, s.length());
+
+	s.erase();
+	EXPECT_EQ(0, s.length());
+
+	s.insert(std::size_t(0), 3, 'f');
+	EXPECT_EQ(3, s.length());
+
+	s.clear();
+	EXPECT_EQ(0, s.length());
+}
+
+TEST(small_string, size)
+{
+	small_string s;
+	EXPECT_EQ(0, s.size());
+
+	s.push_back('f');
+	EXPECT_EQ(1, s.size());
+
+	s.pop_back();
+	EXPECT_EQ(0, s.size());
+
+	s.append("foobar");
+	EXPECT_EQ(6, s.size());
+
+	s.erase(4, 1);
+	EXPECT_EQ(5, s.size());
+
+	s.erase();
+	EXPECT_EQ(0, s.size());
+
+	s.insert(std::size_t(0), 3, 'f');
+	EXPECT_EQ(3, s.size());
+
+	s.clear();
+	EXPECT_EQ(0, s.size());
+}
+
+TEST(small_string, max_size)
+{
+	small_string s;
+	EXPECT_EQ(31, s.max_size());
+
+	small_string_t<42> ss;
+	EXPECT_EQ(41, ss.max_size());
+}
+
+TEST(small_string, capacity)
+{
+	small_string s;
+	EXPECT_EQ(32, s.capacity());
+
+	small_string_t<42> ss;
+	EXPECT_EQ(42, ss.capacity());
+}
+
+TEST(small_string, shrink_to_fit)
+{
+	small_string s("foobar");
+	s.shrink_to_fit();
+	EXPECT_EQ("foobar", std::string(s.c_str()));
 }
 
 TEST(small_string, substr)
