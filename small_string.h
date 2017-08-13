@@ -268,6 +268,21 @@ not_eof - checks whether a character is eof value
 		return insert(pos, view.data(), count == npos ? view.size() - index_str : count);
 	}
 
+	basic_small_string_t& erase(size_type pos = 0, size_type count = npos)
+	{
+		return _erase(pos, std::min(size() - pos, count));
+	}
+
+	iterator erase(const_iterator pos)
+	{
+		return _erase(pos - _data.data(), size());
+	}
+
+	iterator erase(const_iterator first, const_iterator last)
+	{
+		return _erase(first - _data.data(), std::distance(first, last));
+	}
+
 	void push_back(value_type ch)
 	{
 		_append(1, ch);
@@ -634,6 +649,16 @@ private:
 
 		// TODO set null char
 		set_size(size() + count);
+	}
+
+	basic_small_string_t& _erase(size_type pos, size_type count)
+	{
+		if (count > size())
+			throw_helper<std::out_of_range>("basic_small_string_t::erase: out of range");
+
+		traits_type::move(_data.data() + pos, _data.data() + pos + count, count);
+		set_size(static_cast<small_size_type>(size() - count));
+		return *this;
 	}
 
 	basic_small_string_t& _append(const value_type* str, size_type count)

@@ -96,29 +96,53 @@ TEST(small_string, constructor)
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
+
+	{
+		std::string str("foobar");
+		small_string s(str);
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		small_string str("foobar");
+		small_string s(str);
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		small_string s({'f', 'o', 'o', 'b', 'a', 'r'});
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		small_string s(std::experimental::string_view("foobarFOO", 6));
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
 }
 
-TEST(small_string, init)
+TEST(small_string, empty)
 {
 	small_string s;
-	ASSERT_TRUE(s.empty());
-	ASSERT_EQ(s.size(), 0);
+	EXPECT_TRUE(s.empty());
 
-	s = small_string(31, 'a');
-	std::cout << sizeof(s) << std::endl;
-	std::cout << s << std::endl;
-	printf("%s\n", s.c_str());
-}
+	s.push_back(1);
+	EXPECT_FALSE(s.empty());
 
-TEST(small_string, init_basic_string)
-{
-	std::string str = "foo";
-	small_string ss(str);
+	s.pop_back();
+	EXPECT_TRUE(s.empty());
 
-	ASSERT_FALSE(ss.empty());
-	ASSERT_EQ(ss.size(), 3);
-	ASSERT_EQ("foo", ss);
-	ASSERT_EQ("foo", std::string(ss.c_str()));
+	s = "foo";
+	EXPECT_FALSE(s.empty());
+
+	s.clear();
+	EXPECT_TRUE(s.empty());
+
+	s = small_string{};
+	EXPECT_TRUE(s.empty());
 }
 
 TEST(small_string, substr)
