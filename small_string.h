@@ -93,89 +93,74 @@ not_eof - checks whether a character is eof value
 	static_assert(std::is_same<value_type, typename traits_type::char_type>::value, "CharT type must be the same type as Traits::char_type");
 	static_assert(N <= max_small_size, "N must be smaller than the maximum small_size possible with this CharT type");
 
-	basic_small_string_t()
+	explicit basic_small_string_t() noexcept
 	{
-#ifdef SMALL_STRING_SANITY_CHECKS
-		for (size_type i = 0; i < N; ++i)
-			_data[i] = 'a';
-#endif
-
 		zero();
 	}
 
 	basic_small_string_t(std::size_t count, value_type ch)
 	{
-#ifdef SMALL_STRING_SANITY_CHECKS
-		for (size_type i = 0; i < N; ++i)
-			_data[i] = 'a';
-#endif
-
-		init(ch, count);
+		init(count, ch);
 	}
 
-	template <typename StringT,
-			  typename = typename std::enable_if_t<std::is_same<StringT, basic_small_string_t>::value || std::is_same<StringT, std::basic_string<CharT, Traits>>::value>>
-	basic_small_string_t(const StringT& other, std::size_t pos)
+	basic_small_string_t(const std::basic_string<CharT, Traits>& other, std::size_t pos)
 	{
-#ifdef SMALL_STRING_SANITY_CHECKS
-		for (size_type i = 0; i < N; ++i)
-			_data[i] = 'a';
-#endif
-
 		init(other.data() + pos, other.size() - pos);
 	}
 
-	template <typename StringT,
-			  typename = typename std::enable_if_t<std::is_same<StringT, basic_small_string_t>::value || std::is_same<StringT, std::basic_string<CharT, Traits>>::value>>
-	basic_small_string_t(const StringT& other, std::size_t pos, std::size_t count)
+	basic_small_string_t(const basic_small_string_t& other, std::size_t pos)
 	{
-#ifdef SMALL_STRING_SANITY_CHECKS
-		for (size_type i = 0; i < N; ++i)
-			_data[i] = 'a';
-#endif
+		init(other.data() + pos, other.size() - pos);
+	}
 
-		init(other.data() + pos, count);
+	basic_small_string_t(const std::basic_string<CharT, Traits>& other, std::size_t pos, std::size_t count)
+	{
+		init(other.data() + pos, std::min(other.size() - pos, count));
+	}
+
+	basic_small_string_t(const basic_small_string_t& other, std::size_t pos, std::size_t count)
+	{
+		init(other.data() + pos, std::min(other.size() - pos, count));
 	}
 
 	basic_small_string_t(const value_type* str, std::size_t count)
 	{
-#ifdef SMALL_STRING_SANITY_CHECKS
-		for (size_type i = 0; i < N; ++i)
-			_data[i] = 'a';
-#endif
-
 		init(str, count);
 	}
 
 	basic_small_string_t(const value_type* str)
 	{
-#ifdef SMALL_STRING_SANITY_CHECKS
-		for (size_type i = 0; i < N; ++i)
-			_data[i] = 'a';
-#endif
-
 		init(str, traits_type::length(str));
-	}
-
-	basic_small_string_t(const std::basic_string<CharT, Traits>& str)
-	{
-#ifdef SMALL_STRING_SANITY_CHECKS
-		for (size_type i = 0; i < N; ++i)
-			_data[i] = 'a';
-#endif
-
-		init(str.data(), str.size());
 	}
 
 	template <typename InputIt>
 	basic_small_string_t(InputIt first, InputIt last)
 	{
-#ifdef SMALL_STRING_SANITY_CHECKS
-		for (size_type i = 0; i < N; ++i)
-			_data[i] = 'a';
-#endif
-
 		init(first, last);
+	}
+
+	basic_small_string_t(const std::basic_string<CharT, Traits>& str)
+	{
+		init(str.data(), str.size());
+	}
+
+	basic_small_string_t(const std::initializer_list<CharT>& ilist)
+	{
+		init(ilist.begin(), ilist.size());
+	}
+
+	explicit basic_small_string_t(std::experimental::basic_string_view<CharT, Traits> sv)
+	{
+		init(sv.data(), sv.size());
+	}
+
+	template <typename T,
+			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value>::type>
+	basic_small_string_t(const T& t, size_type pos, size_type n)
+	{
+		std::experimental::basic_string_view<CharT, Traits> sv = t;
+		sv = sv.substr(pos, n);
+		init(sv.data(), sv.size());
 	}
 
 	reference   at(std::size_t i)       { return _data.at(i); }
@@ -547,18 +532,30 @@ not_eof - checks whether a character is eof value
 	}
 
 private:
-	void init(value_type ch, std::size_t count)
+	void init(size_type count, value_type ch)
 	{
+#ifdef SMALL_STRING_SANITY_CHECKS
+		for (size_type i = 0; i < N; ++i)
+			_data[i] = 'a';
+#endif
+
 		if (count > N)
 			throw_helper<std::out_of_range>("basic_small_string_t::init: out of range");
 
 		traits_type::assign(std::begin(_data), count, ch);
+		_data[count] = value_type{};
+
 		set_size(static_cast<small_size_type>(count));
 	}
 
 	void init(const value_type* str, std::size_t count)
 	{
 		assert(str != nullptr);
+
+#ifdef SMALL_STRING_SANITY_CHECKS
+		for (size_type i = 0; i < N; ++i)
+			_data[i] = 'a';
+#endif
 
 		if (count > N)
 			throw_helper<std::out_of_range>("basic_small_string_t::init: out of range");
@@ -570,8 +567,14 @@ private:
 	}
 
 	template <typename InputIt>
-	void init(InputIt first, InputIt last)
+	typename std::enable_if_t<is_input_iterator<InputIt>::value && !is_exactly_input_iterator<InputIt>::value>
+	init(InputIt first, InputIt last)
 	{
+#ifdef SMALL_STRING_SANITY_CHECKS
+		for (size_type i = 0; i < N; ++i)
+			_data[i] = 'a';
+#endif
+
 		const std::size_t count = std::distance(first, last);
 		if (count > N)
 			throw_helper<std::out_of_range>("basic_small_string_t::init: out of range");
@@ -581,7 +584,30 @@ private:
 			traits_type::assign(*p, *it);
 		traits_type::assign(*p, value_type{});
 
-		set_size(count);
+		set_size(static_cast<small_size_type>(count));
+	}
+
+	template <typename InputIt>
+	typename std::enable_if_t<is_exactly_input_iterator<InputIt>::value>
+	init(InputIt first, InputIt last)
+	{
+#ifdef SMALL_STRING_SANITY_CHECKS
+		for (size_type i = 0; i < N; ++i)
+			_data[i] = 'a';
+#endif
+
+		pointer p = _data.data();
+		size_type count = 0;
+		for (auto it = first; it != last; ++it, ++p, ++count)
+		{
+			traits_type::assign(*p, *it);
+
+			if (count >= N)
+				throw_helper<std::out_of_range>("basic_small_string_t::init: out of range");
+		}
+		traits_type::assign(*p, value_type{});
+
+		set_size(static_cast<small_size_type>(count));
 	}
 
 	void zero()
