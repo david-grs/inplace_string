@@ -3,6 +3,7 @@
 #include <array>
 #include <cassert>
 #include <algorithm>
+#include <type_traits>
 #include <limits>
 
 #if defined _NO_EXCEPTIONS
@@ -26,6 +27,28 @@ inline void throw_helper(const std::string& msg)
 	std::abort();
 #endif
 }
+
+template <typename It, typename ItUp>
+struct is_iterator_convertible_to :
+		std::integral_constant<bool,
+			std::is_convertible<typename std::iterator_traits<It>::iterator_category, ItUp>::value>
+{};
+
+template <typename It>
+struct is_input_iterator :
+	public is_iterator_convertible_to<It, std::input_iterator_tag>
+{};
+
+template <typename It>
+struct is_forward_iterator :
+	public is_iterator_convertible_to<It, std::forward_iterator_tag>
+{};
+
+template <typename It>
+struct is_exactly_input_iterator :
+	public std::integral_constant<bool,
+		is_input_iterator<It>::value && !is_forward_iterator<It>::value>
+{};
 
 }
 
