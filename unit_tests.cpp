@@ -680,10 +680,53 @@ TEST(small_string, find)
 	EXPECT_EQ(0, s.find("foo"));
 	EXPECT_EQ(1, s.find("o"));
 	EXPECT_EQ(3, s.find("bar"));
+	EXPECT_EQ(5, s.find("r"));
 
-	const small_string::size_type notfound = small_string::npos;
-	EXPECT_EQ(notfound, s.find("baz"));
-	EXPECT_EQ(notfound, s.find("fooz"));
-	EXPECT_EQ(notfound, s.find("zar"));
+	const small_string::size_type npos = small_string::npos;
+	EXPECT_EQ(npos, s.find("baz"));
+	EXPECT_EQ(npos, s.find("fooz"));
+	EXPECT_EQ(npos, s.find("zar"));
+	EXPECT_EQ(npos, s.find("foobarz"));
+	EXPECT_EQ(npos, s.find("foofoofoofoo"));
+	EXPECT_EQ(npos, s.find(""));
+
+	EXPECT_EQ(3, s.find("bar", 1));
+	EXPECT_EQ(3, s.find("bar", 3));
+	EXPECT_EQ(npos, s.find("bar", 4));
+	EXPECT_EQ(npos, s.find("foo", 1));
+
+	EXPECT_EQ(npos, s.find("barbar", 3));
+	EXPECT_EQ(3, s.find("barbar", 3, 2));
+	EXPECT_EQ(3, s.find("barbar", 3, 3));
+	EXPECT_EQ(npos, s.find("barbar", 3, 4));
+
+	EXPECT_EQ(3, s.find(std::string("bar")));
+	EXPECT_EQ(3, s.find(std::string("bar"), 2));
+	EXPECT_EQ(3, s.find(std::string("bar"), 3));
+	EXPECT_EQ(npos, s.find(std::string("barb"), 3));
+	EXPECT_EQ(npos, s.find(std::string("bar"), 4));
+
+	EXPECT_EQ(3, s.find(std::experimental::string_view("bar")));
+	EXPECT_EQ(3, s.find(std::experimental::string_view("bar"), 2));
+	EXPECT_EQ(3, s.find(std::experimental::string_view("bar"), 3));
+	EXPECT_EQ(npos, s.find(std::experimental::string_view("barb"), 3));
+	EXPECT_EQ(npos, s.find(std::experimental::string_view("bar"), 4));
+
+	EXPECT_EQ(3, s.find(small_string("bar")));
+	EXPECT_EQ(3, s.find(small_string("bar"), 2));
+	EXPECT_EQ(3, s.find(small_string("bar"), 3));
+	EXPECT_EQ(npos, s.find(small_string("barb"), 3));
+	EXPECT_EQ(npos, s.find(small_string("bar"), 4));
+
+	EXPECT_EQ(0, s.find('f'));
+	EXPECT_EQ(1, s.find('o'));
+	EXPECT_EQ(3, s.find('b'));
+	EXPECT_EQ(5, s.find('r'));
+	EXPECT_EQ(npos, s.find('z'));
+	EXPECT_EQ(0, s.find('f', 0));
+	EXPECT_EQ(npos, s.find('f', 1));
+	EXPECT_EQ(3, s.find('b', 2));
+	EXPECT_EQ(3, s.find('b', 3));
+	EXPECT_EQ(npos, s.find('b', 4));
 }
 

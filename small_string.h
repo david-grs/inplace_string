@@ -569,7 +569,6 @@ public:
 		*this = s;
 	}
 
-
 	size_type find(const std::basic_string<CharT, Traits>& str, size_type pos = 0) const
 	{
 		return _find(str.data(), str.size(), pos);
@@ -577,7 +576,7 @@ public:
 
 	size_type find(const basic_small_string_t& other, size_type pos = 0) const
 	{
-		return find(other.data(), other.size());
+		return _find(other.data(), other.size(), pos);
 	}
 
 	size_type find(const value_type* str, size_type pos, size_type count) const
