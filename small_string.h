@@ -50,6 +50,30 @@ struct is_exactly_input_iterator :
 		is_input_iterator<It>::value && !is_forward_iterator<It>::value>
 {};
 
+template <typename CharT, typename Traits>
+const CharT* search_substring(const CharT* first1, const CharT* last1, const CharT* first2, const CharT* last2)
+{
+	const std::size_t size2 = last2 - first2;
+
+	while (true)
+	{
+		const std::size_t size1 = last1 - first1;
+		if (size1 < size2)
+			return nullptr;
+
+		first1 = Traits::find(first1, size1, *first2);
+		if (first1 == nullptr)
+			return nullptr;
+
+		if (Traits::compare(first1, first2, size2) == 0)
+			return first1;
+
+		++first1;
+	}
+
+	return nullptr;
+}
+
 }
 
 template <
@@ -75,7 +99,7 @@ private:
 	using small_size_type = std::make_unsigned_t<value_type>;
 
 public:
-	static const size_type npos = std::basic_string<value_type, traits_type>::npos;
+	static constexpr const size_type npos = static_cast<size_type>(-1);
 
 	static_assert(std::is_pod<value_type>::value, "CharT type of basic_small_string_t must be a POD");
 	static_assert(std::is_same<value_type, typename traits_type::char_type>::value, "CharT type must be the same type as Traits::char_type");
@@ -545,6 +569,37 @@ public:
 		*this = s;
 	}
 
+
+	size_type find(const std::basic_string<CharT, Traits>& str, size_type pos = 0) const
+	{
+		return _find(str.data(), str.size(), pos);
+	}
+
+	size_type find(const basic_small_string_t& other, size_type pos = 0) const
+	{
+		return find(other.data(), other.size());
+	}
+
+	size_type find(const value_type* str, size_type pos, size_type count) const
+	{
+		return _find(str, count, pos);
+	}
+
+	size_type find(const value_type* str, size_type pos = 0) const
+	{
+		return _find(str, traits_type::length(str), pos);
+	}
+
+	size_type find(value_type ch, size_type pos = 0) const
+	{
+		return _find(ch, pos);
+	}
+
+	size_type find(std::experimental::basic_string_view<CharT, Traits> sv, size_type pos = 0) const
+	{
+		return _find(sv.data(), sv.size(), pos);
+	}
+
 private:
 	void init(size_type count, value_type ch)
 	{
@@ -774,6 +829,21 @@ private:
 		if (cmp != 0)
 			return cmp;
 		return count1 - pos1 > count2 ? 1 : (count1 - pos1 == count2 ? 0 : -1);
+	}
+
+	size_type _find(const value_type* str, size_type count, size_type pos) const
+	{
+		if (pos >= size() || count == 0)
+			return npos;
+
+		const value_type* res = search_substring<CharT, Traits>(cbegin() + pos, cend(), str, str + count);
+		return res ? res - cbegin() : npos;
+	}
+
+	size_type _find(value_type ch, size_type pos) const
+	{
+		const value_type* res = traits_type::find(data() + pos, size() - pos, ch);
+		return res ? res - cbegin() : npos;
 	}
 
 	void set_size(size_type sz)

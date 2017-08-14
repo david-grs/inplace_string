@@ -672,3 +672,18 @@ TEST(small_string, swap)
 	EXPECT_EQ("FOOBAR", std::string(s.c_str()));
 }
 
+
+TEST(small_string, find)
+{
+	small_string s("foobar");
+
+	EXPECT_EQ(0, s.find("foo"));
+	EXPECT_EQ(1, s.find("o"));
+	EXPECT_EQ(3, s.find("bar"));
+
+	const small_string::size_type notfound = small_string::npos;
+	EXPECT_EQ(notfound, s.find("baz"));
+	EXPECT_EQ(notfound, s.find("fooz"));
+	EXPECT_EQ(notfound, s.find("zar"));
+}
+
