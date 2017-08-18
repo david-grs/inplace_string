@@ -208,12 +208,13 @@ public:
 	const_reverse_iterator rend() const    { return const_reverse_iterator(cbegin()); }
 	const_reverse_iterator crend() const   { return const_reverse_iterator(cbegin()); }
 
-	bool      empty() const    { return get_remaining_size() == max_size(); }
+	bool empty() const { return get_remaining_size() == max_size(); }
 
-	constexpr size_type length() const   { return size(); }
-	constexpr size_type size() const     { return get_size(); }
+	size_type length() const { return size(); }
+	size_type size() const   { return get_size(); }
+
 	constexpr size_type max_size() const { return N - 1; }
-	constexpr size_type capacity() const { return N; }
+	constexpr size_type capacity() const { return N - 1; }
 
 	void      shrink_to_fit()  {}
 
@@ -679,6 +680,14 @@ private:
 	}
 
 	reference _at(size_type i)
+	{
+		if (i >= size())
+			throw_helper<std::out_of_range>("basic_static_string_t::at: out of range");
+
+		return _data[i];
+	}
+
+	value_type _at(size_type i) const
 	{
 		if (i >= size())
 			throw_helper<std::out_of_range>("basic_static_string_t::at: out of range");
