@@ -80,7 +80,7 @@ template <
 	std::size_t N,
 	typename CharT = char,
 	typename Traits = std::char_traits<CharT>>
-struct basic_static_string_t
+struct basic_inplace_string_t
 {
 	using traits_type = Traits;
 	using value_type = CharT;
@@ -101,74 +101,74 @@ private:
 public:
 	static constexpr const size_type npos = static_cast<size_type>(-1);
 
-	static_assert(std::is_pod<value_type>::value, "CharT type of basic_static_string_t must be a POD");
+	static_assert(std::is_pod<value_type>::value, "CharT type of basic_inplace_string_t must be a POD");
 	static_assert(std::is_same<value_type, typename traits_type::char_type>::value, "CharT type must be the same type as Traits::char_type");
 	static_assert(N <= std::numeric_limits<static_size_type>::max(), "N must be smaller than the maximum static_size possible with this CharT type");
 
-	explicit basic_static_string_t() noexcept
+	explicit basic_inplace_string_t() noexcept
 	{
 		zero();
 	}
 
-	basic_static_string_t(size_type count, value_type ch)
+	basic_inplace_string_t(size_type count, value_type ch)
 	{
 		init(count, ch);
 	}
 
-	basic_static_string_t(const std::basic_string<CharT, Traits>& other, size_type pos)
+	basic_inplace_string_t(const std::basic_string<CharT, Traits>& other, size_type pos)
 	{
 		init(other.data() + pos, other.size() - pos);
 	}
 
-	basic_static_string_t(const basic_static_string_t& other, size_type pos)
+	basic_inplace_string_t(const basic_inplace_string_t& other, size_type pos)
 	{
 		init(other.data() + pos, other.size() - pos);
 	}
 
-	basic_static_string_t(const std::basic_string<CharT, Traits>& other, size_type pos, size_type count)
+	basic_inplace_string_t(const std::basic_string<CharT, Traits>& other, size_type pos, size_type count)
 	{
 		init(other.data() + pos, std::min(other.size() - pos, count));
 	}
 
-	basic_static_string_t(const basic_static_string_t& other, size_type pos, size_type count)
+	basic_inplace_string_t(const basic_inplace_string_t& other, size_type pos, size_type count)
 	{
 		init(other.data() + pos, std::min(other.size() - pos, count));
 	}
 
-	basic_static_string_t(const value_type* str, size_type count)
+	basic_inplace_string_t(const value_type* str, size_type count)
 	{
 		init(str, count);
 	}
 
-	basic_static_string_t(const value_type* str)
+	basic_inplace_string_t(const value_type* str)
 	{
 		init(str, traits_type::length(str));
 	}
 
 	template <typename InputIt>
-	basic_static_string_t(InputIt first, InputIt last)
+	basic_inplace_string_t(InputIt first, InputIt last)
 	{
 		init(first, last);
 	}
 
-	basic_static_string_t(const std::basic_string<CharT, Traits>& str)
+	basic_inplace_string_t(const std::basic_string<CharT, Traits>& str)
 	{
 		init(str.data(), str.size());
 	}
 
-	basic_static_string_t(const std::initializer_list<CharT>& ilist)
+	basic_inplace_string_t(const std::initializer_list<CharT>& ilist)
 	{
 		init(ilist.begin(), ilist.size());
 	}
 
-	explicit basic_static_string_t(std::experimental::basic_string_view<CharT, Traits> sv)
+	explicit basic_inplace_string_t(std::experimental::basic_string_view<CharT, Traits> sv)
 	{
 		init(sv.data(), sv.size());
 	}
 
 	template <typename T,
 			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value>::type>
-	basic_static_string_t(const T& t, size_type pos, size_type n)
+	basic_inplace_string_t(const T& t, size_type pos, size_type n)
 	{
 		std::experimental::basic_string_view<CharT, Traits> sv = t;
 		sv = sv.substr(pos, n);
@@ -220,29 +220,29 @@ public:
 
 	void clear() { zero(); }
 
-	basic_static_string_t& insert(size_type index, size_type count, value_type ch)
+	basic_inplace_string_t& insert(size_type index, size_type count, value_type ch)
 	{
 		return _insert(index, count, ch);
 	}
 
-	basic_static_string_t& insert(size_type index, const value_type* str)
+	basic_inplace_string_t& insert(size_type index, const value_type* str)
 	{
 		return _insert(index, str, traits_type::length(str));
 	}
 
-	basic_static_string_t& insert(size_type index, const value_type* str, size_type count)
+	basic_inplace_string_t& insert(size_type index, const value_type* str, size_type count)
 	{
 		return _insert(index, str, count);
 	}
 
-	basic_static_string_t& insert(size_type index, const basic_static_string_t& str)
+	basic_inplace_string_t& insert(size_type index, const basic_inplace_string_t& str)
 	{
 		return _insert(index, str.data(), str.size());
 	}
 
-	basic_static_string_t& insert(size_type index, const basic_static_string_t& str, size_type index_str, size_type count = npos)
+	basic_inplace_string_t& insert(size_type index, const basic_inplace_string_t& str, size_type index_str, size_type count = npos)
 	{
-		basic_static_string_t subs = str.substr(index_str, count);
+		basic_inplace_string_t subs = str.substr(index_str, count);
 		return _insert(index, subs.data(), subs.size());
 	}
 
@@ -271,7 +271,7 @@ public:
 		return pos;
 	}
 
-	basic_static_string_t& insert(size_type pos, std::experimental::basic_string_view<CharT, Traits> view)
+	basic_inplace_string_t& insert(size_type pos, std::experimental::basic_string_view<CharT, Traits> view)
 	{
 		return insert(pos, view.data(), view.size());
 	}
@@ -279,13 +279,13 @@ public:
 	template <typename T,
 			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
-	basic_static_string_t& insert(size_type pos, const T& t, size_type index_str, size_type count = npos)
+	basic_inplace_string_t& insert(size_type pos, const T& t, size_type index_str, size_type count = npos)
 	{
 		std::experimental::basic_string_view<CharT, Traits> view = t;
 		return insert(pos, view.data(), count == npos ? view.size() - index_str : count);
 	}
 
-	basic_static_string_t& erase(size_type pos = 0, size_type count = npos)
+	basic_inplace_string_t& erase(size_type pos = 0, size_type count = npos)
 	{
 		return _erase(pos, std::min(size() - pos, count));
 	}
@@ -310,44 +310,44 @@ public:
 		erase(size() - 1, 1);
 	}
 
-	basic_static_string_t& append(size_type count, value_type ch)
+	basic_inplace_string_t& append(size_type count, value_type ch)
 	{
 		return _append(count, ch);
 	}
 
-	basic_static_string_t& append(const std::basic_string<CharT, Traits>& str)
+	basic_inplace_string_t& append(const std::basic_string<CharT, Traits>& str)
 	{
 		return append(str.data(), str.size());
 	}
 
-	basic_static_string_t& append(const std::basic_string<CharT, Traits>& str, size_type pos, size_type count = npos)
+	basic_inplace_string_t& append(const std::basic_string<CharT, Traits>& str, size_type pos, size_type count = npos)
 	{
 		return append(str.data() + pos, count == npos ? str.size() - pos : count);
 	}
 
-	basic_static_string_t& append(const value_type* str, size_type count)
+	basic_inplace_string_t& append(const value_type* str, size_type count)
 	{
 		return _append(str, count);
 	}
 
-	basic_static_string_t& append(const value_type* str)
+	basic_inplace_string_t& append(const value_type* str)
 	{
 		size_type sz = traits_type::length(str);
 		return append(str, sz);
 	}
 
 	template <typename InputIt>
-	basic_static_string_t& append(InputIt first, InputIt last)
+	basic_inplace_string_t& append(InputIt first, InputIt last)
 	{
 		return _append(first, last);
 	}
 
-	basic_static_string_t& append(std::initializer_list<value_type> ilist)
+	basic_inplace_string_t& append(std::initializer_list<value_type> ilist)
 	{
 		return append(ilist.begin(), ilist.size());
 	}
 
-	basic_static_string_t& append(const std::experimental::basic_string_view<CharT, Traits>& view)
+	basic_inplace_string_t& append(const std::experimental::basic_string_view<CharT, Traits>& view)
 	{
 		return append(view.data(), view.size());
 	}
@@ -355,55 +355,55 @@ public:
 	template <typename T,
 			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
-	basic_static_string_t& append(const T& t, size_type pos, size_type count = npos)
+	basic_inplace_string_t& append(const T& t, size_type pos, size_type count = npos)
 	{
 		std::experimental::basic_string_view<CharT, Traits> view = t;
 		return append(view.data() + pos, count == npos ? view.size() - pos : count);
 	}
 
-	basic_static_string_t& operator+=(const std::basic_string<CharT, Traits>& str)
+	basic_inplace_string_t& operator+=(const std::basic_string<CharT, Traits>& str)
 	{
 		return append(str);
 	}
 
-	basic_static_string_t& operator+=(value_type ch)
+	basic_inplace_string_t& operator+=(value_type ch)
 	{
 		push_back(ch);
 		return *this;
 	}
 
-	basic_static_string_t& operator+=(const value_type* str)
+	basic_inplace_string_t& operator+=(const value_type* str)
 	{
 		return append(str);
 	}
 
-	basic_static_string_t& operator+=(std::initializer_list<value_type> ilist)
+	basic_inplace_string_t& operator+=(std::initializer_list<value_type> ilist)
 	{
 		return append(ilist);
 	}
 
-	basic_static_string_t& operator+=(std::experimental::basic_string_view<CharT, Traits> view)
+	basic_inplace_string_t& operator+=(std::experimental::basic_string_view<CharT, Traits> view)
 	{
 		return append(view);
 	}
 
-	basic_static_string_t substr(size_type pos = 0, size_type count = npos)
+	basic_inplace_string_t substr(size_type pos = 0, size_type count = npos)
 	{
 		size_type sz = count == npos ? size() - pos : count;
-		return basic_static_string_t(data() + pos, sz);
+		return basic_inplace_string_t(data() + pos, sz);
 	}
 
-	int compare(const basic_static_string_t& str) const
+	int compare(const basic_inplace_string_t& str) const
 	{
 		return _compare(0, size(), str.data(), str.size());
 	}
 
-	int compare(size_type pos1, size_type count1, const basic_static_string_t& str) const
+	int compare(size_type pos1, size_type count1, const basic_inplace_string_t& str) const
 	{
 		return _compare(pos1, count1, str.data(), str.size());
 	}
 
-	int compare(size_type pos1, size_type count1, const basic_static_string_t& str, size_type pos2, size_type count2) const // TODO adding npos
+	int compare(size_type pos1, size_type count1, const basic_inplace_string_t& str, size_type pos2, size_type count2) const // TODO adding npos
 	{
 		return _compare(pos1, count1, str.data() + pos2, count2 - pos2);
 	}
@@ -436,89 +436,89 @@ public:
 	template <typename T,
 			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
-	basic_static_string_t& compare(size_type pos1, size_type count1, const T& t, size_type pos2, size_type count2 = npos)
+	basic_inplace_string_t& compare(size_type pos1, size_type count1, const T& t, size_type pos2, size_type count2 = npos)
 	{
 		std::experimental::basic_string_view<CharT, Traits> view = t;
 		return _compare(pos1, count1, view.data() + pos2, count2 == npos ? view.size() : count2);
 	}
 
-	basic_static_string_t& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str)
+	basic_inplace_string_t& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str)
 	{
 		return _replace(pos, count, str.c_str(), str.size());
 	}
 
-	basic_static_string_t& replace(size_type pos, size_type count, const basic_static_string_t& str)
+	basic_inplace_string_t& replace(size_type pos, size_type count, const basic_inplace_string_t& str)
 	{
 		return _replace(pos, count, str.c_str(), str.size());
 	}
 
-	basic_static_string_t& replace(const_iterator first, const_iterator last, const std::basic_string<CharT, Traits>& str)
+	basic_inplace_string_t& replace(const_iterator first, const_iterator last, const std::basic_string<CharT, Traits>& str)
 	{
 		return _replace(first - _data.data(), std::distance(first, last), str.c_str(), str.size());
 	}
 
-	basic_static_string_t& replace(const_iterator first, const_iterator last, const basic_static_string_t& str)
+	basic_inplace_string_t& replace(const_iterator first, const_iterator last, const basic_inplace_string_t& str)
 	{
 		return _replace(first - _data.data(), std::distance(first, last), str.c_str(), str.size());
 	}
 
-	basic_static_string_t& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str, size_type pos2, size_type count2 = npos)
+	basic_inplace_string_t& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str, size_type pos2, size_type count2 = npos)
 	{
 		return _replace(pos, count, str.c_str() + pos2, std::min(str.size() - pos2, count2));
 	}
 
-	basic_static_string_t& replace(size_type pos, size_type count, const basic_static_string_t& str, size_type pos2, size_type count2 = npos)
+	basic_inplace_string_t& replace(size_type pos, size_type count, const basic_inplace_string_t& str, size_type pos2, size_type count2 = npos)
 	{
 		return _replace(pos, count, str.c_str() + pos2, std::min(str.size() - pos2, count2));
 	}
 
 	template <class InputIt>
-	basic_static_string_t& replace(const_iterator first, const_iterator last, InputIt first2, InputIt last2)
+	basic_inplace_string_t& replace(const_iterator first, const_iterator last, InputIt first2, InputIt last2)
 	{
 		return _replace(first - _data.data(), std::distance(first, last), first2, last2);
 	}
 
-	basic_static_string_t& replace(size_type pos, size_type count, const CharT* str, size_type count2)
+	basic_inplace_string_t& replace(size_type pos, size_type count, const CharT* str, size_type count2)
 	{
 		return _replace(pos, count, str, count2);
 	}
 
-	basic_static_string_t& replace(const_iterator first, const_iterator last, const CharT* str, size_type count2)
+	basic_inplace_string_t& replace(const_iterator first, const_iterator last, const CharT* str, size_type count2)
 	{
 		return _replace(first - _data.data(), std::distance(first, last), str, count2);
 	}
 
-	basic_static_string_t& replace(size_type pos, size_type count, const CharT* str)
+	basic_inplace_string_t& replace(size_type pos, size_type count, const CharT* str)
 	{
 		return _replace(pos, count, str, traits_type::length(str));
 	}
 
-	basic_static_string_t& replace(const_iterator first, const_iterator last, const CharT* str)
+	basic_inplace_string_t& replace(const_iterator first, const_iterator last, const CharT* str)
 	{
 		return _replace(first - _data.data(), std::distance(first, last), str, traits_type::length(str));
 	}
 
-	basic_static_string_t& replace(size_type pos, size_type count, size_type count2, value_type ch)
+	basic_inplace_string_t& replace(size_type pos, size_type count, size_type count2, value_type ch)
 	{
 		return _replace(pos, count, count2, ch);
 	}
 
-	basic_static_string_t& replace(const_iterator first, const_iterator last, size_type count2, value_type ch)
+	basic_inplace_string_t& replace(const_iterator first, const_iterator last, size_type count2, value_type ch)
 	{
 		return _replace(first - _data.data(), std::distance(first, last), count2, ch);
 	}
 
-	basic_static_string_t& replace(const_iterator first, const_iterator last, std::initializer_list<value_type> ilist)
+	basic_inplace_string_t& replace(const_iterator first, const_iterator last, std::initializer_list<value_type> ilist)
 	{
 		return _replace(first - _data.data(), std::distance(first, last), ilist.begin(), ilist.size());
 	}
 
-	basic_static_string_t& replace(size_type pos, size_type count, std::experimental::basic_string_view<CharT, Traits> sv)
+	basic_inplace_string_t& replace(size_type pos, size_type count, std::experimental::basic_string_view<CharT, Traits> sv)
 	{
 		return _replace(pos, count, sv.data(), sv.size());
 	}
 
-	basic_static_string_t& replace(const_iterator first, const_iterator last, std::experimental::basic_string_view<CharT, Traits> sv)
+	basic_inplace_string_t& replace(const_iterator first, const_iterator last, std::experimental::basic_string_view<CharT, Traits> sv)
 	{
 		return _replace(first - _data.data(), std::distance(first, last), sv.data(), sv.size());
 	}
@@ -526,7 +526,7 @@ public:
 	template <typename T,
 			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
-	basic_static_string_t& replace(size_type pos, size_type count, const T& t, size_type pos2, size_type count2 = npos)
+	basic_inplace_string_t& replace(size_type pos, size_type count, const T& t, size_type pos2, size_type count2 = npos)
 	{
 		std::experimental::basic_string_view<CharT, Traits> view = t;
 		return _replace(pos, count, view.data() + pos2, std::min(view.size() - pos2, count2));
@@ -535,7 +535,7 @@ public:
 	size_type copy(value_type* dest, size_type count, size_type pos = 0) const
 	{
 		if (pos > N)
-			throw_helper<std::out_of_range>("basic_static_string_t::copy: out of range");
+			throw_helper<std::out_of_range>("basic_inplace_string_t::copy: out of range");
 
 		size_type i = pos;
 		for (; i != pos + std::min(size() - pos, count); ++i, ++dest)
@@ -552,7 +552,7 @@ public:
 	void resize(size_type new_size, value_type ch)
 	{
 		if (new_size > max_size())
-			throw_helper<std::length_error>("basic_static_string_t::resize: exceed maximum string length");
+			throw_helper<std::length_error>("basic_inplace_string_t::resize: exceed maximum string length");
 
 		const size_type sz = size();
 		const std::make_signed<size_type>::type count = new_size - sz;
@@ -563,9 +563,9 @@ public:
 		_data[new_size] = value_type{};
 	}
 
-	void swap(basic_static_string_t& other) noexcept
+	void swap(basic_inplace_string_t& other) noexcept
 	{
-		basic_static_string_t s(other);
+		basic_inplace_string_t s(other);
 		other = *this;
 		*this = s;
 	}
@@ -575,7 +575,7 @@ public:
 		return _find(str.data(), str.size(), pos);
 	}
 
-	size_type find(const basic_static_string_t& other, size_type pos = 0) const
+	size_type find(const basic_inplace_string_t& other, size_type pos = 0) const
 	{
 		return _find(other.data(), other.size(), pos);
 	}
@@ -609,7 +609,7 @@ private:
 #endif
 
 		if (count > N)
-			throw_helper<std::out_of_range>("basic_static_string_t::init: out of range");
+			throw_helper<std::out_of_range>("basic_inplace_string_t::init: out of range");
 
 		traits_type::assign(std::begin(_data), count, ch);
 		_data[count] = value_type{};
@@ -627,7 +627,7 @@ private:
 #endif
 
 		if (count > N)
-			throw_helper<std::out_of_range>("basic_static_string_t::init: out of range");
+			throw_helper<std::out_of_range>("basic_inplace_string_t::init: out of range");
 
 		traits_type::copy(std::begin(_data), str, count);
 		_data[count] = value_type{};
@@ -646,7 +646,7 @@ private:
 
 		const size_type count = std::distance(first, last);
 		if (count > N)
-			throw_helper<std::out_of_range>("basic_static_string_t::init: out of range");
+			throw_helper<std::out_of_range>("basic_inplace_string_t::init: out of range");
 
 		pointer p = _data.data();
 		for (auto it = first; it != last; ++it, ++p)
@@ -672,7 +672,7 @@ private:
 			traits_type::assign(*p, *it);
 
 			if (count >= N)
-				throw_helper<std::out_of_range>("basic_static_string_t::init: out of range");
+				throw_helper<std::out_of_range>("basic_inplace_string_t::init: out of range");
 		}
 		traits_type::assign(*p, value_type{});
 
@@ -682,7 +682,7 @@ private:
 	reference _at(size_type i)
 	{
 		if (i >= size())
-			throw_helper<std::out_of_range>("basic_static_string_t::at: out of range");
+			throw_helper<std::out_of_range>("basic_inplace_string_t::at: out of range");
 
 		return _data[i];
 	}
@@ -690,7 +690,7 @@ private:
 	value_type _at(size_type i) const
 	{
 		if (i >= size())
-			throw_helper<std::out_of_range>("basic_static_string_t::at: out of range");
+			throw_helper<std::out_of_range>("basic_inplace_string_t::at: out of range");
 
 		return _data[i];
 	}
@@ -701,7 +701,7 @@ private:
 		set_size(0);
 	}
 
-	basic_static_string_t& _insert(size_type index, size_type count, value_type ch)
+	basic_inplace_string_t& _insert(size_type index, size_type count, value_type ch)
 	{
 		traits_type::move(_data.data() + index + count, _data.data() + index, count);
 		for (size_type i = 0; i != count; ++i)
@@ -712,7 +712,7 @@ private:
 		return *this;
 	}
 
-	basic_static_string_t& _insert(size_type index, const value_type* str, size_type count)
+	basic_inplace_string_t& _insert(size_type index, const value_type* str, size_type count)
 	{
 		traits_type::move(_data.data() + index + count, _data.data() + index, count);
 		for (size_type i = 0; i != count; ++i)
@@ -723,20 +723,20 @@ private:
 		return *this;
 	}
 
-	basic_static_string_t& _erase(size_type pos, size_type count)
+	basic_inplace_string_t& _erase(size_type pos, size_type count)
 	{
 		if (count > size())
-			throw_helper<std::out_of_range>("basic_static_string_t::erase: out of range");
+			throw_helper<std::out_of_range>("basic_inplace_string_t::erase: out of range");
 
 		traits_type::move(_data.data() + pos, _data.data() + pos + count, count);
 		set_size(size() - count);
 		return *this;
 	}
 
-	basic_static_string_t& _append(const value_type* str, size_type count)
+	basic_inplace_string_t& _append(const value_type* str, size_type count)
 	{
 		if (get_remaining_size() < count)
-			throw_helper<std::length_error>("basic_static_string_t::append: exceed maximum string length");
+			throw_helper<std::length_error>("basic_inplace_string_t::append: exceed maximum string length");
 
 		const size_type sz = size();
 		for (size_type i = 0; i != count; ++i)
@@ -748,11 +748,11 @@ private:
 	}
 
 	template <typename InputIt>
-	basic_static_string_t& _append(InputIt first, InputIt last)
+	basic_inplace_string_t& _append(InputIt first, InputIt last)
 	{
 		const size_type count = std::distance(first, last);
 		if (get_remaining_size() < count)
-			throw_helper<std::length_error>("basic_static_string_t::append: exceed maximum string length");
+			throw_helper<std::length_error>("basic_inplace_string_t::append: exceed maximum string length");
 
 		const size_type sz = size();
 		const pointer p = _data.data() + sz;
@@ -765,10 +765,10 @@ private:
 		return *this;
 	}
 
-	basic_static_string_t& _append(size_type count, value_type ch)
+	basic_inplace_string_t& _append(size_type count, value_type ch)
 	{
 		if (get_remaining_size() < count)
-			throw_helper<std::length_error>("basic_static_string_t::append: exceed maximum string length");
+			throw_helper<std::length_error>("basic_inplace_string_t::append: exceed maximum string length");
 
 		const size_type sz = size();
 		traits_type::assign(_data.data() + sz, count, ch);
@@ -778,12 +778,12 @@ private:
 		return *this;
 	}
 
-	basic_static_string_t& _replace(size_type pos1, size_type count1, const value_type* str, size_type count2)
+	basic_inplace_string_t& _replace(size_type pos1, size_type count1, const value_type* str, size_type count2)
 	{
 		const std::make_signed<size_type>::type count = count2 - count1;
 
 		if (count > 0 && get_remaining_size() < size_type(count))
-			throw_helper<std::length_error>("basic_static_string_t::replace: exceed maximum string length");
+			throw_helper<std::length_error>("basic_inplace_string_t::replace: exceed maximum string length");
 
 		traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, size() - pos1 - count1);
 
@@ -795,12 +795,12 @@ private:
 		return *this;
 	}
 
-	basic_static_string_t& _replace(size_type pos1, size_type count1, size_type count2, value_type ch)
+	basic_inplace_string_t& _replace(size_type pos1, size_type count1, size_type count2, value_type ch)
 	{
 		const std::make_signed<size_type>::type count = count2 - count1;
 
 		if (count > 0 && get_remaining_size() < size_type(count))
-			throw_helper<std::length_error>("basic_static_string_t::replace: exceed maximum string length");
+			throw_helper<std::length_error>("basic_inplace_string_t::replace: exceed maximum string length");
 
 		traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, size() - pos1 - count1);
 		traits_type::assign(_data.data() + pos1, count2, ch);
@@ -811,13 +811,13 @@ private:
 	}
 
 	template <typename InputIt>
-	basic_static_string_t& _replace(size_type pos1, size_type count1, InputIt first, InputIt last)
+	basic_inplace_string_t& _replace(size_type pos1, size_type count1, InputIt first, InputIt last)
 	{
 		const size_type count2 = std::distance(first, last);
 		const std::make_signed<size_type>::type count = count2 - count1;
 
 		if (count > 0 && get_remaining_size() < size_type(count))
-			throw_helper<std::length_error>("basic_static_string_t::replace: exceed maximum string length");
+			throw_helper<std::length_error>("basic_inplace_string_t::replace: exceed maximum string length");
 
 		traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, size() - pos1 - count1);
 
@@ -874,20 +874,20 @@ private:
 };
 
 template <std::size_t N, typename CharT, typename Traits>
-inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, const basic_static_string_t<N, CharT, Traits>& str)
+inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, const basic_inplace_string_t<N, CharT, Traits>& str)
 {
 	return os.write(str.data(), str.size());
 }
 
 template <std::size_t N, std::size_t M, typename CharT, typename Traits>
-inline bool operator==(const basic_static_string_t<N, CharT, Traits>& lhs,
-					   const basic_static_string_t<M, CharT, Traits>& rhs)
+inline bool operator==(const basic_inplace_string_t<N, CharT, Traits>& lhs,
+					   const basic_inplace_string_t<M, CharT, Traits>& rhs)
 {
 	return lhs.size() == rhs.size() && Traits::compare(lhs.data(), rhs.data(), lhs.size()) == 0;
 }
 
 template <std::size_t N, typename CharT, typename Traits>
-inline bool operator==(const basic_static_string_t<N, CharT, Traits>& lhs,
+inline bool operator==(const basic_inplace_string_t<N, CharT, Traits>& lhs,
 					   const CharT* rhs)
 {
 	assert(rhs != nullptr);
@@ -896,20 +896,20 @@ inline bool operator==(const basic_static_string_t<N, CharT, Traits>& lhs,
 
 template <std::size_t N, typename CharT, typename Traits>
 inline bool operator==(const CharT* lhs,
-					   const basic_static_string_t<N, CharT, Traits>& rhs)
+					   const basic_inplace_string_t<N, CharT, Traits>& rhs)
 {
 	return rhs == lhs;
 }
 
 template <std::size_t N, std::size_t M, typename CharT, typename Traits>
-inline bool operator!=(const basic_static_string_t<N, CharT, Traits>& lhs,
-					   const basic_static_string_t<M, CharT, Traits>& rhs)
+inline bool operator!=(const basic_inplace_string_t<N, CharT, Traits>& lhs,
+					   const basic_inplace_string_t<M, CharT, Traits>& rhs)
 {
 	return !(lhs == rhs);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
-inline bool operator!=(const basic_static_string_t<N, CharT, Traits>& lhs,
+inline bool operator!=(const basic_inplace_string_t<N, CharT, Traits>& lhs,
 					   const CharT* rhs)
 {
 	assert(rhs != nullptr);
@@ -918,47 +918,47 @@ inline bool operator!=(const basic_static_string_t<N, CharT, Traits>& lhs,
 
 template <std::size_t N, typename CharT, typename Traits>
 inline bool operator!=(const CharT* lhs,
-					   const basic_static_string_t<N, CharT, Traits>& rhs)
+					   const basic_inplace_string_t<N, CharT, Traits>& rhs)
 {
 	return rhs != lhs;
 }
 
 template <std::size_t N, std::size_t M, typename CharT, typename Traits>
-inline bool operator<(const basic_static_string_t<N, CharT, Traits>& lhs,
-					  const basic_static_string_t<M, CharT, Traits>& rhs)
+inline bool operator<(const basic_inplace_string_t<N, CharT, Traits>& lhs,
+					  const basic_inplace_string_t<M, CharT, Traits>& rhs)
 {
 	return lhs.compare(rhs) < 0;
 }
 
 template <std::size_t N, std::size_t M, typename CharT, typename Traits>
-inline bool operator>(const basic_static_string_t<N, CharT, Traits>& lhs,
-					  const basic_static_string_t<M, CharT, Traits>& rhs)
+inline bool operator>(const basic_inplace_string_t<N, CharT, Traits>& lhs,
+					  const basic_inplace_string_t<M, CharT, Traits>& rhs)
 {
 	return rhs < lhs;
 }
 
 template <std::size_t N, std::size_t M, typename CharT, typename Traits>
-inline bool operator<=(const basic_static_string_t<N, CharT, Traits>& lhs,
-					   const basic_static_string_t<M, CharT, Traits>& rhs)
+inline bool operator<=(const basic_inplace_string_t<N, CharT, Traits>& lhs,
+					   const basic_inplace_string_t<M, CharT, Traits>& rhs)
 {
 	return !(rhs < lhs);
 }
 
 template <std::size_t N, std::size_t M, typename CharT, typename Traits>
-inline bool operator>=(const basic_static_string_t<N, CharT, Traits>& lhs,
-					   const basic_static_string_t<M, CharT, Traits>& rhs)
+inline bool operator>=(const basic_inplace_string_t<N, CharT, Traits>& lhs,
+					   const basic_inplace_string_t<M, CharT, Traits>& rhs)
 {
 	return !(lhs < rhs);
 }
 
 } }
 
-template <std::size_t N> using static_string_t = cxx::detail::basic_static_string_t<N, char>;
-template <std::size_t N> using static_wstring_t = cxx::detail::basic_static_string_t<N, wchar_t>;
-template <std::size_t N> using static_u16string_t = cxx::detail::basic_static_string_t<N, char16_t>;
-template <std::size_t N> using static_u32string_t = cxx::detail::basic_static_string_t<N, char32_t>;
+template <std::size_t N> using inplace_string_t = cxx::detail::basic_inplace_string_t<N, char>;
+template <std::size_t N> using static_wstring_t = cxx::detail::basic_inplace_string_t<N, wchar_t>;
+template <std::size_t N> using static_u16string_t = cxx::detail::basic_inplace_string_t<N, char16_t>;
+template <std::size_t N> using static_u32string_t = cxx::detail::basic_inplace_string_t<N, char32_t>;
 
-using static_string = static_string_t<32>;
+using inplace_string = inplace_string_t<32>;
 using static_wstring = static_wstring_t<32>;
 using static_u16string = static_u16string_t<32>;
 using static_u32string = static_u32string_t<32>;
@@ -978,7 +978,7 @@ using static_u32string = static_u32string_t<32>;
 namespace std
 {
 
-SMALL_STRING_HASH_DEF(static_string)
+SMALL_STRING_HASH_DEF(inplace_string)
 SMALL_STRING_HASH_DEF(static_wstring)
 SMALL_STRING_HASH_DEF(static_u16string)
 SMALL_STRING_HASH_DEF(static_u32string)

@@ -1,83 +1,83 @@
 #define SMALL_STRING_SANITY_CHECKS
-#include "static_string.h"
+#include "inplace_string.h"
 
 #include <boost/noncopyable.hpp>
 #include <gtest/gtest.h>
 
 #include <fstream>
 
-TEST(static_string, constructor)
+TEST(inplace_string, constructor)
 {
 	{
-		static_string s;
+		inplace_string s;
 		ASSERT_TRUE(s.empty());
 		ASSERT_EQ(0, s.size());
 		EXPECT_EQ("", std::string(s.c_str()));
 	}
 
 	{
-		static_string s(6, 'a');
+		inplace_string s(6, 'a');
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ(std::string(6, 'a'), std::string(s.c_str()));
 	}
 
 	{
 		std::string str("ZZZfoobar");
-		static_string s(str, 3);
+		inplace_string s(str, 3);
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
 
 	{
 		std::string str("ZZZfoobar");
-		static_string s(str, 3, static_string::npos);
+		inplace_string s(str, 3, inplace_string::npos);
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
 
 	{
 		std::string str("ZZZfoobar");
-		static_string s(str, 3, 2);
+		inplace_string s(str, 3, 2);
 		ASSERT_EQ(2, s.size());
 		EXPECT_EQ("fo", std::string(s.c_str()));
 	}
 
 	{
-		static_string str("ZZZfoobar");
-		static_string s(str, 3);
+		inplace_string str("ZZZfoobar");
+		inplace_string s(str, 3);
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
 
 	{
-		static_string str("ZZZfoobar");
-		static_string s(str, 3, static_string::npos);
+		inplace_string str("ZZZfoobar");
+		inplace_string s(str, 3, inplace_string::npos);
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
 
 	{
-		static_string str("ZZZfoobar");
-		static_string s(str, 3, 2);
+		inplace_string str("ZZZfoobar");
+		inplace_string s(str, 3, 2);
 		ASSERT_EQ(2, s.size());
 		EXPECT_EQ("fo", std::string(s.c_str()));
 	}
 
 	{
-		static_string s("foobarfoo", 6);
+		inplace_string s("foobarfoo", 6);
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
 
 	{
-		static_string s("foobar", 6);
+		inplace_string s("foobar", 6);
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
 
 	{
 		std::string str("foobarfoo");
-		static_string s(str.cbegin(), str.cbegin() + 6);
+		inplace_string s(str.cbegin(), str.cbegin() + 6);
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
@@ -89,7 +89,7 @@ TEST(static_string, constructor)
 		ofs.close();
 
 		std::ifstream file(tmp);
-		static_string s(
+		inplace_string s(
 			std::istreambuf_iterator<char>(file),
 			(std::istreambuf_iterator<char>())
 		);
@@ -99,34 +99,34 @@ TEST(static_string, constructor)
 
 	{
 		std::string str("foobar");
-		static_string s(str);
+		inplace_string s(str);
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
 
 	{
-		static_string str("foobar");
-		static_string s(str);
+		inplace_string str("foobar");
+		inplace_string s(str);
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
 
 	{
-		static_string s({'f', 'o', 'o', 'b', 'a', 'r'});
+		inplace_string s({'f', 'o', 'o', 'b', 'a', 'r'});
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
 
 	{
-		static_string s(std::experimental::string_view("foobarFOO", 6));
+		inplace_string s(std::experimental::string_view("foobarFOO", 6));
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
 }
 
-TEST(static_string, at)
+TEST(inplace_string, at)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 	std::string str("foobar");
 
 	for (std::size_t i = 0;i < s.size(); ++i)
@@ -135,9 +135,9 @@ TEST(static_string, at)
 	EXPECT_THROW(s.at(6), std::out_of_range);
 }
 
-TEST(static_string, sqbck)
+TEST(inplace_string, sqbck)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 	std::string str("foobar");
 
 	for (std::size_t i = 0;i < s.size(); ++i)
@@ -146,18 +146,18 @@ TEST(static_string, sqbck)
 	EXPECT_NO_THROW((void)s[6]);
 }
 
-TEST(static_string, front)
+TEST(inplace_string, front)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 	EXPECT_EQ('f', s.front());
 
 	s[0] = 'z';
 	EXPECT_EQ('z', s.front());
 }
 
-TEST(static_string, back)
+TEST(inplace_string, back)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 	EXPECT_EQ('r', s.back());
 
 	s.push_back('z');
@@ -167,86 +167,86 @@ TEST(static_string, back)
 	EXPECT_EQ('r', s.back());
 }
 
-TEST(static_string, c_str)
+TEST(inplace_string, c_str)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 	EXPECT_EQ("foobar", std::string(s.c_str()));
 
 	s.clear();
 	EXPECT_EQ("", std::string(s.c_str()));
 }
 
-TEST(static_string, data)
+TEST(inplace_string, data)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 	EXPECT_EQ("foobar", std::string(s.data()));
 
 	s.clear();
 	EXPECT_EQ("", std::string(s.data()));
 }
 
-TEST(static_string, string_view)
+TEST(inplace_string, string_view)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 	std::experimental::string_view sv = s;
 	EXPECT_EQ("foobar", std::string(sv));
 }
 
-TEST(static_string, criterator)
+TEST(inplace_string, criterator)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 	std::string str("foobar");
 
 	auto sit = str.rbegin();
-	static_string::size_type count = 0;
+	inplace_string::size_type count = 0;
 	for (auto it = s.crbegin(); it != s.crend(); ++it, ++sit, ++count)
 		EXPECT_EQ(*sit, *it);
 
 	EXPECT_EQ(s.size(), count);
 }
 
-TEST(static_string, riterator)
+TEST(inplace_string, riterator)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 	std::string str("foobar");
 
 	auto sit = str.rbegin();
-	static_string::size_type count = 0;
+	inplace_string::size_type count = 0;
 	for (auto it = s.rbegin(); it != s.rend(); ++it, ++sit, ++count)
 		EXPECT_EQ(*sit, *it);
 
 	EXPECT_EQ(s.size(), count);
 }
 
-TEST(static_string, iterator)
+TEST(inplace_string, iterator)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 	std::string str("foobar");
 
 	auto sit = str.begin();
-	static_string::size_type count = 0;
+	inplace_string::size_type count = 0;
 	for (auto it = s.begin(); it != s.end(); ++it, ++sit, ++count)
 		EXPECT_EQ(*sit, *it);
 
 	EXPECT_EQ(s.size(), count);
 }
 
-TEST(static_string, citerator)
+TEST(inplace_string, citerator)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 	std::string str("foobar");
 
 	auto sit = str.begin();
-	static_string::size_type count = 0;
+	inplace_string::size_type count = 0;
 	for (auto it = s.cbegin(); it != s.cend(); ++it, ++sit, ++count)
 		EXPECT_EQ(*sit, *it);
 
 	EXPECT_EQ(s.size(), count);
 }
 
-TEST(static_string, empty)
+TEST(inplace_string, empty)
 {
-	static_string s;
+	inplace_string s;
 	EXPECT_TRUE(s.empty());
 
 	s.push_back(1);
@@ -261,13 +261,13 @@ TEST(static_string, empty)
 	s.clear();
 	EXPECT_TRUE(s.empty());
 
-	s = static_string{};
+	s = inplace_string{};
 	EXPECT_TRUE(s.empty());
 }
 
-TEST(static_string, length)
+TEST(inplace_string, length)
 {
-	static_string s;
+	inplace_string s;
 	EXPECT_EQ(0, s.length());
 
 	s.push_back('f');
@@ -292,9 +292,9 @@ TEST(static_string, length)
 	EXPECT_EQ(0, s.length());
 }
 
-TEST(static_string, size)
+TEST(inplace_string, size)
 {
-	static_string s;
+	inplace_string s;
 	EXPECT_EQ(0, s.size());
 
 	s.push_back('f');
@@ -319,34 +319,34 @@ TEST(static_string, size)
 	EXPECT_EQ(0, s.size());
 }
 
-TEST(static_string, max_size)
+TEST(inplace_string, max_size)
 {
-	static_string s;
+	inplace_string s;
 	EXPECT_EQ(31, s.max_size());
 
-	static_string_t<42> ss;
+	inplace_string_t<42> ss;
 	EXPECT_EQ(41, ss.max_size());
 }
 
-TEST(static_string, capacity)
+TEST(inplace_string, capacity)
 {
-	static_string s;
+	inplace_string s;
 	EXPECT_EQ(32, s.capacity());
 
-	static_string_t<42> ss;
+	inplace_string_t<42> ss;
 	EXPECT_EQ(42, ss.capacity());
 }
 
-TEST(static_string, shrink_to_fit)
+TEST(inplace_string, shrink_to_fit)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 	s.shrink_to_fit();
 	EXPECT_EQ("foobar", std::string(s.c_str()));
 }
 
-TEST(static_string, clear)
+TEST(inplace_string, clear)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 	s.clear();
 
 	EXPECT_EQ(0, s.size());
@@ -355,10 +355,10 @@ TEST(static_string, clear)
 	EXPECT_TRUE(s.empty());
 }
 
-TEST(static_string, substr)
+TEST(inplace_string, substr)
 {
-	static_string s("123456");
-	static_string ss = s.substr();
+	inplace_string s("123456");
+	inplace_string ss = s.substr();
 
 	EXPECT_EQ(s, ss);
 
@@ -372,28 +372,28 @@ TEST(static_string, substr)
 	EXPECT_EQ('5', ss.at(0));
 }
 
-TEST(static_string, compare_eq)
+TEST(inplace_string, compare_eq)
 {
-	static_string s1("123456");
-	static_string s2("123456");
+	inplace_string s1("123456");
+	inplace_string s2("123456");
 	EXPECT_TRUE(s1 == s2);
 	EXPECT_EQ(s1.compare(s2), 0);
 	EXPECT_TRUE(s1 == "123456");
 	EXPECT_TRUE("123456" == s1);
 }
 
-TEST(static_string, compare_ne)
+TEST(inplace_string, compare_ne)
 {
-	static_string s1("123456");
-	static_string s2("123356");
+	inplace_string s1("123456");
+	inplace_string s2("123356");
 	EXPECT_TRUE(s1 != s2);
 	EXPECT_NE(s1.compare(s2), 0);
 }
 
-TEST(static_string, compare_lt)
+TEST(inplace_string, compare_lt)
 {
-	static_string s1("123456");
-	static_string s2("123456789");
+	inplace_string s1("123456");
+	inplace_string s2("123456789");
 	EXPECT_TRUE(s1 < s2);
 	EXPECT_LT(s1.compare(s2), 0);
 
@@ -403,10 +403,10 @@ TEST(static_string, compare_lt)
 	EXPECT_LT(s1.compare(s2), 0);
 }
 
-TEST(static_string, compare_lte)
+TEST(inplace_string, compare_lte)
 {
-	static_string s1("123456");
-	static_string s2("123456789");
+	inplace_string s1("123456");
+	inplace_string s2("123456789");
 	EXPECT_TRUE(s1 <= s2);
 	EXPECT_LE(s1.compare(s2), 0);
 
@@ -416,10 +416,10 @@ TEST(static_string, compare_lte)
 	EXPECT_LE(s1.compare(s2), 0);
 }
 
-TEST(static_string, compare_gt)
+TEST(inplace_string, compare_gt)
 {
-	static_string s1("123356789");
-	static_string s2("123356");
+	inplace_string s1("123356789");
+	inplace_string s2("123356");
 	EXPECT_TRUE(s1 > s2);
 	EXPECT_GT(s1.compare(s2), 0);
 
@@ -429,10 +429,10 @@ TEST(static_string, compare_gt)
 	EXPECT_GT(s1.compare(s2), 0);
 }
 
-TEST(static_string, compare_gte)
+TEST(inplace_string, compare_gte)
 {
-	static_string s1("123356789");
-	static_string s2("123356");
+	inplace_string s1("123356789");
+	inplace_string s2("123356");
 	EXPECT_TRUE(s1 >= s2);
 	EXPECT_GE(s1.compare(s2), 0);
 
@@ -442,9 +442,9 @@ TEST(static_string, compare_gte)
 	EXPECT_GE(s1.compare(s2), 0);
 }
 
-TEST(static_string, append)
+TEST(inplace_string, append)
 {
-	static_string s("foo");
+	inplace_string s("foo");
 	s.append("bar");
 	EXPECT_EQ(6, s.size());
 	EXPECT_EQ("foobar", s);
@@ -482,9 +482,9 @@ TEST(static_string, append)
 	EXPECT_EQ("foobar", s);
 }
 
-TEST(static_string, append_operator)
+TEST(inplace_string, append_operator)
 {
-	static_string s("foo");
+	inplace_string s("foo");
 	s += "bar";
 	EXPECT_EQ(6, s.size());
 	EXPECT_EQ("foobar", s);
@@ -511,9 +511,9 @@ TEST(static_string, append_operator)
 	EXPECT_EQ("foobar", s);
 }
 
-TEST(static_string, resize)
+TEST(inplace_string, resize)
 {
-	static_string s("foo");
+	inplace_string s("foo");
 	s.resize(3, 'z');
 	EXPECT_EQ("foo", s);
 
@@ -530,9 +530,9 @@ TEST(static_string, resize)
 	EXPECT_EQ("fozzzz", s);
 }
 
-TEST(static_string, replace_basic)
+TEST(inplace_string, replace_basic)
 {
-	static_string s("fooFOO");
+	inplace_string s("fooFOO");
 
 	s.replace(3, 3, "bar");
 	EXPECT_EQ(6, s.size());
@@ -575,11 +575,11 @@ TEST(static_string, replace_basic)
 	EXPECT_EQ("foobarbuzbaz", std::string(s.c_str()));
 }
 
-TEST(static_string, replace)
+TEST(inplace_string, replace)
 {
-	static_string s("fooFOOBAR");
+	inplace_string s("fooFOOBAR");
 
-	s.replace(3, 6, static_string("bar"));
+	s.replace(3, 6, inplace_string("bar"));
 	EXPECT_EQ(6, s.size());
 	EXPECT_EQ("foobar", std::string(s.c_str()));
 
@@ -591,7 +591,7 @@ TEST(static_string, replace)
 	EXPECT_EQ(9, s.size());
 	EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
 
-	s.replace(s.begin(), s.begin() + 6, static_string("foo"));
+	s.replace(s.begin(), s.begin() + 6, inplace_string("foo"));
 	EXPECT_EQ(6, s.size());
 	EXPECT_EQ("foobar", std::string(s.c_str()));
 
@@ -599,7 +599,7 @@ TEST(static_string, replace)
 	EXPECT_EQ(6, s.size());
 	EXPECT_EQ("fooBAR", std::string(s.c_str()));
 
-	s.replace(0, 3, static_string("BARFOO"), 3, 3);
+	s.replace(0, 3, inplace_string("BARFOO"), 3, 3);
 	EXPECT_EQ(6, s.size());
 	EXPECT_EQ("FOOBAR", std::string(s.c_str()));
 
@@ -616,7 +616,7 @@ TEST(static_string, replace)
 	EXPECT_EQ(9, s.size());
 	EXPECT_EQ("fooFOOBAR", std::string(s.c_str()));
 
-	s = static_string(31, 'a');
+	s = inplace_string(31, 'a');
 	s.replace(s.begin(), s.end(), "foo");
 	EXPECT_EQ(3, s.size());
 	EXPECT_EQ("foo", std::string(s.c_str()));
@@ -648,12 +648,12 @@ TEST(static_string, replace)
 }
 
 
-TEST(static_string, copy)
+TEST(inplace_string, copy)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 
 	char str[10];
-	static_string::size_type bytes = s.copy(str, static_string::npos, 0);
+	inplace_string::size_type bytes = s.copy(str, inplace_string::npos, 0);
 	EXPECT_EQ(6, bytes);
 	EXPECT_EQ("foobar", std::string(str));
 
@@ -662,10 +662,10 @@ TEST(static_string, copy)
 	EXPECT_EQ("barbar", std::string(str));
 }
 
-TEST(static_string, swap)
+TEST(inplace_string, swap)
 {
-	static_string s("foobar");
-	static_string ss("FOOBAR");
+	inplace_string s("foobar");
+	inplace_string ss("FOOBAR");
 
 	s.swap(ss);
 	EXPECT_EQ("foobar", std::string(ss.c_str()));
@@ -673,16 +673,16 @@ TEST(static_string, swap)
 }
 
 
-TEST(static_string, find)
+TEST(inplace_string, find)
 {
-	static_string s("foobar");
+	inplace_string s("foobar");
 
 	EXPECT_EQ(0, s.find("foo"));
 	EXPECT_EQ(1, s.find("o"));
 	EXPECT_EQ(3, s.find("bar"));
 	EXPECT_EQ(5, s.find("r"));
 
-	const static_string::size_type npos = static_string::npos;
+	const inplace_string::size_type npos = inplace_string::npos;
 	EXPECT_EQ(npos, s.find("baz"));
 	EXPECT_EQ(npos, s.find("fooz"));
 	EXPECT_EQ(npos, s.find("zar"));
@@ -712,11 +712,11 @@ TEST(static_string, find)
 	EXPECT_EQ(npos, s.find(std::experimental::string_view("barb"), 3));
 	EXPECT_EQ(npos, s.find(std::experimental::string_view("bar"), 4));
 
-	EXPECT_EQ(3, s.find(static_string("bar")));
-	EXPECT_EQ(3, s.find(static_string("bar"), 2));
-	EXPECT_EQ(3, s.find(static_string("bar"), 3));
-	EXPECT_EQ(npos, s.find(static_string("barb"), 3));
-	EXPECT_EQ(npos, s.find(static_string("bar"), 4));
+	EXPECT_EQ(3, s.find(inplace_string("bar")));
+	EXPECT_EQ(3, s.find(inplace_string("bar"), 2));
+	EXPECT_EQ(3, s.find(inplace_string("bar"), 3));
+	EXPECT_EQ(npos, s.find(inplace_string("barb"), 3));
+	EXPECT_EQ(npos, s.find(inplace_string("bar"), 4));
 
 	EXPECT_EQ(0, s.find('f'));
 	EXPECT_EQ(1, s.find('o'));
