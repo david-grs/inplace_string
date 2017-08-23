@@ -959,9 +959,9 @@ template <std::size_t N> using static_u16string_t = cxx::detail::basic_inplace_s
 template <std::size_t N> using static_u32string_t = cxx::detail::basic_inplace_string_t<N, char32_t>;
 
 using inplace_string = inplace_string_t<32>;
-using static_wstring = static_wstring_t<32>;
-using static_u16string = static_u16string_t<32>;
-using static_u32string = static_u32string_t<32>;
+using inplace_wstring = static_wstring_t<32>;
+using inplace_u16string = static_u16string_t<32>;
+using inplace_u32string = static_u32string_t<32>;
 
 #define SMALL_STRING_HASH_DEF(x) \
 	template <> \
@@ -979,9 +979,9 @@ namespace std
 {
 
 SMALL_STRING_HASH_DEF(inplace_string)
-SMALL_STRING_HASH_DEF(static_wstring)
-SMALL_STRING_HASH_DEF(static_u16string)
-SMALL_STRING_HASH_DEF(static_u32string)
+SMALL_STRING_HASH_DEF(inplace_wstring)
+SMALL_STRING_HASH_DEF(inplace_u16string)
+SMALL_STRING_HASH_DEF(inplace_u32string)
 
 }
 
