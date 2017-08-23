@@ -331,10 +331,10 @@ TEST(inplace_string, max_size)
 TEST(inplace_string, capacity)
 {
 	inplace_string s;
-	EXPECT_EQ(32, s.capacity());
+	EXPECT_EQ(31, s.capacity());
 
 	inplace_string_t<42> ss;
-	EXPECT_EQ(42, ss.capacity());
+	EXPECT_EQ(41, ss.capacity());
 }
 
 TEST(inplace_string, shrink_to_fit)
