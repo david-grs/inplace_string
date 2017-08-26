@@ -857,7 +857,11 @@ basic_inplace_string_t<N, CharT, Traits>::basic_inplace_string_t(const T& t, siz
 template <std::size_t N, typename CharT, typename Traits>
 template <typename InputIt>
 basic_inplace_string_t<N, CharT, Traits>::basic_inplace_string_t(InputIt first, InputIt last) :
-	basic_inplace_string_t(first, last, typename std::conditional<is_exactly_input_iterator<InputIt>::value, is_exactly_input_iterator_tag, is_input_iterator_tag>::type{})
+	basic_inplace_string_t(first,
+						   last,
+						   typename std::conditional<is_exactly_input_iterator<InputIt>::value,
+										is_exactly_input_iterator_tag,
+										is_input_iterator_tag>::type{})
 {
 }
 
