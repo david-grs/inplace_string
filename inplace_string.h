@@ -994,25 +994,20 @@ template <std::size_t N> using inplace_wstring = cxx::detail::basic_inplace_stri
 template <std::size_t N> using inplace_u16string = cxx::detail::basic_inplace_string_t<N, char16_t>;
 template <std::size_t N> using inplace_u32string = cxx::detail::basic_inplace_string_t<N, char32_t>;
 
-#define SMALL_STRING_HASH_DEF(x) \
-	template <> \
-	struct hash<x> \
-	{ \
-		size_t operator()(const x& str) const \
-		{ \
-			using view = typename std::experimental::basic_string_view<x::value_type, x::traits_type>; \
-			view v(str.data(), str.size()); \
-			return std::hash<view>()(v); \
-		} \
-	};
-
 namespace std
 {
 
-SMALL_STRING_HASH_DEF(inplace_string)
-SMALL_STRING_HASH_DEF(inplace_wstring)
-SMALL_STRING_HASH_DEF(inplace_u16string)
-SMALL_STRING_HASH_DEF(inplace_u32string)
+template <std::size_t N, typename CharT>
+struct hash<cxx::detail::basic_inplace_string_t<N, CharT>>
+{
+	size_t operator()(const cxx::detail::basic_inplace_string_t<N, CharT>& str) const
+	{
+		using Traits = typename cxx::detail::basic_inplace_string_t<N, CharT>::traits_type;
+		using view = typename std::experimental::basic_string_view<CharT, Traits>;
+		view v(str.data(), str.size());
+		return std::hash<view>()(v);
+	}
+};
 
 }
 
