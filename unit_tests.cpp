@@ -1,7 +1,6 @@
-#define SMALL_STRING_SANITY_CHECKS
+#define INPLACE_STRING_SANITY_CHECKS
 #include "inplace_string.h"
 
-#include <boost/noncopyable.hpp>
 #include <gtest/gtest.h>
 
 #include <fstream>

@@ -764,7 +764,7 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string() noexcept
 template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string(size_type count, value_type ch)
 {
-#ifdef SMALL_STRING_SANITY_CHECKS
+#ifdef INPLACE_STRING_SANITY_CHECKS
 	for (size_type i = 0; i <= N; ++i)
 		_data[i] = 'a';
 #endif
@@ -807,7 +807,7 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const value_type* s
 {
 	assert(str != nullptr);
 
-#ifdef SMALL_STRING_SANITY_CHECKS
+#ifdef INPLACE_STRING_SANITY_CHECKS
 	for (size_type i = 0; i <= N; ++i)
 		_data[i] = 'a';
 #endif
@@ -869,7 +869,7 @@ template <std::size_t N, typename CharT, typename Traits>
 template <typename InputIt>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string(InputIt first, InputIt last, is_exactly_input_iterator_tag)
 {
-#ifdef SMALL_STRING_SANITY_CHECKS
+#ifdef INPLACE_STRING_SANITY_CHECKS
 	for (size_type i = 0; i <= N; ++i)
 		_data[i] = 'a';
 #endif
@@ -892,7 +892,7 @@ template <std::size_t N, typename CharT, typename Traits>
 template <typename InputIt>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string(InputIt first, InputIt last, is_input_iterator_tag)
 {
-#ifdef SMALL_STRING_SANITY_CHECKS
+#ifdef INPLACE_STRING_SANITY_CHECKS
 	for (size_type i = 0; i <= N; ++i)
 		_data[i] = 'a';
 #endif
