@@ -167,8 +167,8 @@ public:
 	size_type length() const { return size(); }
 	size_type size() const   { return get_size(); }
 
-	constexpr size_type max_size() const { return N - 1; }
-	constexpr size_type capacity() const { return N - 1; }
+	static constexpr size_type max_size() { return N - 1; }
+	static constexpr size_type capacity() { return N - 1; }
 
 	void shrink_to_fit()  {}
 
