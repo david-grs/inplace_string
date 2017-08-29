@@ -997,14 +997,14 @@ template <std::size_t N> using inplace_u32string = detail::basic_inplace_string<
 namespace std
 {
 
-template <std::size_t N, typename CharT>
-struct hash<detail::basic_inplace_string<N, CharT>>
+template <std::size_t N, typename CharT, typename Traits>
+struct hash<detail::basic_inplace_string<N, CharT, Traits>>
 {
-	size_t operator()(const detail::basic_inplace_string<N, CharT>& str) const
+	size_t operator()(const detail::basic_inplace_string<N, CharT, Traits>& str) const
 	{
-		using Traits = typename detail::basic_inplace_string<N, CharT>::traits_type;
 		using view = typename std::experimental::basic_string_view<CharT, Traits>;
-		view v(str.data(), str.size());
+
+		const view v(str.data(), str.size());
 		return std::hash<view>()(v);
 	}
 };
