@@ -989,15 +989,10 @@ inline bool operator>=(const basic_inplace_string_t<N, CharT, Traits>& lhs,
 
 } }
 
-template <std::size_t N> using inplace_string_t = cxx::detail::basic_inplace_string_t<N, char>;
-template <std::size_t N> using inplace_wstring_t = cxx::detail::basic_inplace_string_t<N, wchar_t>;
-template <std::size_t N> using inplace_u16string_t = cxx::detail::basic_inplace_string_t<N, char16_t>;
-template <std::size_t N> using inplace_u32string_t = cxx::detail::basic_inplace_string_t<N, char32_t>;
-
-using inplace_string = inplace_string_t<32>;
-using inplace_wstring = inplace_wstring_t<32>;
-using inplace_u16string = inplace_u16string_t<32>;
-using inplace_u32string = inplace_u32string_t<32>;
+template <std::size_t N> using inplace_string = cxx::detail::basic_inplace_string_t<N, char>;
+template <std::size_t N> using inplace_wstring = cxx::detail::basic_inplace_string_t<N, wchar_t>;
+template <std::size_t N> using inplace_u16string = cxx::detail::basic_inplace_string_t<N, char16_t>;
+template <std::size_t N> using inplace_u32string = cxx::detail::basic_inplace_string_t<N, char32_t>;
 
 #define SMALL_STRING_HASH_DEF(x) \
 	template <> \
