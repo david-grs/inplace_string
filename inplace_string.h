@@ -1011,5 +1011,4 @@ struct hash<cxx::detail::basic_inplace_string_t<N, CharT>>
 
 }
 
-#undef SMALL_STRING_HASH_DEF
 
