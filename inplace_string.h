@@ -170,7 +170,7 @@ public:
 	constexpr size_type max_size() const { return N - 1; }
 	constexpr size_type capacity() const { return N - 1; }
 
-	void      shrink_to_fit()  {}
+	void shrink_to_fit()  {}
 
 	void clear() { zero(); }
 
