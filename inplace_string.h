@@ -12,7 +12,7 @@
 
 #include <experimental/string_view>
 
-namespace cxx { namespace detail {
+namespace detail {
 
 namespace
 {
@@ -987,22 +987,22 @@ inline bool operator>=(const basic_inplace_string<N, CharT, Traits>& lhs,
 	return !(lhs < rhs);
 }
 
-} }
+}
 
-template <std::size_t N> using inplace_string = cxx::detail::basic_inplace_string<N, char>;
-template <std::size_t N> using inplace_wstring = cxx::detail::basic_inplace_string<N, wchar_t>;
-template <std::size_t N> using inplace_u16string = cxx::detail::basic_inplace_string<N, char16_t>;
-template <std::size_t N> using inplace_u32string = cxx::detail::basic_inplace_string<N, char32_t>;
+template <std::size_t N> using inplace_string = detail::basic_inplace_string<N, char>;
+template <std::size_t N> using inplace_wstring = detail::basic_inplace_string<N, wchar_t>;
+template <std::size_t N> using inplace_u16string = detail::basic_inplace_string<N, char16_t>;
+template <std::size_t N> using inplace_u32string = detail::basic_inplace_string<N, char32_t>;
 
 namespace std
 {
 
 template <std::size_t N, typename CharT>
-struct hash<cxx::detail::basic_inplace_string<N, CharT>>
+struct hash<detail::basic_inplace_string<N, CharT>>
 {
-	size_t operator()(const cxx::detail::basic_inplace_string<N, CharT>& str) const
+	size_t operator()(const detail::basic_inplace_string<N, CharT>& str) const
 	{
-		using Traits = typename cxx::detail::basic_inplace_string<N, CharT>::traits_type;
+		using Traits = typename detail::basic_inplace_string<N, CharT>::traits_type;
 		using view = typename std::experimental::basic_string_view<CharT, Traits>;
 		view v(str.data(), str.size());
 		return std::hash<view>()(v);
