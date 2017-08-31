@@ -106,7 +106,7 @@ public:
 
 	static_assert(std::is_pod<value_type>::value, "CharT type of basic_inplace_string must be a POD");
 	static_assert(std::is_same<value_type, typename traits_type::char_type>::value, "CharT type must be the same type as Traits::char_type");
-	static_assert(N <= std::numeric_limits<static_size_type>::max(), "N must be smaller than the maximum static_size possible with this CharT type");
+	static_assert(N < std::numeric_limits<static_size_type>::max(), "N must be smaller than the maximum static_size possible with this CharT type");
 
 	explicit basic_inplace_string() noexcept;
 
@@ -167,8 +167,8 @@ public:
 	size_type length() const { return size(); }
 	size_type size() const   { return get_size(); }
 
-	static constexpr size_type max_size() { return N - 1; }
-	static constexpr size_type capacity() { return N - 1; }
+	static constexpr size_type max_size() { return N; }
+	static constexpr size_type capacity() { return N; }
 
 	void shrink_to_fit()  {}
 
@@ -488,7 +488,7 @@ public:
 
 	size_type copy(value_type* dest, size_type count, size_type pos = 0) const
 	{
-		if (pos > N)
+		if (pos > size())
 			throw_helper<std::out_of_range>("basic_inplace_string::copy: out of range");
 
 		size_type i = pos;
@@ -738,21 +738,21 @@ private:
 
 	void set_size(size_type sz)
 	{
-		assert(sz <= N - 1);
-		_data[N - 1] = static_cast<static_size_type>(N - 1 - sz);
+		assert(sz <= N);
+		_data[N] = static_cast<static_size_type>(N - sz);
 	}
 
 	size_type get_size() const
 	{
-		return N - 1 - _data[N - 1];
+		return N - _data[N];
 	}
 
 	size_type get_remaining_size() const
 	{
-		return _data[N - 1];
+		return _data[N];
 	}
 
-	std::array<value_type, N> _data;
+	std::array<value_type, N + 1> _data;
 };
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -769,7 +769,7 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string(size_type count, va
 		_data[i] = 'a';
 #endif
 
-	if (count >= N)
+	if (count > N)
 		throw_helper<std::out_of_range>("basic_inplace_string::init: out of range");
 
 	traits_type::assign(std::begin(_data), count, ch);
@@ -812,7 +812,7 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const value_type* s
 		_data[i] = 'a';
 #endif
 
-	if (count >= N)
+	if (count > N)
 		throw_helper<std::out_of_range>("basic_inplace_string::init: out of range");
 
 	traits_type::copy(std::begin(_data), str, count);

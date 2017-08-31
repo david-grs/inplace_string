@@ -5,7 +5,7 @@
 
 #include <fstream>
 
-using my_string = inplace_string<32>;
+using my_string = inplace_string<31>;
 
 TEST(inplace_string, constructor)
 {
@@ -325,7 +325,7 @@ TEST(inplace_string, max_size)
 	my_string s;
 	EXPECT_EQ(31, s.max_size());
 
-	inplace_string<42> ss;
+	inplace_string<41> ss;
 	EXPECT_EQ(41, ss.max_size());
 }
 
@@ -334,7 +334,7 @@ TEST(inplace_string, capacity)
 	my_string s;
 	EXPECT_EQ(31, s.capacity());
 
-	inplace_string<42> ss;
+	inplace_string<41> ss;
 	EXPECT_EQ(41, ss.capacity());
 }
 
