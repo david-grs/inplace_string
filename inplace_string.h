@@ -149,18 +149,18 @@ public:
 
 	operator std::experimental::basic_string_view<CharT, Traits>() const noexcept { return {_data.data(), size()}; }
 
+	iterator       begin()        { return std::begin(_data); }
 	const_iterator begin() const  { return std::begin(_data); }
-	const_iterator end() const    { return std::begin(_data) + size(); }
-	iterator begin()              { return std::begin(_data); }
-	iterator end()                { return std::begin(_data) + size(); }
 	const_iterator cbegin() const { return begin(); }
+	iterator       end()          { return std::begin(_data) + size(); }
+	const_iterator end() const    { return std::begin(_data) + size(); }
 	const_iterator cend() const   { return end(); }
 
-	reverse_iterator rbegin()              { return reverse_iterator(end()); }
+	reverse_iterator       rbegin()        { return reverse_iterator(end()); }
 	const_reverse_iterator rbegin() const  { return const_reverse_iterator(cend()); }
 	const_reverse_iterator crbegin() const { return const_reverse_iterator(cend()); }
 
-	reverse_iterator rend()                { return reverse_iterator(begin()); }
+	reverse_iterator       rend()          { return reverse_iterator(begin()); }
 	const_reverse_iterator rend() const    { return const_reverse_iterator(cbegin()); }
 	const_reverse_iterator crend() const   { return const_reverse_iterator(cbegin()); }
 
