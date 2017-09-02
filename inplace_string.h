@@ -293,54 +293,19 @@ public:
 		return basic_inplace_string(data() + pos, sz);
 	}
 
-	int compare(const basic_inplace_string& str) const
-	{
-		return _compare(0, size(), str.data(), str.size());
-	}
-
-	int compare(size_type pos1, size_type count1, const basic_inplace_string& str) const
-	{
-		return _compare(pos1, count1, str.data(), str.size());
-	}
-
-	int compare(size_type pos1, size_type count1, const basic_inplace_string& str, size_type pos2, size_type count2) const // TODO adding npos
-	{
-		return _compare(pos1, count1, str.data() + pos2, count2 - pos2);
-	}
-
-	int compare(const value_type* str) const
-	{
-		return _compare(0, size(), str, traits_type::length(str));
-	}
-
-	int compare(size_type pos1, size_type count1, const value_type* str) const
-	{
-		return _compare(pos1, count1, str, traits_type::length(str));
-	}
-
-	int compare(size_type pos1, size_type count1, const value_type* str, size_type count2) const
-	{
-		return _compare(pos1, count1, str, count2);
-	}
-
-	int compare(std::experimental::basic_string_view<CharT, Traits> sv) const
-	{
-		return _compare(0, size(), sv.data(), sv.size());
-	}
-
-	int compare(size_type pos1, size_type count1, std::experimental::basic_string_view<CharT, Traits> sv) const
-	{
-		return _compare(pos1, count1, sv.data(), sv.size());
-	}
+	int compare(const basic_inplace_string& str) const;
+	int compare(size_type pos1, size_type count1, const basic_inplace_string& str) const;
+	int compare(size_type pos1, size_type count1, const basic_inplace_string& str, size_type pos2, size_type count2) const; // TODO adding npos
+	int compare(const value_type* str) const;
+	int compare(size_type pos1, size_type count1, const value_type* str) const;
+	int compare(size_type pos1, size_type count1, const value_type* str, size_type count2) const;
+	int compare(std::experimental::basic_string_view<CharT, Traits> sv) const;
+	int compare(size_type pos1, size_type count1, std::experimental::basic_string_view<CharT, Traits> sv) const;
 
 	template <typename T,
 			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
-	basic_inplace_string& compare(size_type pos1, size_type count1, const T& t, size_type pos2, size_type count2 = npos)
-	{
-		std::experimental::basic_string_view<CharT, Traits> view = t;
-		return _compare(pos1, count1, view.data() + pos2, count2 == npos ? view.size() : count2);
-	}
+	basic_inplace_string& compare(size_type pos1, size_type count1, const T& t, size_type pos2, size_type count2 = npos);
 
 	basic_inplace_string& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str)
 	{
@@ -602,15 +567,6 @@ private:
 		set_size(size() + count);
 		_data[size()] = value_type{};
 		return *this;
-	}
-
-	int _compare(size_type pos1, size_type count1, const value_type* str, size_type count2) const
-	{
-		const size_type sz = std::min(count1, count2);
-		const int cmp = traits_type::compare(data() + pos1, str, sz);
-		if (cmp != 0)
-			return cmp;
-		return count1 - pos1 > count2 ? 1 : (count1 - pos1 == count2 ? 0 : -1);
 	}
 
 	size_type _find(const value_type* str, size_type count, size_type pos) const
@@ -949,6 +905,68 @@ basic_inplace_string<N, CharT, Traits>::erase(const_iterator first, const_iterat
 	size_type index = static_cast<size_type>(first - _data.data());
 	erase(index, std::distance(first, last));
 	return iterator{_data.data() + index};
+}
+
+
+template <std::size_t N, typename CharT, typename Traits>
+int basic_inplace_string<N, CharT, Traits>::compare(const basic_inplace_string& str) const
+{
+	return compare(0, size(), str.data(), str.size());
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1, const basic_inplace_string& str) const
+{
+	return compare(pos1, count1, str.data(), str.size());
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1, const basic_inplace_string& str, size_type pos2, size_type count2) const // TODO adding npos
+{
+	return compare(pos1, count1, str.data() + pos2, count2 - pos2);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+int basic_inplace_string<N, CharT, Traits>::compare(const value_type* str) const
+{
+	return compare(0, size(), str, traits_type::length(str));
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1, const value_type* str) const
+{
+	return compare(pos1, count1, str, traits_type::length(str));
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1, const value_type* str, size_type count2) const
+{
+	const size_type sz = std::min(count1, count2);
+	const int cmp = traits_type::compare(data() + pos1, str, sz);
+	if (cmp != 0)
+		return cmp;
+	return count1 - pos1 > count2 ? 1 : (count1 - pos1 == count2 ? 0 : -1);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+int basic_inplace_string<N, CharT, Traits>::compare(std::experimental::basic_string_view<CharT, Traits> sv) const
+{
+	return compare(0, size(), sv.data(), sv.size());
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1, std::experimental::basic_string_view<CharT, Traits> sv) const
+{
+	return compare(pos1, count1, sv.data(), sv.size());
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+template <typename T, typename X>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1, const T& t, size_type pos2, size_type count2)
+{
+	std::experimental::basic_string_view<CharT, Traits> view = t;
+	return compare(pos1, count1, view.data() + pos2, count2 == npos ? view.size() : count2);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
