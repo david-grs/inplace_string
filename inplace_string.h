@@ -210,7 +210,7 @@ public:
 
 	int compare(const basic_inplace_string& str) const;
 	int compare(size_type pos1, size_type count1, const basic_inplace_string& str) const;
-	int compare(size_type pos1, size_type count1, const basic_inplace_string& str, size_type pos2, size_type count2) const; // TODO adding npos
+	int compare(size_type pos1, size_type count1, const basic_inplace_string& str, size_type pos2, size_type count2 = npos) const;
 	int compare(const value_type* str) const;
 	int compare(size_type pos1, size_type count1, const value_type* str) const;
 	int compare(size_type pos1, size_type count1, const value_type* str, size_type count2) const;
@@ -222,95 +222,30 @@ public:
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
 	basic_inplace_string& compare(size_type pos1, size_type count1, const T& t, size_type pos2, size_type count2 = npos);
 
-	basic_inplace_string& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str)
-	{
-		return _replace(pos, count, str.c_str(), str.size());
-	}
-
-	basic_inplace_string& replace(size_type pos, size_type count, const basic_inplace_string& str)
-	{
-		return _replace(pos, count, str.c_str(), str.size());
-	}
-
-	basic_inplace_string& replace(const_iterator first, const_iterator last, const std::basic_string<CharT, Traits>& str)
-	{
-		return _replace(first - _data.data(), std::distance(first, last), str.c_str(), str.size());
-	}
-
-	basic_inplace_string& replace(const_iterator first, const_iterator last, const basic_inplace_string& str)
-	{
-		return _replace(first - _data.data(), std::distance(first, last), str.c_str(), str.size());
-	}
-
-	basic_inplace_string& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str, size_type pos2, size_type count2 = npos)
-	{
-		return _replace(pos, count, str.c_str() + pos2, std::min(str.size() - pos2, count2));
-	}
-
-	basic_inplace_string& replace(size_type pos, size_type count, const basic_inplace_string& str, size_type pos2, size_type count2 = npos)
-	{
-		return _replace(pos, count, str.c_str() + pos2, std::min(str.size() - pos2, count2));
-	}
+	basic_inplace_string& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str);
+	basic_inplace_string& replace(size_type pos, size_type count, const basic_inplace_string& str);
+	basic_inplace_string& replace(const_iterator first, const_iterator last, const std::basic_string<CharT, Traits>& str);
+	basic_inplace_string& replace(const_iterator first, const_iterator last, const basic_inplace_string& str);
+	basic_inplace_string& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str, size_type pos2, size_type count2 = npos);
+	basic_inplace_string& replace(size_type pos, size_type count, const basic_inplace_string& str, size_type pos2, size_type count2 = npos);
 
 	template <class InputIt>
-	basic_inplace_string& replace(const_iterator first, const_iterator last, InputIt first2, InputIt last2)
-	{
-		return _replace(first - _data.data(), std::distance(first, last), first2, last2);
-	}
+	basic_inplace_string& replace(const_iterator first, const_iterator last, InputIt first2, InputIt last2);
 
-	basic_inplace_string& replace(size_type pos, size_type count, const CharT* str, size_type count2)
-	{
-		return _replace(pos, count, str, count2);
-	}
-
-	basic_inplace_string& replace(const_iterator first, const_iterator last, const CharT* str, size_type count2)
-	{
-		return _replace(first - _data.data(), std::distance(first, last), str, count2);
-	}
-
-	basic_inplace_string& replace(size_type pos, size_type count, const CharT* str)
-	{
-		return _replace(pos, count, str, traits_type::length(str));
-	}
-
-	basic_inplace_string& replace(const_iterator first, const_iterator last, const CharT* str)
-	{
-		return _replace(first - _data.data(), std::distance(first, last), str, traits_type::length(str));
-	}
-
-	basic_inplace_string& replace(size_type pos, size_type count, size_type count2, value_type ch)
-	{
-		return _replace(pos, count, count2, ch);
-	}
-
-	basic_inplace_string& replace(const_iterator first, const_iterator last, size_type count2, value_type ch)
-	{
-		return _replace(first - _data.data(), std::distance(first, last), count2, ch);
-	}
-
-	basic_inplace_string& replace(const_iterator first, const_iterator last, std::initializer_list<value_type> ilist)
-	{
-		return _replace(first - _data.data(), std::distance(first, last), ilist.begin(), ilist.size());
-	}
-
-	basic_inplace_string& replace(size_type pos, size_type count, std::experimental::basic_string_view<CharT, Traits> sv)
-	{
-		return _replace(pos, count, sv.data(), sv.size());
-	}
-
-	basic_inplace_string& replace(const_iterator first, const_iterator last, std::experimental::basic_string_view<CharT, Traits> sv)
-	{
-		return _replace(first - _data.data(), std::distance(first, last), sv.data(), sv.size());
-	}
+	basic_inplace_string& replace(size_type pos, size_type count, const CharT* str, size_type count2);
+	basic_inplace_string& replace(const_iterator first, const_iterator last, const CharT* str, size_type count2);
+	basic_inplace_string& replace(size_type pos, size_type count, const CharT* str);
+	basic_inplace_string& replace(const_iterator first, const_iterator last, const CharT* str);
+	basic_inplace_string& replace(size_type pos, size_type count, size_type count2, value_type ch);
+	basic_inplace_string& replace(const_iterator first, const_iterator last, size_type count2, value_type ch);
+	basic_inplace_string& replace(const_iterator first, const_iterator last, std::initializer_list<value_type> ilist);
+	basic_inplace_string& replace(size_type pos, size_type count, std::experimental::basic_string_view<CharT, Traits> sv);
+	basic_inplace_string& replace(const_iterator first, const_iterator last, std::experimental::basic_string_view<CharT, Traits> sv);
 
 	template <typename T,
 			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
-	basic_inplace_string& replace(size_type pos, size_type count, const T& t, size_type pos2, size_type count2 = npos)
-	{
-		std::experimental::basic_string_view<CharT, Traits> view = t;
-		return _replace(pos, count, view.data() + pos2, std::min(view.size() - pos2, count2));
-	}
+	basic_inplace_string& replace(size_type pos, size_type count, const T& t, size_type pos2, size_type count2 = npos);
 
 	size_type copy(value_type* dest, size_type count, size_type pos = 0) const
 	{
@@ -386,58 +321,6 @@ private:
 
 	template <typename InputIt>
 	basic_inplace_string(InputIt first, InputIt last, detail::is_input_iterator_tag);
-
-	basic_inplace_string& _replace(size_type pos1, size_type count1, const value_type* str, size_type count2)
-	{
-		const std::make_signed<size_type>::type count = count2 - count1;
-
-		if (count > 0 && get_remaining_size() < size_type(count))
-			detail::throw_helper<std::length_error>("basic_inplace_string::replace: exceed maximum string length");
-
-		traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, size() - pos1 - count1);
-
-		for (size_type i = 0; i != count2; ++i)
-			traits_type::assign(_data[pos1 + i], str[i]);
-
-		set_size(size() + count);
-		_data[size()] = value_type{};
-		return *this;
-	}
-
-	basic_inplace_string& _replace(size_type pos1, size_type count1, size_type count2, value_type ch)
-	{
-		const std::make_signed<size_type>::type count = count2 - count1;
-
-		if (count > 0 && get_remaining_size() < size_type(count))
-			detail::throw_helper<std::length_error>("basic_inplace_string::replace: exceed maximum string length");
-
-		traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, size() - pos1 - count1);
-		traits_type::assign(_data.data() + pos1, count2, ch);
-
-		set_size(size() + count);
-		_data[size()] = value_type{};
-		return *this;
-	}
-
-	template <typename InputIt>
-	basic_inplace_string& _replace(size_type pos1, size_type count1, InputIt first, InputIt last)
-	{
-		const size_type count2 = std::distance(first, last);
-		const std::make_signed<size_type>::type count = count2 - count1;
-
-		if (count > 0 && get_remaining_size() < size_type(count))
-			detail::throw_helper<std::length_error>("basic_inplace_string::replace: exceed maximum string length");
-
-		traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, size() - pos1 - count1);
-
-		pointer p = _data.data() + pos1;
-		for (auto it = first; it != last; ++it, ++p)
-			traits_type::assign(*p, *it);
-
-		set_size(size() + count);
-		_data[size()] = value_type{};
-		return *this;
-	}
 
 	size_type _find(const value_type* str, size_type count, size_type pos) const
 	{
@@ -934,6 +817,180 @@ basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1
 	std::experimental::basic_string_view<CharT, Traits> view = t;
 	return compare(pos1, count1, view.data() + pos2, count2 == npos ? view.size() : count2);
 }
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str)
+{
+	return replace(pos, count, str.c_str(), str.size());
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(size_type pos, size_type count, const basic_inplace_string& str)
+{
+	return replace(pos, count, str.c_str(), str.size());
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, const std::basic_string<CharT, Traits>& str)
+{
+	return replace(first - _data.data(), std::distance(first, last), str.c_str(), str.size());
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, const basic_inplace_string& str)
+{
+	return replace(first - _data.data(), std::distance(first, last), str.c_str(), str.size());
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str, size_type pos2, size_type count2)
+{
+	return replace(pos, count, str.c_str() + pos2, std::min(str.size() - pos2, count2));
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(size_type pos, size_type count, const basic_inplace_string& str, size_type pos2, size_type count2)
+{
+	return replace(pos, count, str.c_str() + pos2, std::min(str.size() - pos2, count2));
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+template <class InputIt>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, InputIt first2, InputIt last2)
+{
+	const size_type pos1 = first - _data.data();
+	const size_type count1 =  std::distance(first, last);
+
+	const size_type count2 = std::distance(first2, last2);
+	const difference_type new_bytes = count2 - count1;
+
+	if (new_bytes > 0 && get_remaining_size() < size_type(new_bytes))
+		detail::throw_helper<std::length_error>("basic_inplace_string::replace: exceed maximum string length");
+
+	traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, size() - pos1 - count1);
+
+	pointer p = _data.data() + pos1;
+	for (auto it = first2; it != last2; ++it, ++p)
+		traits_type::assign(*p, *it);
+
+	set_size(size() + new_bytes);
+	_data[size()] = value_type{};
+	return *this;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(size_type pos1, size_type count1, const CharT* str, size_type count2)
+{
+	const std::make_signed<size_type>::type count = count2 - count1;
+
+	if (count > 0 && get_remaining_size() < size_type(count))
+		detail::throw_helper<std::length_error>("basic_inplace_string::replace: exceed maximum string length");
+
+	traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, size() - pos1 - count1);
+
+	for (size_type i = 0; i != count2; ++i)
+		traits_type::assign(_data[pos1 + i], str[i]);
+
+	set_size(size() + count);
+	_data[size()] = value_type{};
+	return *this;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, const CharT* str, size_type count2)
+{
+	return replace(first - _data.data(), std::distance(first, last), str, count2);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(size_type pos, size_type count, const CharT* str)
+{
+	return replace(pos, count, str, traits_type::length(str));
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, const CharT* str)
+{
+	return replace(first - _data.data(), std::distance(first, last), str, traits_type::length(str));
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(size_type pos1, size_type count1, size_type count2, value_type ch)
+{
+	const std::make_signed<size_type>::type count = count2 - count1;
+
+	if (count > 0 && get_remaining_size() < size_type(count))
+		detail::throw_helper<std::length_error>("basic_inplace_string::replace: exceed maximum string length");
+
+	traits_type::move(_data.data() + pos1 + count2, _data.data() + pos1 + count1, size() - pos1 - count1);
+	traits_type::assign(_data.data() + pos1, count2, ch);
+
+	set_size(size() + count);
+	_data[size()] = value_type{};
+	return *this;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, size_type count2, value_type ch)
+{
+	return replace(first - _data.data(), std::distance(first, last), count2, ch);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, std::initializer_list<value_type> ilist)
+{
+	return replace(first - _data.data(), std::distance(first, last), ilist.begin(), ilist.size());
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(size_type pos, size_type count, std::experimental::basic_string_view<CharT, Traits> sv)
+{
+	return replace(pos, count, sv.data(), sv.size());
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, std::experimental::basic_string_view<CharT, Traits> sv)
+{
+	return replace(first - _data.data(), std::distance(first, last), sv.data(), sv.size());
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+template <typename T, typename X>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::replace(size_type pos, size_type count, const T& t, size_type pos2, size_type count2)
+{
+	std::experimental::basic_string_view<CharT, Traits> view = t;
+	return replace(pos, count, view.data() + pos2, std::min(view.size() - pos2, count2));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 template <std::size_t N, typename CharT, typename Traits>
 inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, const basic_inplace_string<N, CharT, Traits>& str)
