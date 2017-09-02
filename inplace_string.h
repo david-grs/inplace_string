@@ -101,8 +101,9 @@ public:
 	template <typename InputIt>
 	basic_inplace_string(InputIt first, InputIt last);
 
-	basic_inplace_string(const std::basic_string<CharT, Traits>& str);
 	basic_inplace_string(const std::initializer_list<CharT>& ilist);
+
+	explicit basic_inplace_string(const std::basic_string<CharT, Traits>& str);
 	explicit basic_inplace_string(std::experimental::basic_string_view<CharT, Traits> sv);
 
 	template <typename T,
@@ -203,10 +204,9 @@ public:
 	basic_inplace_string& operator+=(std::initializer_list<value_type> ilist) {return append(ilist); }
 	basic_inplace_string& operator+=(std::experimental::basic_string_view<CharT, Traits> view) { return append(view); }
 
-	basic_inplace_string substr(size_type pos = 0, size_type count = npos)
+	basic_inplace_string substr(size_type pos = 0, size_type count = npos) const
 	{
-		size_type sz = count == npos ? size() - pos : count;
-		return basic_inplace_string(data() + pos, sz);
+		return basic_inplace_string(data() + pos, std::min(count, size() - pos));
 	}
 
 	int compare(const basic_inplace_string& str) const;
@@ -277,7 +277,7 @@ private:
 
 	void set_size(size_type sz)
 	{
-		assert(sz <= N);
+		assert(sz <= N + 1);
 		_data[N] = static_cast<static_size_type>(N - sz);
 	}
 
@@ -468,12 +468,22 @@ template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::insert(size_type index, size_type count, value_type ch)
 {
-	traits_type::move(_data.data() + index + count, _data.data() + index, count);
+	const size_type sz = size();
+
+	if (index > sz)
+		detail::throw_helper<std::out_of_range>("basic_inplace_string::insert: out of range");
+
+	if (sz + count > max_size())
+		detail::throw_helper<std::length_error>("basic_inplace_string::insert: maximum capacity reached");
+
+	traits_type::move(_data.data() + index + count, _data.data() + index, sz - index);
 	for (size_type i = 0; i != count; ++i)
 		traits_type::assign(_data[index + i], ch);
 
-	// TODO set null char
-	set_size(size() + count);
+	const size_type new_size = sz + count;
+	traits_type::assign(_data[new_size], value_type{});
+	set_size(new_size);
+
 	return *this;
 }
 
@@ -481,19 +491,29 @@ template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::insert(size_type index, const value_type* str)
 {
-	return _insert(index, str, traits_type::length(str));
+	return insert(index, str, traits_type::length(str));
 }
 
 template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::insert(size_type index, const value_type* str, size_type count)
 {
-	traits_type::move(_data.data() + index + count, _data.data() + index, count);
+	const size_type sz = size();
+
+	if (index > sz)
+		detail::throw_helper<std::out_of_range>("basic_inplace_string::insert: out of range");
+
+	if (size() + count > max_size())
+		detail::throw_helper<std::length_error>("basic_inplace_string::insert: maximum capacity reached");
+
+	traits_type::move(_data.data() + index + count, _data.data() + index, sz - index);
 	for (size_type i = 0; i != count; ++i)
 		traits_type::assign(_data[index + i], str[i]);
 
-	// TODO set null char
-	set_size(size() + count);
+	const size_type new_size = sz + count;
+	traits_type::assign(_data[new_size], value_type{});
+	set_size(new_size);
+
 	return *this;
 }
 
@@ -508,6 +528,9 @@ template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::insert(size_type index, const basic_inplace_string& str, size_type index_str, size_type count)
 {
+	if (index_str > str.size())
+		detail::throw_helper<std::out_of_range>("basic_inplace_string::insert: out of range");
+
 	basic_inplace_string subs = str.substr(index_str, count);
 	return insert(index, subs.data(), subs.size());
 }
@@ -516,16 +539,18 @@ template <std::size_t N, typename CharT, typename Traits>
 typename basic_inplace_string<N, CharT, Traits>::iterator
 basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, value_type ch)
 {
-	insert(pos - begin(), 1, ch);
-	return pos - begin();
+	const size_type index = pos - _data.data();
+	insert(index, 1, ch);
+	return _data.data() + index;
 }
 
 template <std::size_t N, typename CharT, typename Traits>
 typename basic_inplace_string<N, CharT, Traits>::iterator
 basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, size_type count, value_type ch)
 {
-	insert(pos - begin(), count, ch);
-	return pos - begin();
+	const size_type index = pos - _data.data();
+	insert(index, count, ch);
+	return _data.data() + index;
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -543,15 +568,18 @@ template <typename InputIt>
 typename basic_inplace_string<N, CharT, Traits>::iterator
 basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, InputIt first, InputIt last, detail::is_exactly_input_iterator_tag)
 {
+	assert(pos >= _data.data() && pos <= _data.data() + size());
+
+	const size_type sz = size();
 	const size_type index = pos - _data.data();
 	size_type count = 0;
 	for (; first != last; ++first, ++count)
 	{
-		traits_type::move(&_data[index + count + 1], &_data[index + count], 1);
+		traits_type::move(&_data[index + count + 1], &_data[index + count], sz - index + count);
 		traits_type::assign(_data[index + count], *first);
 	}
 
-	const size_type new_size = size() + count;
+	const size_type new_size = sz + count;
 	traits_type::assign(_data[new_size], value_type{});
 	set_size(new_size);
 
@@ -563,14 +591,17 @@ template <typename InputIt>
 typename basic_inplace_string<N, CharT, Traits>::iterator
 basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, InputIt first, InputIt last, detail::is_input_iterator_tag)
 {
+	assert(pos >= _data.data() && pos <= _data.data() + size());
+
+	const size_type sz = size();
 	const size_type index = pos - _data.data();
 	const size_type count = std::distance(first, last);
 
-	traits_type::move(&_data[index + count], &_data[index], count);
+	traits_type::move(&_data[index + count], &_data[index], sz - index);
 	for (size_type i = 0; i < count; ++i, ++first)
 		traits_type::assign(_data[index + i], *first);
 
-	const size_type new_size = size() + count;
+	const size_type new_size = sz + count;
 	traits_type::assign(_data[new_size], value_type{});
 	set_size(new_size);
 
@@ -581,8 +612,11 @@ template <std::size_t N, typename CharT, typename Traits>
 typename basic_inplace_string<N, CharT, Traits>::iterator
 basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, std::initializer_list<CharT> ilist)
 {
-	insert(pos, ilist.begin(), ilist.size());
-	return pos;
+	assert(pos >= _data.data() && pos <= _data.data() + size());
+
+	const size_type index = pos - _data.data();
+	insert(index, ilist.begin(), ilist.size());
+	return _data.data() + index;
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -598,7 +632,11 @@ basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::insert(size_type pos, const T& t, size_type index_str, size_type count)
 {
 	std::experimental::basic_string_view<CharT, Traits> view = t;
-	return insert(pos, view.data(), count == npos ? view.size() - index_str : count);
+
+	if (index_str > view.size())
+		detail::throw_helper<std::out_of_range>("basic_inplace_string::insert: out of range");
+
+	return insert(pos, view.data(), index_str, std::min(count, view.size() - index_str));
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -642,14 +680,16 @@ template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::append(size_type count, value_type ch)
 {
-	if (get_remaining_size() < count)
+	const size_type sz = size();
+	if (sz + count > max_size())
 		detail::throw_helper<std::length_error>("basic_inplace_string::append: exceed maximum string length");
 
-	const size_type sz = size();
 	traits_type::assign(_data.data() + sz, count, ch);
-	_data[sz + count] = value_type{};
 
-	set_size(sz + count);
+	const size_type new_size = sz + count;
+	traits_type::assign(_data[new_size], value_type{});
+	set_size(new_size);
+
 	return *this;
 }
 
@@ -671,15 +711,17 @@ template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::append(const value_type* str, size_type count)
 {
-	if (get_remaining_size() < count)
+	const size_type sz = size();
+	if (sz + count > max_size())
 		detail::throw_helper<std::length_error>("basic_inplace_string::append: exceed maximum string length");
 
-	const size_type sz = size();
 	for (size_type i = 0; i != count; ++i)
 		traits_type::assign(_data[sz + i], str[i]);
-	_data[sz + count] = value_type{};
 
-	set_size(size() + count);
+	const size_type new_size = sz + count;
+	traits_type::assign(_data[new_size], value_type{});
+	set_size(new_size);
+
 	return *this;
 }
 
@@ -697,16 +739,17 @@ basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::append(InputIt first, InputIt last)
 {
 	// TODO exact fwd it stuff
+	const size_type sz = size();
 	const size_type count = std::distance(first, last);
-	if (get_remaining_size() < count)
+
+	if (sz + count > max_size())
 		detail::throw_helper<std::length_error>("basic_inplace_string::append: exceed maximum string length");
 
-	const size_type sz = size();
 	const pointer p = _data.data() + sz;
 
 	for (auto it = first; it != last; ++it, ++p)
 		traits_type::assign(*p, *it);
-	*p = value_type{};
+	traits_type::assign(*p, value_type{});
 
 	set_size(sz + count);
 	return *this;
