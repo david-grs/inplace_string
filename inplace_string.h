@@ -285,35 +285,12 @@ public:
 		*this = s;
 	}
 
-	size_type find(const std::basic_string<CharT, Traits>& str, size_type pos = 0) const
-	{
-		return _find(str.data(), str.size(), pos);
-	}
-
-	size_type find(const basic_inplace_string& other, size_type pos = 0) const
-	{
-		return _find(other.data(), other.size(), pos);
-	}
-
-	size_type find(const value_type* str, size_type pos, size_type count) const
-	{
-		return _find(str, count, pos);
-	}
-
-	size_type find(const value_type* str, size_type pos = 0) const
-	{
-		return _find(str, traits_type::length(str), pos);
-	}
-
-	size_type find(value_type ch, size_type pos = 0) const
-	{
-		return _find(ch, pos);
-	}
-
-	size_type find(std::experimental::basic_string_view<CharT, Traits> sv, size_type pos = 0) const
-	{
-		return _find(sv.data(), sv.size(), pos);
-	}
+	size_type find(const std::basic_string<CharT, Traits>& str, size_type pos = 0) const;
+	size_type find(const basic_inplace_string& other, size_type pos = 0) const;
+	size_type find(const value_type* str, size_type pos, size_type count) const;
+	size_type find(const value_type* str, size_type pos = 0) const;
+	size_type find(value_type ch, size_type pos = 0) const;
+	size_type find(std::experimental::basic_string_view<CharT, Traits> sv, size_type pos = 0) const;
 
 private:
 	template <typename InputIt>
@@ -321,21 +298,6 @@ private:
 
 	template <typename InputIt>
 	basic_inplace_string(InputIt first, InputIt last, detail::is_input_iterator_tag);
-
-	size_type _find(const value_type* str, size_type count, size_type pos) const
-	{
-		if (pos >= size() || count == 0)
-			return npos;
-
-		const value_type* res = detail::search_substring<CharT, Traits>(cbegin() + pos, cend(), str, str + count);
-		return res ? res - cbegin() : npos;
-	}
-
-	size_type _find(value_type ch, size_type pos) const
-	{
-		const value_type* res = traits_type::find(data() + pos, size() - pos, ch);
-		return res ? res - cbegin() : npos;
-	}
 
 	void set_size(size_type sz)
 	{
@@ -979,8 +941,52 @@ basic_inplace_string<N, CharT, Traits>::replace(size_type pos, size_type count, 
 	return replace(pos, count, view.data() + pos2, std::min(view.size() - pos2, count2));
 }
 
+template <std::size_t N, typename CharT, typename Traits>
+typename basic_inplace_string<N, CharT, Traits>::size_type
+basic_inplace_string<N, CharT, Traits>::find(const std::basic_string<CharT, Traits>& str, size_type pos) const
+{
+	return find(str.data(), pos, str.size());
+}
 
+template <std::size_t N, typename CharT, typename Traits>
+typename basic_inplace_string<N, CharT, Traits>::size_type
+basic_inplace_string<N, CharT, Traits>::find(const basic_inplace_string& other, size_type pos) const
+{
+	return find(other.data(), pos, other.size());
+}
 
+template <std::size_t N, typename CharT, typename Traits>
+typename basic_inplace_string<N, CharT, Traits>::size_type
+basic_inplace_string<N, CharT, Traits>::find(const value_type* str, size_type pos, size_type count) const
+{
+	if (pos >= size() || count == 0)
+		return npos;
+
+	const value_type* res = detail::search_substring<CharT, Traits>(cbegin() + pos, cend(), str, str + count);
+	return res ? res - cbegin() : npos;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+typename basic_inplace_string<N, CharT, Traits>::size_type
+basic_inplace_string<N, CharT, Traits>::find(const value_type* str, size_type pos) const
+{
+	return find(str, pos, traits_type::length(str));
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+typename basic_inplace_string<N, CharT, Traits>::size_type
+basic_inplace_string<N, CharT, Traits>::find(value_type ch, size_type pos) const
+{
+	const value_type* res = traits_type::find(data() + pos, size() - pos, ch);
+	return res ? res - cbegin() : npos;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+typename basic_inplace_string<N, CharT, Traits>::size_type
+basic_inplace_string<N, CharT, Traits>::find(std::experimental::basic_string_view<CharT, Traits> sv, size_type pos) const
+{
+	return find(sv.data(), pos, sv.size());
+}
 
 
 
