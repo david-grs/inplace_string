@@ -247,43 +247,12 @@ public:
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
 	basic_inplace_string& replace(size_type pos, size_type count, const T& t, size_type pos2, size_type count2 = npos);
 
-	size_type copy(value_type* dest, size_type count, size_type pos = 0) const
-	{
-		if (pos > size())
-			detail::throw_helper<std::out_of_range>("basic_inplace_string::copy: out of range");
+	size_type copy(value_type* dest, size_type count, size_type pos = 0) const;
 
-		size_type i = pos;
-		for (; i != pos + std::min(size() - pos, count); ++i, ++dest)
-			traits_type::assign(*dest, _data[i]);
+	void resize(size_type sz);
+	void resize(size_type new_size, value_type ch);
 
-		return i - pos;
-	}
-
-	void resize(size_type sz)
-	{
-		resize(sz, value_type{});
-	}
-
-	void resize(size_type new_size, value_type ch)
-	{
-		if (new_size > max_size())
-			detail::throw_helper<std::length_error>("basic_inplace_string::resize: exceed maximum string length");
-
-		const size_type sz = size();
-		const std::make_signed<size_type>::type count = new_size - sz;
-		if (count > 0)
-			traits_type::assign(std::begin(_data) + size(), count, ch);
-
-		set_size(new_size);
-		_data[new_size] = value_type{};
-	}
-
-	void swap(basic_inplace_string& other) noexcept
-	{
-		basic_inplace_string s(other);
-		other = *this;
-		*this = s;
-	}
+	void swap(basic_inplace_string& other) noexcept;
 
 	size_type find(const std::basic_string<CharT, Traits>& str, size_type pos = 0) const;
 	size_type find(const basic_inplace_string& other, size_type pos = 0) const;
@@ -988,15 +957,48 @@ basic_inplace_string<N, CharT, Traits>::find(std::experimental::basic_string_vie
 	return find(sv.data(), pos, sv.size());
 }
 
+template <std::size_t N, typename CharT, typename Traits>
+typename basic_inplace_string<N, CharT, Traits>::size_type
+basic_inplace_string<N, CharT, Traits>::copy(value_type* dest, size_type count, size_type pos) const
+{
+	if (pos > size())
+		detail::throw_helper<std::out_of_range>("basic_inplace_string::copy: out of range");
 
+	size_type i = pos;
+	for (; i != pos + std::min(size() - pos, count); ++i, ++dest)
+		traits_type::assign(*dest, _data[i]);
 
+	return i - pos;
+}
 
+template <std::size_t N, typename CharT, typename Traits>
+void basic_inplace_string<N, CharT, Traits>::resize(size_type sz)
+{
+	resize(sz, value_type{});
+}
 
+template <std::size_t N, typename CharT, typename Traits>
+void basic_inplace_string<N, CharT, Traits>::resize(size_type new_size, value_type ch)
+{
+	if (new_size > max_size())
+		detail::throw_helper<std::length_error>("basic_inplace_string::resize: exceed maximum string length");
 
+	const size_type sz = size();
+	const std::make_signed<size_type>::type count = new_size - sz;
+	if (count > 0)
+		traits_type::assign(std::begin(_data) + size(), count, ch);
 
+	set_size(new_size);
+	_data[new_size] = value_type{};
+}
 
-
-
+template <std::size_t N, typename CharT, typename Traits>
+void basic_inplace_string<N, CharT, Traits>::swap(basic_inplace_string& other) noexcept
+{
+	basic_inplace_string s(other);
+	other = *this;
+	*this = s;
+}
 
 template <std::size_t N, typename CharT, typename Traits>
 inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, const basic_inplace_string<N, CharT, Traits>& str)
