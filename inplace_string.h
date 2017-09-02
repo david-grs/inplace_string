@@ -132,8 +132,8 @@ public:
 	reference        at(size_type i);
 	const_reference  at(size_type i) const;
 
-	reference   operator[](size_type i)       { assert(i <= size()); return _data[i]; }
-	value_type  operator[](size_type i) const { assert(i <= size()); return _data[i]; }
+	reference   operator[](size_type i)       { assert(i < size()); return _data[i]; }
+	value_type  operator[](size_type i) const { assert(i < size()); return _data[i]; }
 
 	value_type front() const { assert(!empty()); return _data[0]; }
 	reference  front()       { assert(!empty()); return _data[0]; }
