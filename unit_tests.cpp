@@ -143,8 +143,6 @@ TEST(inplace_string, sqbck)
 
 	for (std::size_t i = 0;i < s.size(); ++i)
 		EXPECT_EQ(str[i], s[i]);
-
-	EXPECT_NO_THROW((void)s[6]);
 }
 
 TEST(inplace_string, front)
