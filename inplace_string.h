@@ -129,8 +129,8 @@ public:
 			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value>::type>
 	basic_inplace_string(const T& t, size_type pos, size_type n);
 
-	reference   at(size_type i)       { return _at(i); }
-	value_type  at(size_type i) const { return _at(i); }
+	reference        at(size_type i);
+	const_reference  at(size_type i) const;
 
 	reference   operator[](size_type i)       { assert(i <= size()); return _data[i]; }
 	value_type  operator[](size_type i) const { assert(i <= size()); return _data[i]; }
@@ -561,22 +561,6 @@ private:
 	template <typename InputIt>
 	basic_inplace_string(InputIt first, InputIt last, is_input_iterator_tag);
 
-	reference _at(size_type i)
-	{
-		if (i >= size())
-			throw_helper<std::out_of_range>("basic_inplace_string::at: out of range");
-
-		return _data[i];
-	}
-
-	value_type _at(size_type i) const
-	{
-		if (i >= size())
-			throw_helper<std::out_of_range>("basic_inplace_string::at: out of range");
-
-		return _data[i];
-	}
-
 	void zero()
 	{
 		_data[0] = value_type{};
@@ -907,6 +891,26 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string(InputIt first, Inpu
 	traits_type::assign(*p, value_type{});
 
 	set_size(count);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+typename basic_inplace_string<N, CharT, Traits>::reference
+basic_inplace_string<N, CharT, Traits>::at(size_type i)
+{
+	if (i >= size())
+		throw_helper<std::out_of_range>("basic_inplace_string::at: out of range");
+
+	return _data[i];
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+typename basic_inplace_string<N, CharT, Traits>::const_reference
+basic_inplace_string<N, CharT, Traits>::at(size_type i) const
+{
+	if (i >= size())
+		throw_helper<std::out_of_range>("basic_inplace_string::at: out of range");
+
+	return _data[i];
 }
 
 template <std::size_t N, typename CharT, typename Traits>
