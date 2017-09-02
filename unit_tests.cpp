@@ -574,6 +574,54 @@ TEST(inplace_string, replace_basic)
 	EXPECT_EQ("foobarbuzbaz", std::string(s.c_str()));
 }
 
+TEST(inplace_string, erase)
+{
+	{
+		my_string s("foobar");
+		s.erase(0, 3);
+		EXPECT_EQ(3, s.size());
+		EXPECT_EQ("bar", std::string(s.c_str()));
+	}
+	{
+		my_string s("foobar");
+		s.erase(2);
+		EXPECT_EQ(2, s.size());
+		EXPECT_EQ("fo", std::string(s.c_str()));
+	}
+	{
+		my_string s("foobar");
+		s.erase(3, 1);
+		EXPECT_EQ(5, s.size());
+		EXPECT_EQ("fooar", std::string(s.c_str()));
+	}
+	{
+		my_string s("foobar");
+		s.erase(5);
+		EXPECT_EQ(5, s.size());
+		EXPECT_EQ("fooba", std::string(s.c_str()));
+	}
+	{
+		my_string s("foobar");
+		auto it = s.erase(s.cbegin());
+		EXPECT_EQ('o', *it);
+		EXPECT_EQ(5, s.size());
+		EXPECT_EQ("oobar", std::string(s.c_str()));
+	}
+	{
+		my_string s("foobar");
+		auto it = s.erase(s.cend() - 1);
+		EXPECT_EQ('\0', *it);
+		EXPECT_EQ(5, s.size());
+		EXPECT_EQ("fooba", std::string(s.c_str()));
+	}
+	{
+		my_string s("foobar");
+		s.erase(s.cbegin() + 3, s.cend());
+		EXPECT_EQ(3, s.size());
+		EXPECT_EQ("foo", std::string(s.c_str()));
+	}
+}
+
 TEST(inplace_string, replace)
 {
 	my_string s("fooFOOBAR");

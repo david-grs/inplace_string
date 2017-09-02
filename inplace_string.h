@@ -12,7 +12,8 @@
 
 #include <experimental/string_view>
 
-namespace detail {
+namespace detail
+{
 
 namespace
 {
@@ -195,20 +196,9 @@ public:
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
 	basic_inplace_string& insert(size_type pos, const T& t, size_type index_str, size_type count = npos);
 
-	basic_inplace_string& erase(size_type pos = 0, size_type count = npos)
-	{
-		return _erase(pos, std::min(size() - pos, count));
-	}
-
-	iterator erase(const_iterator pos)
-	{
-		return _erase(pos - _data.data(), size());
-	}
-
-	iterator erase(const_iterator first, const_iterator last)
-	{
-		return _erase(first - _data.data(), std::distance(first, last));
-	}
+	basic_inplace_string& erase(size_type pos = 0, size_type count = npos);
+	iterator erase(const_iterator pos);
+	iterator erase(const_iterator first, const_iterator last);
 
 	void push_back(value_type ch)
 	{
@@ -516,16 +506,6 @@ private:
 
 	template <typename InputIt>
 	basic_inplace_string(InputIt first, InputIt last, is_input_iterator_tag);
-
-	basic_inplace_string& _erase(size_type pos, size_type count)
-	{
-		if (count > size())
-			throw_helper<std::out_of_range>("basic_inplace_string::erase: out of range");
-
-		traits_type::move(_data.data() + pos, _data.data() + pos + count, count);
-		set_size(size() - count);
-		return *this;
-	}
 
 	basic_inplace_string& _append(const value_type* str, size_type count)
 	{
@@ -932,6 +912,43 @@ basic_inplace_string<N, CharT, Traits>::insert(size_type pos, const T& t, size_t
 {
 	std::experimental::basic_string_view<CharT, Traits> view = t;
 	return insert(pos, view.data(), count == npos ? view.size() - index_str : count);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::erase(size_type index, size_type count)
+{
+	size_type sz = size();
+	count = std::min(sz - index, count);
+
+	if (index > sz)
+		throw_helper<std::out_of_range>("basic_inplace_string::erase: out of range");
+
+	traits_type::move(_data.data() + index, _data.data() + index + count, sz - index - count);
+
+	sz -= count;
+	traits_type::assign(_data[sz], value_type{});
+
+	set_size(sz);
+	return *this;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+typename basic_inplace_string<N, CharT, Traits>::iterator
+basic_inplace_string<N, CharT, Traits>::erase(const_iterator position)
+{
+	size_type index = static_cast<size_type>(position - _data.data());
+	erase(index, 1);
+	return iterator{_data.data() + index};
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+typename basic_inplace_string<N, CharT, Traits>::iterator
+basic_inplace_string<N, CharT, Traits>::erase(const_iterator first, const_iterator last)
+{
+	size_type index = static_cast<size_type>(first - _data.data());
+	erase(index, std::distance(first, last));
+	return iterator{_data.data() + index};
 }
 
 template <std::size_t N, typename CharT, typename Traits>
