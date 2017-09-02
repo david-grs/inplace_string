@@ -60,8 +60,9 @@ template <
 	std::size_t N,
 	typename CharT = char,
 	typename Traits = std::char_traits<CharT>>
-struct basic_inplace_string
+class basic_inplace_string
 {
+public:
 	using __self = basic_inplace_string;
 
 	using traits_type = Traits;
