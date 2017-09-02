@@ -622,6 +622,36 @@ TEST(inplace_string, erase)
 	}
 }
 
+
+TEST(inplace_string, insert)
+{
+
+	{
+		std::string str("FOOBAR");
+		my_string s = "foobar";
+		s.insert(s.cbegin() + 3, str.cbegin(), str.cend());
+		ASSERT_EQ(12, s.size());
+		EXPECT_EQ("fooFOOBARbar", std::string(s.c_str()));
+	}
+
+	{
+		std::string tmp = std::tmpnam(nullptr);
+		std::ofstream ofs(tmp);
+		ofs << "foobar";
+		ofs.close();
+
+		std::ifstream file(tmp);
+		my_string s;
+		auto it = s.insert(s.cbegin(),
+			std::istreambuf_iterator<char>(file),
+			(std::istreambuf_iterator<char>())
+		);
+		ASSERT_EQ(6, s.size());
+		ASSERT_EQ(s.cbegin(), it);
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+}
+
 TEST(inplace_string, replace)
 {
 	my_string s("fooFOOBAR");

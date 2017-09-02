@@ -269,6 +269,12 @@ private:
 	template <typename InputIt>
 	basic_inplace_string(InputIt first, InputIt last, detail::is_input_iterator_tag);
 
+	template <typename InputIt>
+	iterator insert(const_iterator pos, InputIt first, InputIt last, detail::is_exactly_input_iterator_tag);
+
+	template <typename InputIt>
+	iterator insert(const_iterator pos, InputIt first, InputIt last, detail::is_input_iterator_tag);
+
 	void set_size(size_type sz)
 	{
 		assert(sz <= N);
@@ -387,10 +393,10 @@ template <std::size_t N, typename CharT, typename Traits>
 template <typename InputIt>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string(InputIt first, InputIt last) :
 	basic_inplace_string(first,
-						   last,
-						   typename std::conditional<detail::is_exactly_input_iterator<InputIt>::value,
-										detail::is_exactly_input_iterator_tag,
-										detail::is_input_iterator_tag>::type{})
+						 last,
+						 typename std::conditional<detail::is_exactly_input_iterator<InputIt>::value,
+							 detail::is_exactly_input_iterator_tag,
+							detail::is_input_iterator_tag>::type{})
 {
 }
 
@@ -527,8 +533,48 @@ template <typename InputIt>
 typename basic_inplace_string<N, CharT, Traits>::iterator
 basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, InputIt first, InputIt last)
 {
-	insert(pos, first, last);
-	return pos;
+	return insert(pos, first, last, typename std::conditional<detail::is_exactly_input_iterator<InputIt>::value,
+											detail::is_exactly_input_iterator_tag,
+											detail::is_input_iterator_tag>::type{});
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+template <typename InputIt>
+typename basic_inplace_string<N, CharT, Traits>::iterator
+basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, InputIt first, InputIt last, detail::is_exactly_input_iterator_tag)
+{
+	const size_type index = pos - _data.data();
+	size_type count = 0;
+	for (; first != last; ++first, ++count)
+	{
+		traits_type::move(&_data[index + count + 1], &_data[index + count], 1);
+		traits_type::assign(_data[index + count], *first);
+	}
+
+	const size_type new_size = size() + count;
+	traits_type::assign(_data[new_size], value_type{});
+	set_size(new_size);
+
+	return _data.data() + index;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+template <typename InputIt>
+typename basic_inplace_string<N, CharT, Traits>::iterator
+basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, InputIt first, InputIt last, detail::is_input_iterator_tag)
+{
+	const size_type index = pos - _data.data();
+	const size_type count = std::distance(first, last);
+
+	traits_type::move(&_data[index + count], &_data[index], count);
+	for (size_type i = 0; i < count; ++i, ++first)
+		traits_type::assign(_data[index + i], *first);
+
+	const size_type new_size = size() + count;
+	traits_type::assign(_data[new_size], value_type{});
+	set_size(new_size);
+
+	return _data.data() + index;
 }
 
 template <std::size_t N, typename CharT, typename Traits>
