@@ -166,8 +166,8 @@ public:
 
 	bool empty() const { return get_remaining_size() == max_size(); }
 
+	size_type size() const   { return N - _data[N]; }
 	size_type length() const { return size(); }
-	size_type size() const   { return get_size(); }
 
 	static constexpr size_type max_size() { return N; }
 	static constexpr size_type capacity() { return N; }
@@ -176,70 +176,24 @@ public:
 
 	void clear() { *this = __self{}; }
 
-	basic_inplace_string& insert(size_type index, size_type count, value_type ch)
-	{
-		return _insert(index, count, ch);
-	}
-
-	basic_inplace_string& insert(size_type index, const value_type* str)
-	{
-		return _insert(index, str, traits_type::length(str));
-	}
-
-	basic_inplace_string& insert(size_type index, const value_type* str, size_type count)
-	{
-		return _insert(index, str, count);
-	}
-
-	basic_inplace_string& insert(size_type index, const basic_inplace_string& str)
-	{
-		return _insert(index, str.data(), str.size());
-	}
-
-	basic_inplace_string& insert(size_type index, const basic_inplace_string& str, size_type index_str, size_type count = npos)
-	{
-		basic_inplace_string subs = str.substr(index_str, count);
-		return _insert(index, subs.data(), subs.size());
-	}
-
-	iterator insert(const_iterator pos, value_type ch)
-	{
-		_insert(pos - begin(), 1, ch);
-		return pos - begin();
-	}
-
-	iterator insert(const_iterator pos, size_type count, value_type ch)
-	{
-		_insert(pos - begin(), count, ch);
-		return pos - begin();
-	}
+	basic_inplace_string& insert(size_type index, size_type count, value_type ch);
+	basic_inplace_string& insert(size_type index, const value_type* str);
+	basic_inplace_string& insert(size_type index, const value_type* str, size_type count);
+	basic_inplace_string& insert(size_type index, const basic_inplace_string& str);
+	basic_inplace_string& insert(size_type index, const basic_inplace_string& str, size_type index_str, size_type count = npos);
+	iterator insert(const_iterator pos, value_type ch);
+	iterator insert(const_iterator pos, size_type count, value_type ch);
 
 	template <typename InputIt>
-	iterator insert(const_iterator pos, InputIt first, InputIt last)
-	{
-		insert(pos, first, last);
-		return pos;
-	}
+	iterator insert(const_iterator pos, InputIt first, InputIt last);
 
-	iterator insert(const_iterator pos, std::initializer_list<CharT> ilist)
-	{
-		insert(pos, ilist.begin(), ilist.size());
-		return pos;
-	}
-
-	basic_inplace_string& insert(size_type pos, std::experimental::basic_string_view<CharT, Traits> view)
-	{
-		return insert(pos, view.data(), view.size());
-	}
+	iterator insert(const_iterator pos, std::initializer_list<CharT> ilist);
+	basic_inplace_string& insert(size_type pos, std::experimental::basic_string_view<CharT, Traits> view);
 
 	template <typename T,
 			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
-	basic_inplace_string& insert(size_type pos, const T& t, size_type index_str, size_type count = npos)
-	{
-		std::experimental::basic_string_view<CharT, Traits> view = t;
-		return insert(pos, view.data(), count == npos ? view.size() - index_str : count);
-	}
+	basic_inplace_string& insert(size_type pos, const T& t, size_type index_str, size_type count = npos);
 
 	basic_inplace_string& erase(size_type pos = 0, size_type count = npos)
 	{
@@ -563,28 +517,6 @@ private:
 	template <typename InputIt>
 	basic_inplace_string(InputIt first, InputIt last, is_input_iterator_tag);
 
-	basic_inplace_string& _insert(size_type index, size_type count, value_type ch)
-	{
-		traits_type::move(_data.data() + index + count, _data.data() + index, count);
-		for (size_type i = 0; i != count; ++i)
-			traits_type::assign(_data[index + i], ch);
-
-		// TODO set null char
-		set_size(size() + count);
-		return *this;
-	}
-
-	basic_inplace_string& _insert(size_type index, const value_type* str, size_type count)
-	{
-		traits_type::move(_data.data() + index + count, _data.data() + index, count);
-		for (size_type i = 0; i != count; ++i)
-			traits_type::assign(_data[index + i], str[i]);
-
-		// TODO set null char
-		set_size(size() + count);
-		return *this;
-	}
-
 	basic_inplace_string& _erase(size_type pos, size_type count)
 	{
 		if (count > size())
@@ -720,11 +652,6 @@ private:
 	{
 		assert(sz <= N);
 		_data[N] = static_cast<static_size_type>(N - sz);
-	}
-
-	size_type get_size() const
-	{
-		return N - _data[N];
 	}
 
 	size_type get_remaining_size() const
@@ -908,6 +835,103 @@ basic_inplace_string<N, CharT, Traits>::at(size_type i) const
 		throw_helper<std::out_of_range>("basic_inplace_string::at: out of range");
 
 	return _data[i];
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::insert(size_type index, size_type count, value_type ch)
+{
+	traits_type::move(_data.data() + index + count, _data.data() + index, count);
+	for (size_type i = 0; i != count; ++i)
+		traits_type::assign(_data[index + i], ch);
+
+	// TODO set null char
+	set_size(size() + count);
+	return *this;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::insert(size_type index, const value_type* str)
+{
+	return _insert(index, str, traits_type::length(str));
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::insert(size_type index, const value_type* str, size_type count)
+{
+	traits_type::move(_data.data() + index + count, _data.data() + index, count);
+	for (size_type i = 0; i != count; ++i)
+		traits_type::assign(_data[index + i], str[i]);
+
+	// TODO set null char
+	set_size(size() + count);
+	return *this;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::insert(size_type index, const basic_inplace_string& str)
+{
+	return insert(index, str.data(), str.size());
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::insert(size_type index, const basic_inplace_string& str, size_type index_str, size_type count)
+{
+	basic_inplace_string subs = str.substr(index_str, count);
+	return insert(index, subs.data(), subs.size());
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+typename basic_inplace_string<N, CharT, Traits>::iterator
+basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, value_type ch)
+{
+	insert(pos - begin(), 1, ch);
+	return pos - begin();
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+typename basic_inplace_string<N, CharT, Traits>::iterator
+basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, size_type count, value_type ch)
+{
+	insert(pos - begin(), count, ch);
+	return pos - begin();
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+template <typename InputIt>
+typename basic_inplace_string<N, CharT, Traits>::iterator
+basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, InputIt first, InputIt last)
+{
+	insert(pos, first, last);
+	return pos;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+typename basic_inplace_string<N, CharT, Traits>::iterator
+basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, std::initializer_list<CharT> ilist)
+{
+	insert(pos, ilist.begin(), ilist.size());
+	return pos;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::insert(size_type pos, std::experimental::basic_string_view<CharT, Traits> view)
+{
+	return insert(pos, view.data(), view.size());
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+template <typename T, typename X>
+basic_inplace_string<N, CharT, Traits>&
+basic_inplace_string<N, CharT, Traits>::insert(size_type pos, const T& t, size_type index_str, size_type count)
+{
+	std::experimental::basic_string_view<CharT, Traits> view = t;
+	return insert(pos, view.data(), count == npos ? view.size() - index_str : count);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
