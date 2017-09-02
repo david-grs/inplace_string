@@ -85,6 +85,8 @@ template <
 	typename Traits = std::char_traits<CharT>>
 struct basic_inplace_string
 {
+	using __self = basic_inplace_string;
+
 	using traits_type = Traits;
 	using value_type = CharT;
 	using reference = value_type&;
@@ -170,9 +172,9 @@ public:
 	static constexpr size_type max_size() { return N; }
 	static constexpr size_type capacity() { return N; }
 
-	void shrink_to_fit()  {}
+	void shrink_to_fit() {}
 
-	void clear() { zero(); }
+	void clear() { *this = __self{}; }
 
 	basic_inplace_string& insert(size_type index, size_type count, value_type ch)
 	{
@@ -561,12 +563,6 @@ private:
 	template <typename InputIt>
 	basic_inplace_string(InputIt first, InputIt last, is_input_iterator_tag);
 
-	void zero()
-	{
-		_data[0] = value_type{};
-		set_size(0);
-	}
-
 	basic_inplace_string& _insert(size_type index, size_type count, value_type ch)
 	{
 		traits_type::move(_data.data() + index + count, _data.data() + index, count);
@@ -742,7 +738,8 @@ private:
 template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string() noexcept
 {
-	zero();
+	_data[0] = value_type{};
+	set_size(0);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
