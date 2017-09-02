@@ -129,19 +129,19 @@ public:
 			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value>::type>
 	basic_inplace_string(const T& t, size_type pos, size_type n);
 
-	reference        at(size_type i);
-	const_reference  at(size_type i) const;
+	reference       at(size_type i);
+	const_reference at(size_type i) const;
 
-	reference   operator[](size_type i)       { assert(i < size()); return _data[i]; }
-	value_type  operator[](size_type i) const { assert(i < size()); return _data[i]; }
+	reference       operator[](size_type i)       { assert(i < size()); return _data[i]; }
+	const_reference operator[](size_type i) const { assert(i < size()); return _data[i]; }
 
-	value_type front() const { assert(!empty()); return _data[0]; }
-	reference  front()       { assert(!empty()); return _data[0]; }
-	value_type back() const  { assert(!empty()); return _data[size() - 1]; }
-	reference  back()        { assert(!empty()); return _data[size() - 1]; }
+	reference       front()       { assert(!empty()); return _data[0]; }
+	const_reference front() const { assert(!empty()); return _data[0]; }
+	reference       back()        { assert(!empty()); return _data[size() - 1]; }
+	const_reference back() const  { assert(!empty()); return _data[size() - 1]; }
 
+	value_type*       data()       { return _data.data(); }
 	const value_type* data() const { return _data.data(); }
-	value_type* data() { return _data.data(); }
 
 	const value_type* c_str() const { return _data.data(); }
 
