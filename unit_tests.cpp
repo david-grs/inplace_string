@@ -617,25 +617,6 @@ TEST(inplace_string, append_operator)
 	}
 }
 
-TEST(inplace_string, resize)
-{
-	my_string s("foo");
-	s.resize(3, 'z');
-	EXPECT_EQ("foo", s);
-
-	s.resize(6, 'z');
-	EXPECT_EQ("foozzz", s);
-
-	s.resize(2);
-	EXPECT_EQ("fo", s);
-
-	s.resize(6, 'z');
-	EXPECT_EQ("fozzzz", s);
-
-	s.resize(6, 'o');
-	EXPECT_EQ("fozzzz", s);
-}
-
 TEST(inplace_string, erase)
 {
 	{
@@ -1013,7 +994,6 @@ TEST(inplace_string, substr)
 	}
 }
 
-
 TEST(inplace_string, copy)
 {
 	my_string s("foobar");
@@ -1026,6 +1006,37 @@ TEST(inplace_string, copy)
 	bytes = s.copy(str, 10, 3);
 	EXPECT_EQ(3, bytes);
 	EXPECT_EQ("barbar", std::string(str));
+
+	EXPECT_THROW(s.copy(str, 10, 7), std::out_of_range);
+}
+
+TEST(inplace_string, resize)
+{
+	my_string s("foo");
+	s.resize(3, 'z');
+	EXPECT_EQ("foo", s);
+
+	s.resize(6, 'z');
+	EXPECT_EQ("foozzz", s);
+
+	s.resize(2);
+	EXPECT_EQ("fo", s);
+
+	s.resize(6, 'z');
+	EXPECT_EQ("fozzzz", s);
+
+	s.resize(6, 'o');
+	EXPECT_EQ("fozzzz", s);
+
+	s.resize(0);
+	EXPECT_EQ(0, s.size());
+	EXPECT_EQ("", std::string(s.c_str()));
+
+	s.resize(s.max_size());
+	EXPECT_EQ(s.max_size(), s.size());
+	EXPECT_EQ("", std::string(s.c_str()));
+
+	EXPECT_THROW(s.resize(s.max_size() + 1), std::length_error);
 }
 
 TEST(inplace_string, swap)
