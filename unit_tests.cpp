@@ -356,19 +356,25 @@ TEST(inplace_string, clear)
 
 TEST(inplace_string, substr)
 {
-	my_string s("123456");
-	my_string ss = s.substr();
+	{
+		my_string s("123456");
+		my_string ss = s.substr(4);
+		EXPECT_EQ(2, int(ss.size()));
+		EXPECT_EQ('5', ss.at(0));
+		EXPECT_EQ('6', ss.at(1));
+	}
 
-	EXPECT_EQ(s, ss);
+	{
+		my_string s("123456");
+		my_string ss = s.substr(4, 1);
+		EXPECT_EQ(1, int(ss.size()));
+		EXPECT_EQ('5', ss.at(0));
+	}
 
-	ss = s.substr(4);
-	EXPECT_EQ(2, int(ss.size()));
-	EXPECT_EQ('5', ss.at(0));
-	EXPECT_EQ('6', ss.at(1));
-
-	ss = s.substr(4, 1);
-	EXPECT_EQ(1, int(ss.size()));
-	EXPECT_EQ('5', ss.at(0));
+	{
+		my_string s("123456");
+		EXPECT_THROW(s.substr(7, 1), std::out_of_range);
+	}
 }
 
 TEST(inplace_string, compare)

@@ -204,11 +204,6 @@ public:
 	basic_inplace_string& operator+=(std::initializer_list<value_type> ilist) {return append(ilist); }
 	basic_inplace_string& operator+=(std::experimental::basic_string_view<CharT, Traits> view) { return append(view); }
 
-	basic_inplace_string substr(size_type pos = 0, size_type count = npos) const
-	{
-		return basic_inplace_string(data() + pos, std::min(count, size() - pos));
-	}
-
 	int compare(const basic_inplace_string& str) const noexcept;
 	int compare(size_type pos1, size_type count1, const basic_inplace_string& str) const;
 	int compare(size_type pos1, size_type count1, const basic_inplace_string& str, size_type pos2, size_type count2 = npos) const;
@@ -244,6 +239,8 @@ public:
 			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
 	basic_inplace_string& replace(size_type pos, size_type count, const T& t, size_type pos2, size_type count2 = npos);
+
+	basic_inplace_string substr(size_type pos = 0, size_type count = npos) const;
 
 	size_type copy(value_type* dest, size_type count, size_type pos = 0) const;
 
@@ -1049,6 +1046,16 @@ basic_inplace_string<N, CharT, Traits>::replace(size_type pos, size_type count, 
 		detail::throw_helper<std::out_of_range>("basic_inplace_string::replace: out of range");
 
 	return replace(pos, count, view.data() + pos2, std::min(view.size() - pos2, count2));
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+basic_inplace_string<N, CharT, Traits>
+basic_inplace_string<N, CharT, Traits>::substr(size_type pos, size_type count) const
+{
+	if (pos > size())
+		detail::throw_helper<std::out_of_range>("basic_inplace_string::substr: out of range");
+
+	return {data() + pos, std::min(count, size() - pos)};
 }
 
 template <std::size_t N, typename CharT, typename Traits>
