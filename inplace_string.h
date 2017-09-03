@@ -72,7 +72,7 @@ public:
 	using pointer = value_type*;
 	using const_pointer = const value_type*;
 	using size_type = std::size_t;
-	using difference_type = std::size_t;
+	using difference_type = std::ptrdiff_t;
 	using iterator = pointer;
 	using const_iterator = const_pointer;
 	using reverse_iterator = std::reverse_iterator<iterator>;
