@@ -179,7 +179,7 @@ public:
 	iterator erase(const_iterator first, const_iterator last);
 
 	void push_back(value_type ch) { append(1, ch); }
-	void pop_back()               { erase(cend() - 1); }
+	void pop_back()               { erase(size() - 1, 1); }
 
 	basic_inplace_string& append(size_type count, value_type ch);
 	basic_inplace_string& append(const std::basic_string<CharT, Traits>& str);
@@ -791,7 +791,7 @@ int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type co
 }
 
 template <std::size_t N, typename CharT, typename Traits>
-int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1, const basic_inplace_string& str, size_type pos2, size_type count2) const // TODO adding npos
+int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1, const basic_inplace_string& str, size_type pos2, size_type count2) const
 {
 	return compare(pos1, count1, str.data() + pos2, count2 - pos2);
 }
