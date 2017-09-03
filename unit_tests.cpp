@@ -429,59 +429,111 @@ TEST(inplace_string, compare_ne)
 	my_string s1("123456");
 	my_string s2("123356");
 	EXPECT_TRUE(s1 != s2);
+	EXPECT_TRUE(std::string(s1.c_str()) != s2);
+	EXPECT_TRUE(s1 != std::string(s2.c_str()));
+	EXPECT_TRUE(s1 != s2.c_str());
+	EXPECT_TRUE(s1.c_str() != s2);
 	EXPECT_NE(s1.compare(s2), 0);
 }
 
 TEST(inplace_string, compare_lt)
 {
-	my_string s1("123456");
-	my_string s2("123456789");
-	EXPECT_TRUE(s1 < s2);
-	EXPECT_LT(s1.compare(s2), 0);
+	{
+		my_string s1("123456");
+		my_string s2("123456789");
+		EXPECT_TRUE(s1 < s2);
+		EXPECT_TRUE(std::string(s1.c_str()) < s2);
+		EXPECT_TRUE(s1 < std::string(s2.c_str()));
+		EXPECT_TRUE(s1 < s2.c_str());
+		EXPECT_TRUE(s1.c_str() < s2);
+		EXPECT_LT(s1.compare(s2), 0);
+	}
 
-	s1 = "123456";
-	s2 = "123466";
-	EXPECT_TRUE(s1 < s2);
-	EXPECT_LT(s1.compare(s2), 0);
+	{
+		my_string s1("123456");
+		my_string s2("123466");
+		EXPECT_TRUE(s1 < s2);
+		EXPECT_TRUE(std::string(s1.c_str()) < s2);
+		EXPECT_TRUE(s1 < std::string(s2.c_str()));
+		EXPECT_TRUE(s1 < s2.c_str());
+		EXPECT_TRUE(s1.c_str() < s2);
+		EXPECT_LT(s1.compare(s2), 0);
+	}
 }
 
 TEST(inplace_string, compare_lte)
 {
-	my_string s1("123456");
-	my_string s2("123456789");
-	EXPECT_TRUE(s1 <= s2);
-	EXPECT_LE(s1.compare(s2), 0);
+	{
+		my_string s1("123456");
+		my_string s2("123456789");
+		EXPECT_TRUE(s1 <= s2);
+		EXPECT_TRUE(std::string(s1.c_str()) <= s2);
+		EXPECT_TRUE(s1 <= std::string(s2.c_str()));
+		EXPECT_TRUE(s1 <= s2.c_str());
+		EXPECT_TRUE(s1.c_str() <= s2);
+		EXPECT_LE(s1.compare(s2), 0);
+	}
 
-	s1 = "123456";
-	s2 = "123456";
-	EXPECT_TRUE(s1 <= s2);
-	EXPECT_LE(s1.compare(s2), 0);
+	{
+		my_string s1("123456");
+		my_string s2("123456");
+		EXPECT_TRUE(s1 <= s2);
+		EXPECT_TRUE(std::string(s1.c_str()) <= s2);
+		EXPECT_TRUE(s1 <= std::string(s2.c_str()));
+		EXPECT_TRUE(s1 <= s2.c_str());
+		EXPECT_TRUE(s1.c_str() <= s2);
+		EXPECT_LE(s1.compare(s2), 0);
+	}
 }
 
 TEST(inplace_string, compare_gt)
 {
-	my_string s1("123356789");
-	my_string s2("123356");
-	EXPECT_TRUE(s1 > s2);
-	EXPECT_GT(s1.compare(s2), 0);
+	{
+		my_string s1("123356789");
+		my_string s2("123356");
+		EXPECT_TRUE(s1 > s2);
+		EXPECT_TRUE(std::string(s1.c_str()) > s2);
+		EXPECT_TRUE(s1 > std::string(s2.c_str()));
+		EXPECT_TRUE(s1 > s2.c_str());
+		EXPECT_TRUE(s1.c_str() > s2);
+		EXPECT_GT(s1.compare(s2), 0);
+	}
 
-	s1 = "123466";
-	s2 = "123456";
-	EXPECT_TRUE(s1 > s2);
-	EXPECT_GT(s1.compare(s2), 0);
+	{
+		my_string s1("123466");
+		my_string s2("123456");
+		EXPECT_TRUE(s1 > s2);
+		EXPECT_TRUE(std::string(s1.c_str()) > s2);
+		EXPECT_TRUE(s1 > std::string(s2.c_str()));
+		EXPECT_TRUE(s1 > s2.c_str());
+		EXPECT_TRUE(s1.c_str() > s2);
+		EXPECT_GT(s1.compare(s2), 0);
+	}
 }
 
 TEST(inplace_string, compare_gte)
 {
-	my_string s1("123356789");
-	my_string s2("123356");
-	EXPECT_TRUE(s1 >= s2);
-	EXPECT_GE(s1.compare(s2), 0);
+	{
+		my_string s1("123356789");
+		my_string s2("123356");
+		EXPECT_TRUE(s1 >= s2);
+		EXPECT_TRUE(std::string(s1.c_str()) >= s2);
+		EXPECT_TRUE(s1 >= std::string(s2.c_str()));
+		EXPECT_TRUE(s1 >= s2.c_str());
+		EXPECT_TRUE(s1.c_str() >= s2);
+		EXPECT_GE(s1.compare(s2), 0);
+	}
 
-	s1 = "123456";
-	s2 = "123456";
-	EXPECT_TRUE(s1 >= s2);
-	EXPECT_GE(s1.compare(s2), 0);
+	{
+		my_string s1("123456");
+		my_string s2("123456");
+		EXPECT_TRUE(s1 >= s2);
+		EXPECT_TRUE(std::string(s1.c_str()) >= s2);
+		EXPECT_TRUE(s1 >= std::string(s2.c_str()));
+		EXPECT_TRUE(s1 >= s2.c_str());
+		EXPECT_TRUE(s1.c_str() >= s2);
+		EXPECT_GE(s1.compare(s2), 0);
+	}
 }
 
 TEST(inplace_string, append)

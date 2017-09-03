@@ -1204,6 +1204,20 @@ inline bool operator!=(const CharT* lhs,
 	return rhs != lhs;
 }
 
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator!=(const basic_inplace_string<N, CharT, Traits>& lhs,
+					   std::experimental::string_view rhs)
+{
+	return !(lhs == rhs);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator!=(std::experimental::string_view lhs,
+					   const basic_inplace_string<N, CharT, Traits>& rhs)
+{
+	return rhs != lhs;
+}
+
 template <std::size_t N, std::size_t M, typename CharT, typename Traits>
 inline bool operator<(const basic_inplace_string<N, CharT, Traits>& lhs,
 					  const basic_inplace_string<M, CharT, Traits>& rhs)
@@ -1211,9 +1225,65 @@ inline bool operator<(const basic_inplace_string<N, CharT, Traits>& lhs,
 	return lhs.compare(rhs) < 0;
 }
 
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator<(const basic_inplace_string<N, CharT, Traits>& lhs,
+					  const CharT* rhs)
+{
+	return lhs.compare(rhs) < 0;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator<(const CharT* lhs,
+					  const basic_inplace_string<N, CharT, Traits>& rhs)
+{
+	return rhs.compare(lhs) > 0;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator<(const basic_inplace_string<N, CharT, Traits>& lhs,
+					  std::experimental::string_view rhs)
+{
+	return lhs.compare(rhs) < 0;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator<(std::experimental::string_view lhs,
+					  const basic_inplace_string<N, CharT, Traits>& rhs)
+{
+	return rhs.compare(lhs) > 0;
+}
+
 template <std::size_t N, std::size_t M, typename CharT, typename Traits>
 inline bool operator>(const basic_inplace_string<N, CharT, Traits>& lhs,
 					  const basic_inplace_string<M, CharT, Traits>& rhs)
+{
+	return rhs < lhs;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator>(const basic_inplace_string<N, CharT, Traits>& lhs,
+					  const CharT* rhs)
+{
+	return rhs < lhs;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator>(const CharT* lhs,
+					  const basic_inplace_string<N, CharT, Traits>& rhs)
+{
+	return rhs < lhs;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator>(const basic_inplace_string<N, CharT, Traits>& lhs,
+					  std::experimental::string_view rhs)
+{
+	return rhs < lhs;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator>(std::experimental::string_view lhs,
+					  const basic_inplace_string<N, CharT, Traits>& rhs)
 {
 	return rhs < lhs;
 }
@@ -1225,9 +1295,65 @@ inline bool operator<=(const basic_inplace_string<N, CharT, Traits>& lhs,
 	return !(rhs < lhs);
 }
 
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator<=(const basic_inplace_string<N, CharT, Traits>& lhs,
+					   const CharT* rhs)
+{
+	return !(rhs < lhs);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator<=(const CharT* lhs,
+					   const basic_inplace_string<N, CharT, Traits>& rhs)
+{
+	return !(rhs < lhs);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator<=(const basic_inplace_string<N, CharT, Traits>& lhs,
+					   std::experimental::string_view rhs)
+{
+	return !(rhs < lhs);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator<=(std::experimental::string_view lhs,
+					   const basic_inplace_string<N, CharT, Traits>& rhs)
+{
+	return !(rhs < lhs);
+}
+
 template <std::size_t N, std::size_t M, typename CharT, typename Traits>
 inline bool operator>=(const basic_inplace_string<N, CharT, Traits>& lhs,
 					   const basic_inplace_string<M, CharT, Traits>& rhs)
+{
+	return !(lhs < rhs);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator>=(const basic_inplace_string<N, CharT, Traits>& lhs,
+					   const CharT* rhs)
+{
+	return !(lhs < rhs);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator>=(const CharT* lhs,
+					   const basic_inplace_string<N, CharT, Traits>& rhs)
+{
+	return !(lhs < rhs);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator>=(const basic_inplace_string<N, CharT, Traits>& lhs,
+					   std::experimental::string_view rhs)
+{
+	return !(lhs < rhs);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator>=(std::experimental::string_view lhs,
+					   const basic_inplace_string<N, CharT, Traits>& rhs)
 {
 	return !(lhs < rhs);
 }
