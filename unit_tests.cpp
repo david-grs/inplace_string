@@ -928,74 +928,128 @@ TEST(inplace_string, insert)
 
 TEST(inplace_string, replace)
 {
-	my_string s("fooFOOBAR");
+	{
+		my_string s = "foobar";
+		s.replace(0, 3, std::string("FOOBAR"));
+		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		s.replace(s.cbegin(), s.cbegin() + 3, std::string("FOOBAR"));
+		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		s.replace(0, 3, std::string("FOOBAR"), 0);
+		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		s.replace(std::size_t(0), 3, std::string("FOOBAR"), 0, 6);
+		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		s.replace(std::size_t(0), 3, std::string("FOOBARBAZ"), 0, 6);
+		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		EXPECT_NO_THROW(s.replace(std::size_t(0), 3, std::string(s.max_size() - s.size() + 3, 'z')));
+		EXPECT_EQ(s.max_size(), s.size());
+	}
+	{
+		my_string s = "foobar";
+		EXPECT_THROW(s.replace(std::size_t(0), 3, std::string(s.max_size() - s.size() + 4, 'z')), std::length_error);
+		EXPECT_EQ(6, s.size());
+	}
+	{
+		my_string s = "foobar";
+		EXPECT_THROW(s.replace(std::size_t(0), 3, std::string("FOOBAR"), 7, 1), std::out_of_range);
+		EXPECT_EQ(6, s.size());
+	}
+	{
+		my_string s = "foobar";
+		EXPECT_NO_THROW(s.replace(std::size_t(0), 6, std::string("FOOBAR")));
+		EXPECT_EQ("FOOBAR", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		EXPECT_NO_THROW(s.replace(std::size_t(6), 6, std::string("FOOBAR")));
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		EXPECT_THROW(s.replace(std::size_t(7), 1, std::string("FOOBAR")), std::out_of_range);
+		EXPECT_EQ(6, s.size());
+	}
+	{
+		std::string str("FOOBARBAZ");
+		my_string s = "foobar";
+		s.replace(s.cbegin(), s.cbegin() + 3, str.cbegin(), str.cbegin() + 6);
+		EXPECT_EQ(9, s.size());
+		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
+	}
+	{
+		std::string tmp = std::tmpnam(nullptr);
+		std::ofstream ofs(tmp);
+		ofs << "FOOBARBAZ";
+		ofs.close();
 
-	s.replace(3, 6, my_string("bar"));
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("foobar", std::string(s.c_str()));
-
-	s.replace(0, 6, std::string("FOObar"));
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("FOObar", std::string(s.c_str()));
-
-	s.replace(s.begin(), s.begin() + 3, std::string("FOOBAR"));
-	EXPECT_EQ(9, s.size());
-	EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
-
-	s.replace(s.begin(), s.begin() + 6, my_string("foo"));
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("foobar", std::string(s.c_str()));
-
-	s.replace(3, 3, std::string("BARFOO"), 0, 3);
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("fooBAR", std::string(s.c_str()));
-
-	s.replace(0, 3, my_string("BARFOO"), 3, 3);
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("FOOBAR", std::string(s.c_str()));
-
-	std::string str("foobarfoo");
-	s.replace(s.begin(), s.end(), str.begin(), str.end());
-	EXPECT_EQ(9, s.size());
-	EXPECT_EQ("foobarfoo", std::string(s.c_str()));
-
-	s.replace(3, 6, "foobar", 3);
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("foofoo", std::string(s.c_str()));
-
-	s.replace(s.begin() + 3, s.end(), "FOOBARfoo", 6);
-	EXPECT_EQ(9, s.size());
-	EXPECT_EQ("fooFOOBAR", std::string(s.c_str()));
-
-	s = my_string(31, 'a');
-	s.replace(s.begin(), s.end(), "foo");
-	EXPECT_EQ(3, s.size());
-	EXPECT_EQ("foo", std::string(s.c_str()));
-
-	s.replace(1, 2, "OOBAR");
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("fOOBAR", std::string(s.c_str()));
-
-	s.replace(3, 3, s.max_size() - 3, 'z');
-	EXPECT_EQ(s.max_size(), s.size());
-	EXPECT_EQ("fOO" + std::string(s.max_size() - 3, 'z'), std::string(s.c_str()));
-
-	s.replace(s.begin(), s.begin() + 3, 3, 'a');
-	EXPECT_EQ(s.max_size(), s.size());
-	EXPECT_EQ("aaa" + std::string(s.max_size() - 3, 'z'), std::string(s.c_str()));
-
-	s = "foobar";
-	s.replace(s.begin() + 3, s.begin() + 6, {'f', 'o', 'o', 'b', 'a', 'r'});
-	EXPECT_EQ(9, s.size());
-	EXPECT_EQ("foofoobar", std::string(s.c_str()));
-
-	s.replace(0, 3, std::experimental::string_view("FOOBARBUZ", 6));
-	EXPECT_EQ(12, s.size());
-	EXPECT_EQ("FOOBARfoobar", std::string(s.c_str()));
-
-	s.replace(s.begin(), s.end() - 3, std::experimental::string_view("foobuz", 3));
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("foobar", std::string(s.c_str()));
+		std::ifstream file(tmp);
+		my_string s = "foobar";
+		s.replace(s.cbegin(), s.cbegin() + 3,
+			std::istreambuf_iterator<char>(file),
+			(std::istreambuf_iterator<char>())
+		);
+		EXPECT_EQ(12, s.size());
+		EXPECT_EQ("FOOBARBAZbar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		s.replace(0, 3, "FOOBAR");
+		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		s.replace(0, 3, "FOOBAR", 0);
+		EXPECT_EQ("bar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		s.replace(0, 3, "FOOBAR", 6);
+		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		s.replace(s.cbegin(), s.cbegin() + 3, "FOOBAR", 6);
+		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		s.replace(0, 3, 6, 'z');
+		EXPECT_EQ("zzzzzzbar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		s.replace(s.cbegin(), s.cbegin() + 3, 6, 'z');
+		EXPECT_EQ("zzzzzzbar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		s.replace(s.cbegin(), s.cbegin() + 3, {'F', 'O', 'O', 'B', 'A', 'R'});
+		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		s.replace(0, 3, std::experimental::string_view("FOOBAR"));
+		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
+	}
+	{
+		my_string s = "foobar";
+		s.replace(s.cbegin(), s.cbegin() + 3, std::experimental::string_view("FOOBAR"));
+		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
+	}
 }
 
 
