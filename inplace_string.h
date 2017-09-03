@@ -144,7 +144,7 @@ public:
 
 	bool empty() const noexcept { return get_remaining_size() == max_size(); }
 
-	size_type size() const noexcept { return N - _data[N]; }
+	size_type size() const noexcept { return N - static_cast<size_type>(_data[N]); }
 	size_type length() const noexcept { return size(); }
 
 	static constexpr size_type max_size() noexcept { return N; }
@@ -276,12 +276,12 @@ private:
 	void set_size(size_type sz)
 	{
 		assert(sz <= max_size());
-		_data[N] = static_cast<static_size_type>(N - sz);
+		_data[N] = static_cast<value_type>(N - sz);
 	}
 
 	size_type get_remaining_size() const
 	{
-		return _data[N];
+		return static_cast<size_type>(_data[N]);
 	}
 
 	std::array<value_type, N + 1> _data;
@@ -430,7 +430,7 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string(InputIt first, Inpu
 		_data[i] = 'a';
 #endif
 
-	const size_type count = std::distance(first, last);
+	const size_type count = static_cast<size_type>(std::distance(first, last));
 	if (count >= N)
 		detail::throw_helper<std::out_of_range>("basic_inplace_string::init: out of range");
 
@@ -537,7 +537,7 @@ template <std::size_t N, typename CharT, typename Traits>
 typename basic_inplace_string<N, CharT, Traits>::iterator
 basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, value_type ch)
 {
-	const size_type index = pos - _data.data();
+	const size_type index = static_cast<size_type>(pos - _data.data());
 	insert(index, 1, ch);
 	return _data.data() + index;
 }
@@ -546,7 +546,7 @@ template <std::size_t N, typename CharT, typename Traits>
 typename basic_inplace_string<N, CharT, Traits>::iterator
 basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, size_type count, value_type ch)
 {
-	const size_type index = pos - _data.data();
+	const size_type index = static_cast<size_type>(pos - _data.data());
 	insert(index, count, ch);
 	return _data.data() + index;
 }
@@ -569,8 +569,9 @@ basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, InputIt first
 	assert(pos >= _data.data() && pos <= _data.data() + size());
 
 	const size_type sz = size();
-	const size_type index = pos - _data.data();
+	const size_type index = static_cast<size_type>(pos - _data.data());
 	size_type count = 0;
+
 	for (; first != last; ++first, ++count)
 	{
 		traits_type::move(&_data[index + count + 1], &_data[index + count], sz - index + count);
@@ -592,8 +593,8 @@ basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, InputIt first
 	assert(pos >= _data.data() && pos <= _data.data() + size());
 
 	const size_type sz = size();
-	const size_type index = pos - _data.data();
-	const size_type count = std::distance(first, last);
+	const size_type index = static_cast<size_type>(pos - _data.data());
+	const size_type count = static_cast<size_type>(std::distance(first, last));
 
 	traits_type::move(&_data[index + count], &_data[index], sz - index);
 	for (size_type i = 0; i < count; ++i, ++first)
@@ -612,7 +613,7 @@ basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, std::initiali
 {
 	assert(pos >= _data.data() && pos <= _data.data() + size());
 
-	const size_type index = pos - _data.data();
+	const size_type index = static_cast<size_type>(pos - _data.data());
 	insert(index, ilist.begin(), ilist.size());
 	return _data.data() + index;
 }
@@ -669,8 +670,10 @@ template <std::size_t N, typename CharT, typename Traits>
 typename basic_inplace_string<N, CharT, Traits>::iterator
 basic_inplace_string<N, CharT, Traits>::erase(const_iterator first, const_iterator last)
 {
-	size_type index = static_cast<size_type>(first - _data.data());
-	erase(index, std::distance(first, last));
+	const size_type index = static_cast<size_type>(first - _data.data());
+	const size_type count = static_cast<size_type>(std::distance(first, last));
+
+	erase(index, count);
 	return iterator{_data.data() + index};
 }
 
@@ -879,8 +882,8 @@ template <class InputIt>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, InputIt first2, InputIt last2, detail::is_exactly_input_iterator_tag)
 {
-	const size_type pos1 = first - _data.data();
-	const size_type count1 =  std::distance(first, last);
+	const size_type pos1 = static_cast<size_type>(first - _data.data());
+	const size_type count1 = static_cast<size_type>(std::distance(first, last));
 	const size_type sz = size();
 
 	if (pos1 > sz)
@@ -895,8 +898,8 @@ basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iter
 		traits_type::assign(_data[pos1 + count2], *first2);
 	}
 
-	const difference_type new_bytes = count2 - count1;
-	const size_type new_size = sz + new_bytes;
+	const difference_type new_bytes = static_cast<difference_type>(count2 - count1);
+	const size_type new_size = sz + static_cast<size_type>(new_bytes);
 
 	traits_type::assign(_data[new_size], value_type{});
 	set_size(new_size);
@@ -909,14 +912,14 @@ template <class InputIt>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, InputIt first2, InputIt last2, detail::is_input_iterator_tag)
 {
-	const size_type pos1 = first - _data.data();
-	const size_type count1 =  std::distance(first, last);
+	const size_type pos1 = static_cast<size_type>(first - _data.data());
+	const size_type count1 = static_cast<size_type>(std::distance(first, last));
 
-	const size_type count2 = std::distance(first2, last2);
-	const difference_type new_bytes = count2 - count1;
+	const size_type count2 = static_cast<size_type>(std::distance(first2, last2));
+	const difference_type new_bytes = static_cast<difference_type>(count2 - count1);
 
 	const size_type sz = size();
-	const size_type new_size = sz + new_bytes;
+	const size_type new_size = sz + static_cast<size_type>(new_bytes);
 
 	if (pos1 > sz)
 		detail::throw_helper<std::out_of_range>("basic_inplace_string::replace: out of range");
@@ -941,8 +944,8 @@ basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::replace(size_type pos1, size_type count1, const CharT* str, size_type count2)
 {
 	const size_type sz = size();
-	const difference_type new_bytes = count2 - count1;
-	const size_type new_size = sz + new_bytes;
+	const difference_type new_bytes = static_cast<difference_type>(count2 - count1);
+	const size_type new_size = sz + static_cast<size_type>(new_bytes);
 
 	if (pos1 > sz)
 		detail::throw_helper<std::out_of_range>("basic_inplace_string::replace: out of range");
@@ -965,7 +968,9 @@ template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, const CharT* str, size_type count2)
 {
-	return replace(first - _data.data(), std::distance(first, last), str, count2);
+	const size_type pos1 = static_cast<size_type>(first - _data.data());
+	const size_type count1 = static_cast<size_type>(std::distance(first, last));
+	return replace(pos1, count1, str, count2);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -987,8 +992,8 @@ basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::replace(size_type pos1, size_type count1, size_type count2, value_type ch)
 {
 	const size_type sz = size();
-	const difference_type new_bytes = count2 - count1;
-	const size_type new_size = sz + new_bytes;
+	const difference_type new_bytes = static_cast<difference_type>(count2 - count1);
+	const size_type new_size = sz + static_cast<size_type>(new_bytes);
 
 	if (pos1 > sz)
 		detail::throw_helper<std::out_of_range>("basic_inplace_string::replace: out of range");
@@ -1009,14 +1014,18 @@ template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, size_type count2, value_type ch)
 {
-	return replace(first - _data.data(), std::distance(first, last), count2, ch);
+	const size_type pos1 = static_cast<size_type>(first - _data.data());
+	const size_type count1 = static_cast<size_type>(std::distance(first, last));
+	return replace(pos1, count1, count2, ch);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, std::initializer_list<value_type> ilist)
 {
-	return replace(first - _data.data(), std::distance(first, last), ilist.begin(), ilist.size());
+	const size_type pos1 = static_cast<size_type>(first - _data.data());
+	const size_type count1 = static_cast<size_type>(std::distance(first, last));
+	return replace(pos1, count1, ilist.begin(), ilist.size());
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -1030,7 +1039,9 @@ template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, std::experimental::basic_string_view<CharT, Traits> sv)
 {
-	return replace(first - _data.data(), std::distance(first, last), sv.data(), sv.size());
+	const size_type pos1 = static_cast<size_type>(first - _data.data());
+	const size_type count1 = static_cast<size_type>(std::distance(first, last));
+	return replace(pos1, count1, sv.data(), sv.size());
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -1071,7 +1082,7 @@ basic_inplace_string<N, CharT, Traits>::find(const value_type* str, size_type po
 		return npos;
 
 	const value_type* res = detail::search_substring<CharT, Traits>(cbegin() + pos, cend(), str, str + count);
-	return res ? res - cbegin() : npos;
+	return res ? static_cast<size_type>(res - cbegin()) : npos;
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -1086,7 +1097,7 @@ typename basic_inplace_string<N, CharT, Traits>::size_type
 basic_inplace_string<N, CharT, Traits>::find(value_type ch, size_type pos) const noexcept
 {
 	const value_type* res = traits_type::find(data() + pos, size() - pos, ch);
-	return res ? res - cbegin() : npos;
+	return res ? static_cast<size_type>(res - cbegin()) : npos;
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -1123,12 +1134,12 @@ void basic_inplace_string<N, CharT, Traits>::resize(size_type new_size, value_ty
 		detail::throw_helper<std::length_error>("basic_inplace_string::resize: exceed maximum string length");
 
 	const size_type sz = size();
-	const difference_type count = new_size - sz;
-	if (count > 0)
-		traits_type::assign(std::begin(_data) + size(), count, ch);
 
+	if (static_cast<difference_type>(new_size - sz) > 0)
+		traits_type::assign(&_data[sz], new_size - sz, ch);
+
+	traits_type::assign(_data[new_size], value_type{});
 	set_size(new_size);
-	_data[new_size] = value_type{};
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -1363,11 +1374,14 @@ namespace detail
 template <typename CharT, typename Traits>
 inline const CharT* search_substring(const CharT* first1, const CharT* last1, const CharT* first2, const CharT* last2)
 {
-	const std::size_t size2 = last2 - first2;
+	assert(last1 >= first1);
+	assert(last2 >= first2);
+
+	const std::size_t size2 = static_cast<std::size_t>(last2 - first2);
 
 	while (true)
 	{
-		const std::size_t size1 = last1 - first1;
+		const std::size_t size1 = static_cast<std::size_t>(last1 - first1);
 		if (size1 < size2)
 			return nullptr;
 
