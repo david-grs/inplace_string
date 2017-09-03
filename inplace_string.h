@@ -121,39 +121,38 @@ public:
 	reference       back()        { assert(!empty()); return _data[size() - 1]; }
 	const_reference back() const  { assert(!empty()); return _data[size() - 1]; }
 
-	value_type*       data()       { return _data.data(); }
-	const value_type* data() const { return _data.data(); }
-
-	const value_type* c_str() const { return _data.data(); }
+	value_type*       data() noexcept        { return _data.data(); }
+	const value_type* data() const noexcept  { return _data.data(); }
+	const value_type* c_str() const noexcept { return _data.data(); }
 
 	operator std::experimental::basic_string_view<CharT, Traits>() const noexcept { return {_data.data(), size()}; }
 
-	iterator       begin()        { return std::begin(_data); }
-	const_iterator begin() const  { return std::begin(_data); }
-	const_iterator cbegin() const { return begin(); }
-	iterator       end()          { return std::begin(_data) + size(); }
-	const_iterator end() const    { return std::begin(_data) + size(); }
-	const_iterator cend() const   { return end(); }
+	iterator       begin() noexcept        { return std::begin(_data); }
+	const_iterator begin() const noexcept  { return std::begin(_data); }
+	const_iterator cbegin() const noexcept { return begin(); }
+	iterator       end() noexcept          { return std::begin(_data) + size(); }
+	const_iterator end() const noexcept    { return std::begin(_data) + size(); }
+	const_iterator cend() const noexcept   { return end(); }
 
-	reverse_iterator       rbegin()        { return reverse_iterator(end()); }
-	const_reverse_iterator rbegin() const  { return const_reverse_iterator(cend()); }
-	const_reverse_iterator crbegin() const { return const_reverse_iterator(cend()); }
+	reverse_iterator       rbegin() noexcept        { return reverse_iterator(end()); }
+	const_reverse_iterator rbegin() const noexcept  { return const_reverse_iterator(cend()); }
+	const_reverse_iterator crbegin() const noexcept { return const_reverse_iterator(cend()); }
 
-	reverse_iterator       rend()          { return reverse_iterator(begin()); }
-	const_reverse_iterator rend() const    { return const_reverse_iterator(cbegin()); }
-	const_reverse_iterator crend() const   { return const_reverse_iterator(cbegin()); }
+	reverse_iterator       rend() noexcept        { return reverse_iterator(begin()); }
+	const_reverse_iterator rend() const noexcept  { return const_reverse_iterator(cbegin()); }
+	const_reverse_iterator crend() const noexcept { return const_reverse_iterator(cbegin()); }
 
-	bool empty() const { return get_remaining_size() == max_size(); }
+	bool empty() const noexcept { return get_remaining_size() == max_size(); }
 
-	size_type size() const   { return N - _data[N]; }
-	size_type length() const { return size(); }
+	size_type size() const noexcept { return N - _data[N]; }
+	size_type length() const noexcept { return size(); }
 
-	static constexpr size_type max_size() { return N; }
-	static constexpr size_type capacity() { return N; }
+	static constexpr size_type max_size() noexcept { return N; }
+	static constexpr size_type capacity() noexcept { return N; }
 
-	void shrink_to_fit() {}
+	void shrink_to_fit() noexcept  {}
 
-	void clear() { *this = __self{}; }
+	void clear() noexcept { *this = __self{}; }
 
 	basic_inplace_string& insert(size_type index, size_type count, value_type ch);
 	basic_inplace_string& insert(size_type index, const value_type* str);
