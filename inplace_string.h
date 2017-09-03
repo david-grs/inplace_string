@@ -209,13 +209,13 @@ public:
 		return basic_inplace_string(data() + pos, std::min(count, size() - pos));
 	}
 
-	int compare(const basic_inplace_string& str) const;
+	int compare(const basic_inplace_string& str) const noexcept;
 	int compare(size_type pos1, size_type count1, const basic_inplace_string& str) const;
 	int compare(size_type pos1, size_type count1, const basic_inplace_string& str, size_type pos2, size_type count2 = npos) const;
 	int compare(const value_type* str) const;
 	int compare(size_type pos1, size_type count1, const value_type* str) const;
 	int compare(size_type pos1, size_type count1, const value_type* str, size_type count2) const;
-	int compare(std::experimental::basic_string_view<CharT, Traits> sv) const;
+	int compare(std::experimental::basic_string_view<CharT, Traits> sv) const noexcept;
 	int compare(size_type pos1, size_type count1, std::experimental::basic_string_view<CharT, Traits> sv) const;
 
 	template <typename T,
@@ -779,7 +779,7 @@ basic_inplace_string<N, CharT, Traits>::append(const T& t, size_type pos, size_t
 }
 
 template <std::size_t N, typename CharT, typename Traits>
-int basic_inplace_string<N, CharT, Traits>::compare(const basic_inplace_string& str) const
+int basic_inplace_string<N, CharT, Traits>::compare(const basic_inplace_string& str) const noexcept
 {
 	return compare(0, size(), str.data(), str.size());
 }
@@ -819,7 +819,7 @@ int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type co
 }
 
 template <std::size_t N, typename CharT, typename Traits>
-int basic_inplace_string<N, CharT, Traits>::compare(std::experimental::basic_string_view<CharT, Traits> sv) const
+int basic_inplace_string<N, CharT, Traits>::compare(std::experimental::basic_string_view<CharT, Traits> sv) const noexcept
 {
 	return compare(0, size(), sv.data(), sv.size());
 }
@@ -1113,6 +1113,20 @@ inline bool operator==(const basic_inplace_string<N, CharT, Traits>& lhs,
 
 template <std::size_t N, typename CharT, typename Traits>
 inline bool operator==(const CharT* lhs,
+					   const basic_inplace_string<N, CharT, Traits>& rhs)
+{
+	return rhs == lhs;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator==(const basic_inplace_string<N, CharT, Traits>& lhs,
+					   std::experimental::string_view rhs)
+{
+	return lhs.size() == rhs.size() && Traits::compare(lhs.data(), rhs.data(), lhs.size()) == 0;
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+inline bool operator==(std::experimental::string_view lhs,
 					   const basic_inplace_string<N, CharT, Traits>& rhs)
 {
 	return rhs == lhs;

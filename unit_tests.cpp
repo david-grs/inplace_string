@@ -371,6 +371,42 @@ TEST(inplace_string, substr)
 	EXPECT_EQ('5', ss.at(0));
 }
 
+TEST(inplace_string, compare)
+{
+	{
+		my_string s("foobar");
+		EXPECT_EQ(s.compare("foobar"), 0);
+	}
+	{
+		my_string s("foobar");
+		EXPECT_LT(s.compare("foobas"), 0);
+	}
+	{
+		my_string s("foobar");
+		EXPECT_GT(s.compare("eoobar"), 0);
+	}
+	{
+		my_string s("foobar");
+		EXPECT_EQ(s.compare(std::string("foobar")), 0);
+		EXPECT_TRUE(s == std::string("foobar"));
+		EXPECT_TRUE(std::string("foobar") == s);
+	}
+	{
+		my_string s("foobar");
+		EXPECT_EQ(s.compare(std::experimental::string_view("foobar")), 0);
+	}
+	{
+		struct A : std::experimental::string_view
+		{
+			A() : std::experimental::string_view("foobar") { }
+		};
+
+		A a;
+		my_string s("foobar");
+		EXPECT_EQ(s.compare(a), 0);
+	}
+}
+
 TEST(inplace_string, compare_eq)
 {
 	my_string s1("123456");
