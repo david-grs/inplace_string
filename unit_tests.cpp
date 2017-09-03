@@ -354,29 +354,6 @@ TEST(inplace_string, clear)
 	EXPECT_TRUE(s.empty());
 }
 
-TEST(inplace_string, substr)
-{
-	{
-		my_string s("123456");
-		my_string ss = s.substr(4);
-		EXPECT_EQ(2, int(ss.size()));
-		EXPECT_EQ('5', ss.at(0));
-		EXPECT_EQ('6', ss.at(1));
-	}
-
-	{
-		my_string s("123456");
-		my_string ss = s.substr(4, 1);
-		EXPECT_EQ(1, int(ss.size()));
-		EXPECT_EQ('5', ss.at(0));
-	}
-
-	{
-		my_string s("123456");
-		EXPECT_THROW(s.substr(7, 1), std::out_of_range);
-	}
-}
-
 TEST(inplace_string, compare)
 {
 	{
@@ -657,51 +634,6 @@ TEST(inplace_string, resize)
 
 	s.resize(6, 'o');
 	EXPECT_EQ("fozzzz", s);
-}
-
-TEST(inplace_string, replace_basic)
-{
-	my_string s("fooFOO");
-
-	s.replace(3, 3, "bar");
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("foobar", std::string(s.c_str()));
-
-	s.replace(0, 3, "FOO");
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("FOObar", std::string(s.c_str()));
-
-	s.replace(3, 3, "BARFOO");
-	EXPECT_EQ(9, s.size());
-	EXPECT_EQ("FOOBARFOO", std::string(s.c_str()));
-
-	s.replace(3, 6, "BUZ");
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("FOOBUZ", std::string(s.c_str()));
-
-	s.replace(0, 3, "foobar");
-	EXPECT_EQ(9, s.size());
-	EXPECT_EQ("foobarBUZ", std::string(s.c_str()));
-
-	s.replace(0, 6, "FOO");
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("FOOBUZ", std::string(s.c_str()));
-
-	s.replace(0, 6, "foo");
-	EXPECT_EQ(3, s.size());
-	EXPECT_EQ("foo", std::string(s.c_str()));
-
-	s.replace(0, 3, "foobarbuzbaz");
-	EXPECT_EQ(12, s.size());
-	EXPECT_EQ("foobarbuzbaz", std::string(s.c_str()));
-
-	s.replace(0, 1, "FOOBARf");
-	EXPECT_EQ(18, s.size());
-	EXPECT_EQ("FOOBARfoobarbuzbaz", std::string(s.c_str()));
-
-	s.replace(0, 7, "f");
-	EXPECT_EQ(12, s.size());
-	EXPECT_EQ("foobarbuzbaz", std::string(s.c_str()));
 }
 
 TEST(inplace_string, erase)
@@ -1055,6 +987,29 @@ TEST(inplace_string, replace)
 		my_string s = "foobar";
 		s.replace(s.cbegin(), s.cbegin() + 3, std::experimental::string_view("FOOBAR"));
 		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
+	}
+}
+
+TEST(inplace_string, substr)
+{
+	{
+		my_string s("123456");
+		my_string ss = s.substr(4);
+		EXPECT_EQ(2, int(ss.size()));
+		EXPECT_EQ('5', ss.at(0));
+		EXPECT_EQ('6', ss.at(1));
+	}
+
+	{
+		my_string s("123456");
+		my_string ss = s.substr(4, 1);
+		EXPECT_EQ(1, int(ss.size()));
+		EXPECT_EQ('5', ss.at(0));
+	}
+
+	{
+		my_string s("123456");
+		EXPECT_THROW(s.substr(7, 1), std::out_of_range);
 	}
 }
 
