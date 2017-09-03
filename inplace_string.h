@@ -113,8 +113,8 @@ public:
 	reference       at(size_type i);
 	const_reference at(size_type i) const;
 
-	reference       operator[](size_type i)       { assert(i < size()); return _data[i]; }
-	const_reference operator[](size_type i) const { assert(i < size()); return _data[i]; }
+	reference       operator[](size_type i)       { assert(i <= size()); return _data[i]; }
+	const_reference operator[](size_type i) const { assert(i <= size()); return _data[i]; }
 
 	reference       front()       { assert(!empty()); return _data[0]; }
 	const_reference front() const { assert(!empty()); return _data[0]; }
@@ -275,7 +275,7 @@ private:
 
 	void set_size(size_type sz)
 	{
-		assert(sz <= N + 1);
+		assert(sz <= max_size());
 		_data[N] = static_cast<static_size_type>(N - sz);
 	}
 
