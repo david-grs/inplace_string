@@ -221,7 +221,7 @@ public:
 	template <typename T,
 			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
-	basic_inplace_string& compare(size_type pos1, size_type count1, const T& t, size_type pos2, size_type count2 = npos);
+	int compare(size_type pos1, size_type count1, const T& t, size_type pos2, size_type count2 = npos) const;
 
 	basic_inplace_string& replace(size_type pos, size_type count, const std::basic_string<CharT, Traits>& str);
 	basic_inplace_string& replace(size_type pos, size_type count, const basic_inplace_string& str);
@@ -704,7 +704,7 @@ template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::append(const std::basic_string<CharT, Traits>& str, size_type pos, size_type count)
 {
-	return append(str.data() + pos, count == npos ? str.size() - pos : count);
+	return append(str.data() + pos, std::min(str.size() - pos, count));
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -775,7 +775,7 @@ basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::append(const T& t, size_type pos, size_type count)
 {
 	std::experimental::basic_string_view<CharT, Traits> view = t;
-	return append(view.data() + pos, count == npos ? view.size() - pos : count);
+	return append(view.data() + pos, std::min(view.size() - pos, count));
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -793,7 +793,7 @@ int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type co
 template <std::size_t N, typename CharT, typename Traits>
 int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1, const basic_inplace_string& str, size_type pos2, size_type count2) const
 {
-	return compare(pos1, count1, str.data() + pos2, count2 - pos2);
+	return compare(pos1, count1, str.data() + pos2, std::min(size() - pos2, count2));
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -815,7 +815,7 @@ int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type co
 	const int cmp = traits_type::compare(data() + pos1, str, sz);
 	if (cmp != 0)
 		return cmp;
-	return count1 - pos1 > count2 ? 1 : (count1 - pos1 == count2 ? 0 : -1);
+	return count1 > count2 ? 1 : (count1 == count2 ? 0 : -1);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -832,11 +832,12 @@ int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type co
 
 template <std::size_t N, typename CharT, typename Traits>
 template <typename T, typename X>
-basic_inplace_string<N, CharT, Traits>&
-basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1, const T& t, size_type pos2, size_type count2)
+int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1, const T& t, size_type pos2, size_type count2) const
 {
 	std::experimental::basic_string_view<CharT, Traits> view = t;
-	return compare(pos1, count1, view.data() + pos2, count2 == npos ? view.size() : count2);
+	count2 = std::min(view.size() - pos2, count2);
+
+	return compare(pos1, count1, view.data() + pos2, count2);
 }
 
 template <std::size_t N, typename CharT, typename Traits>

@@ -387,6 +387,18 @@ TEST(inplace_string, compare)
 	}
 	{
 		my_string s("foobar");
+		EXPECT_EQ(s.compare(0, 3, "foo"), 0);
+	}
+	{
+		my_string s("FOOfoobar");
+		EXPECT_EQ(s.compare(3, 3, "foo"), 0);
+	}
+	{
+		my_string s("FOOfoobar");
+		EXPECT_EQ(s.compare(3, 6, "FOOfoobarFOO", 3, 6), 0);
+	}
+	{
+		my_string s("foobar");
 		EXPECT_EQ(s.compare(std::string("foobar")), 0);
 		EXPECT_TRUE(s == std::string("foobar"));
 		EXPECT_TRUE(std::string("foobar") == s);
@@ -404,6 +416,18 @@ TEST(inplace_string, compare)
 		A a;
 		my_string s("foobar");
 		EXPECT_EQ(s.compare(a), 0);
+	}
+	{
+		my_string s("FOOfoobar");
+		EXPECT_EQ(s.compare(3, 6, std::string("foobar")), 0);
+	}
+	{
+		my_string s("FOOfoobar");
+		EXPECT_EQ(s.compare(3, 6, std::string("FOOfoobar"), 3), 0);
+	}
+	{
+		my_string s("FOOfoobar");
+		EXPECT_EQ(s.compare(3, 6, std::string("FOOfoobarFOO"), 3, 6), 0);
 	}
 }
 
