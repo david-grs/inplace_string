@@ -249,12 +249,11 @@ public:
 
 	void swap(basic_inplace_string& other) noexcept;
 
-	size_type find(const std::basic_string<CharT, Traits>& str, size_type pos = 0) const;
-	size_type find(const basic_inplace_string& other, size_type pos = 0) const;
-	size_type find(const value_type* str, size_type pos, size_type count) const;
-	size_type find(const value_type* str, size_type pos = 0) const;
-	size_type find(value_type ch, size_type pos = 0) const;
-	size_type find(std::experimental::basic_string_view<CharT, Traits> sv, size_type pos = 0) const;
+	size_type find(const basic_inplace_string& other, size_type pos = 0) const noexcept;
+	size_type find(const value_type* str, size_type pos, size_type count) const noexcept;
+	size_type find(const value_type* str, size_type pos = 0) const noexcept;
+	size_type find(value_type ch, size_type pos = 0) const noexcept;
+	size_type find(std::experimental::basic_string_view<CharT, Traits> sv, size_type pos = 0) const noexcept;
 
 private:
 	template <typename InputIt>
@@ -1060,21 +1059,14 @@ basic_inplace_string<N, CharT, Traits>::substr(size_type pos, size_type count) c
 
 template <std::size_t N, typename CharT, typename Traits>
 typename basic_inplace_string<N, CharT, Traits>::size_type
-basic_inplace_string<N, CharT, Traits>::find(const std::basic_string<CharT, Traits>& str, size_type pos) const
-{
-	return find(str.data(), pos, str.size());
-}
-
-template <std::size_t N, typename CharT, typename Traits>
-typename basic_inplace_string<N, CharT, Traits>::size_type
-basic_inplace_string<N, CharT, Traits>::find(const basic_inplace_string& other, size_type pos) const
+basic_inplace_string<N, CharT, Traits>::find(const basic_inplace_string& other, size_type pos) const noexcept
 {
 	return find(other.data(), pos, other.size());
 }
 
 template <std::size_t N, typename CharT, typename Traits>
 typename basic_inplace_string<N, CharT, Traits>::size_type
-basic_inplace_string<N, CharT, Traits>::find(const value_type* str, size_type pos, size_type count) const
+basic_inplace_string<N, CharT, Traits>::find(const value_type* str, size_type pos, size_type count) const noexcept
 {
 	if (pos >= size() || count == 0)
 		return npos;
@@ -1085,14 +1077,14 @@ basic_inplace_string<N, CharT, Traits>::find(const value_type* str, size_type po
 
 template <std::size_t N, typename CharT, typename Traits>
 typename basic_inplace_string<N, CharT, Traits>::size_type
-basic_inplace_string<N, CharT, Traits>::find(const value_type* str, size_type pos) const
+basic_inplace_string<N, CharT, Traits>::find(const value_type* str, size_type pos) const noexcept
 {
 	return find(str, pos, traits_type::length(str));
 }
 
 template <std::size_t N, typename CharT, typename Traits>
 typename basic_inplace_string<N, CharT, Traits>::size_type
-basic_inplace_string<N, CharT, Traits>::find(value_type ch, size_type pos) const
+basic_inplace_string<N, CharT, Traits>::find(value_type ch, size_type pos) const noexcept
 {
 	const value_type* res = traits_type::find(data() + pos, size() - pos, ch);
 	return res ? res - cbegin() : npos;
@@ -1100,7 +1092,7 @@ basic_inplace_string<N, CharT, Traits>::find(value_type ch, size_type pos) const
 
 template <std::size_t N, typename CharT, typename Traits>
 typename basic_inplace_string<N, CharT, Traits>::size_type
-basic_inplace_string<N, CharT, Traits>::find(std::experimental::basic_string_view<CharT, Traits> sv, size_type pos) const
+basic_inplace_string<N, CharT, Traits>::find(std::experimental::basic_string_view<CharT, Traits> sv, size_type pos) const noexcept
 {
 	return find(sv.data(), pos, sv.size());
 }
