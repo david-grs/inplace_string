@@ -526,31 +526,52 @@ TEST(inplace_string, append)
 
 TEST(inplace_string, append_operator)
 {
-	my_string s("foo");
-	s += "bar";
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("foobar", s);
-	EXPECT_EQ("foobar", std::string(s.c_str()));
+	{
+		my_string s("foo");
+		s += "bar";
+		EXPECT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
 
-	s = "foo";
-	s += std::string("baz");
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("foobaz", s);
+	{
+		my_string s("foo");
+		s += std::string("bar");
+		EXPECT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
 
-	s = "foo";
-	s += 'b';
-	EXPECT_EQ(4, s.size());
-	EXPECT_EQ("foob", s);
+	{
+		my_string s("foo");
+		s += 'b';
+		EXPECT_EQ(4, s.size());
+		EXPECT_EQ("foob", std::string(s.c_str()));
+	}
 
-	s = "foo";
-	s += std::experimental::string_view("buz");
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("foobuz", s);
+	{
+		my_string s("foo");
+		s += std::experimental::string_view("bar");
+		EXPECT_EQ(6, s.size());
+		EXPECT_EQ("foobar", s);
+	}
 
-	s = "foo";
-	s += {'b', 'a', 'r'};
-	EXPECT_EQ(6, s.size());
-	EXPECT_EQ("foobar", s);
+	{
+		my_string s("foo");
+		s += {'b', 'a', 'r'};
+		EXPECT_EQ(6, s.size());
+		EXPECT_EQ("foobar", s);
+	}
+
+	{
+		my_string s("foo");
+		s += std::string(s.max_size() - s.size(), 'z');
+		EXPECT_EQ(s.max_size(), s.size());
+	}
+
+	{
+		my_string s("foo");
+		EXPECT_THROW(s += std::string(s.max_size() - s.size() + 1, 'z'), std::length_error);
+		EXPECT_EQ(3, s.size());
+	}
 }
 
 TEST(inplace_string, resize)
