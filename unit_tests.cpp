@@ -1,4 +1,3 @@
-#define INPLACE_STRING_SANITY_CHECKS
 #include "inplace_string.h"
 
 #include <gtest/gtest.h>

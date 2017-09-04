@@ -297,18 +297,7 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string() noexcept
 template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string(size_type count, value_type ch)
 {
-#ifdef INPLACE_STRING_SANITY_CHECKS
-	for (size_type i = 0; i <= N; ++i)
-		_data[i] = 'a';
-#endif
-
-	if (count > N)
-		detail::throw_helper<std::out_of_range>("basic_inplace_string::init: out of range");
-
-	traits_type::assign(std::begin(_data), count, ch);
-	_data[count] = value_type{};
-
-	set_size(count);
+	insert(static_cast<size_type>(0), count, ch);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -338,20 +327,7 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const basic_inplace
 template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const value_type* str, size_type count)
 {
-	assert(str != nullptr);
-
-#ifdef INPLACE_STRING_SANITY_CHECKS
-	for (size_type i = 0; i <= N; ++i)
-		_data[i] = 'a';
-#endif
-
-	if (count > N)
-		detail::throw_helper<std::out_of_range>("basic_inplace_string::init: out of range");
-
-	traits_type::copy(std::begin(_data), str, count);
-	_data[count] = value_type{};
-
-	set_size(count);
+	insert(static_cast<size_type>(0), str, count);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -400,46 +376,16 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string(InputIt first, Inpu
 
 template <std::size_t N, typename CharT, typename Traits>
 template <typename InputIt>
-basic_inplace_string<N, CharT, Traits>::basic_inplace_string(InputIt first, InputIt last, detail::is_exactly_input_iterator_tag)
+basic_inplace_string<N, CharT, Traits>::basic_inplace_string(InputIt first, InputIt last, detail::is_exactly_input_iterator_tag tag)
 {
-#ifdef INPLACE_STRING_SANITY_CHECKS
-	for (size_type i = 0; i <= N; ++i)
-		_data[i] = 'a';
-#endif
-
-	pointer p = _data.data();
-	size_type count = 0;
-	for (auto it = first; it != last; ++it, ++p, ++count)
-	{
-		traits_type::assign(*p, *it);
-
-		if (count >= N)
-			detail::throw_helper<std::out_of_range>("basic_inplace_string::init: out of range");
-	}
-	traits_type::assign(*p, value_type{});
-
-	set_size(count);
+	insert(cbegin(), first, last, tag);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
 template <typename InputIt>
-basic_inplace_string<N, CharT, Traits>::basic_inplace_string(InputIt first, InputIt last, detail::is_input_iterator_tag)
+basic_inplace_string<N, CharT, Traits>::basic_inplace_string(InputIt first, InputIt last, detail::is_input_iterator_tag tag)
 {
-#ifdef INPLACE_STRING_SANITY_CHECKS
-	for (size_type i = 0; i <= N; ++i)
-		_data[i] = 'a';
-#endif
-
-	const size_type count = static_cast<size_type>(std::distance(first, last));
-	if (count >= N)
-		detail::throw_helper<std::out_of_range>("basic_inplace_string::init: out of range");
-
-	pointer p = _data.data();
-	for (auto it = first; it != last; ++it, ++p)
-		traits_type::assign(*p, *it);
-	traits_type::assign(*p, value_type{});
-
-	set_size(count);
+	insert(cbegin(), first, last, tag);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
@@ -475,8 +421,7 @@ basic_inplace_string<N, CharT, Traits>::insert(size_type index, size_type count,
 		detail::throw_helper<std::length_error>("basic_inplace_string::insert: maximum capacity reached");
 
 	traits_type::move(_data.data() + index + count, _data.data() + index, sz - index);
-	for (size_type i = 0; i != count; ++i)
-		traits_type::assign(_data[index + i], ch);
+	traits_type::assign(&_data[index], count, ch);
 
 	const size_type new_size = sz + count;
 	traits_type::assign(_data[new_size], value_type{});
