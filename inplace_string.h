@@ -86,7 +86,7 @@ public:
 
 	static_assert(std::is_pod<value_type>::value, "CharT type of basic_inplace_string must be a POD");
 	static_assert(std::is_same<value_type, typename traits_type::char_type>::value, "CharT type must be the same type as Traits::char_type");
-	static_assert(N < std::numeric_limits<static_size_type>::max(), "N must be smaller than the maximum static_size possible with this CharT type");
+	static_assert(N <= std::numeric_limits<static_size_type>::max(), "N must be smaller than the maximum static_size possible with this CharT type");
 
 	explicit basic_inplace_string() noexcept;
 
@@ -144,7 +144,7 @@ public:
 
 	bool empty() const noexcept { return get_remaining_size() == max_size(); }
 
-	size_type size() const noexcept { return N - static_cast<size_type>(_data[N]); }
+	size_type size() const noexcept { return N - reinterpret_cast<const static_size_type&>(_data[N]); }
 	size_type length() const noexcept { return size(); }
 
 	static constexpr size_type max_size() noexcept { return N; }

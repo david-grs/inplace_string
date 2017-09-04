@@ -124,6 +124,27 @@ TEST(inplace_string, constructor)
 	}
 }
 
+TEST(inplace_string, big_inplace_string)
+{
+	using big_string = inplace_string<255>;
+
+	{
+		big_string s;
+		ASSERT_EQ(0, s.size());
+	}
+	{
+		big_string s = "foobar";
+		ASSERT_EQ(6, s.size());
+	}
+	{
+		big_string s = big_string(255, 'z');
+		EXPECT_EQ(std::string(255, 'z'), std::string(s.c_str()));
+	}
+	{
+		EXPECT_THROW(big_string s = big_string(256, 'z'), std::length_error);
+	}
+}
+
 TEST(inplace_string, at)
 {
 	my_string s("foobar");
