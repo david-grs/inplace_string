@@ -297,6 +297,7 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string() noexcept
 template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string(size_type count, value_type ch)
 {
+	set_size(0);
 	insert(static_cast<size_type>(0), count, ch);
 }
 
@@ -327,6 +328,7 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const basic_inplace
 template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const value_type* str, size_type count)
 {
+	set_size(0);
 	insert(static_cast<size_type>(0), str, count);
 }
 
@@ -378,6 +380,7 @@ template <std::size_t N, typename CharT, typename Traits>
 template <typename InputIt>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string(InputIt first, InputIt last, detail::is_exactly_input_iterator_tag tag)
 {
+	set_size(0);
 	insert(cbegin(), first, last, tag);
 }
 
@@ -385,6 +388,7 @@ template <std::size_t N, typename CharT, typename Traits>
 template <typename InputIt>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string(InputIt first, InputIt last, detail::is_input_iterator_tag tag)
 {
+	set_size(0);
 	insert(cbegin(), first, last, tag);
 }
 
