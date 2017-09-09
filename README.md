@@ -1,6 +1,6 @@
 inplace_string<T, CharT, Traits>
 ================================
-A std::string's alternative with inplace storage, C++17 compliant.
+An alternative to std::string with inplace storage. STL compliant, can be used as a full replacement of C++17's std::string.
 
 
 Example
@@ -27,3 +27,11 @@ Example
 ```
 
 
+
+Compatibility
+-------------
+inplace_string<T, CharT, Traits> implements C++17's std::string interface, plus:
+  * `max_size()` and `capacity()` are `constexpr`
+  * `inplace_string` can be constructed from `const CharT(&)[M])`, allowing a compile-time error it the input exceeds the maximum capacity
+
+It is compatible with GCC >= 5.
