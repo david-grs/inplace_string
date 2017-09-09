@@ -136,10 +136,11 @@ TEST(inplace_string, constructor)
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
 
-	{
-		inplace_string<7> s("foobar");
-		EXPECT_EQ("foobar", std::string(s.c_str()));
-	}
+	// expected to not build
+	//{
+	//	inplace_string<5> s("foobar");
+	//	EXPECT_EQ("foobar", std::string(s.c_str()));
+	//}
 
 	{
 		inplace_string<6> s("foobar");
