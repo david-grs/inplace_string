@@ -1,17 +1,29 @@
-inplace_string
-==============
-A C++17 compliant version of basic_inplace_string<N, CharT, Traits>
+inplace_string<T, CharT, Traits>
+================================
+A std::string's alternative with inplace storage, C++17 compliant.
 
 
 Example
 -------
 ```
-using Name = inplace_string<5>; // 5 characters + NULL-byte
-Name name = "foo"; // can be used as a std::string
+{
+  using Name = inplace_string<15>; // 16 bytes on stack, size included
+  Name name = "foo"; 
 
-name += "bar"; // throws std::length_error
+  auto it = name.find("r");
+  assert(it == Name::npos);
 
-name = "foobar"; // compiler error
+  name += "bar";
+  
+  std::string str(name); // implicit string_view construction
+
+  ....
+}
+
+{
+  inplace_string<5> too_small;
+  too_small = "foobar"; // compiler error
+}
 ```
 
 
