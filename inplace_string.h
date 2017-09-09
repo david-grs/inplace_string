@@ -10,7 +10,13 @@
 #include <iostream>
 #endif
 
+#if __has_include(<string_view>)
+#include <string_view>
+template <typename CharT, typename Traits> using basic_string_view = std::basic_string_view<CharT, Traits>;
+#else
 #include <experimental/string_view>
+template <typename CharT, typename Traits>  using basic_string_view = std::experimental::basic_string_view<CharT, Traits>;
+#endif
 
 namespace detail
 {
@@ -109,10 +115,10 @@ public:
 	basic_inplace_string(const std::initializer_list<CharT>& ilist);
 
 	explicit basic_inplace_string(const std::basic_string<CharT, Traits>& str);
-	explicit basic_inplace_string(std::experimental::basic_string_view<CharT, Traits> sv);
+	explicit basic_inplace_string(basic_string_view<CharT, Traits> sv);
 
 	template <typename T,
-			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value>::type>
+			  typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value>::type>
 	basic_inplace_string(const T& t, size_type pos, size_type n);
 
 	reference       at(size_type i);
@@ -130,7 +136,7 @@ public:
 	const value_type* data() const noexcept  { return _data.data(); }
 	const value_type* c_str() const noexcept { return _data.data(); }
 
-	operator std::experimental::basic_string_view<CharT, Traits>() const noexcept { return {_data.data(), size()}; }
+	operator basic_string_view<CharT, Traits>() const noexcept { return {_data.data(), size()}; }
 
 	iterator       begin() noexcept        { return std::begin(_data); }
 	const_iterator begin() const noexcept  { return std::begin(_data); }
@@ -171,10 +177,10 @@ public:
 	iterator insert(const_iterator pos, InputIt first, InputIt last);
 
 	iterator insert(const_iterator pos, std::initializer_list<CharT> ilist);
-	basic_inplace_string& insert(size_type pos, std::experimental::basic_string_view<CharT, Traits> view);
+	basic_inplace_string& insert(size_type pos, basic_string_view<CharT, Traits> view);
 
 	template <typename T,
-			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
+			  typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
 	basic_inplace_string& insert(size_type pos, const T& t, size_type index_str, size_type count = npos);
 
@@ -195,10 +201,10 @@ public:
 	basic_inplace_string& append(InputIt first, InputIt last);
 
 	basic_inplace_string& append(std::initializer_list<value_type> ilist);
-	basic_inplace_string& append(const std::experimental::basic_string_view<CharT, Traits>& view);
+	basic_inplace_string& append(const basic_string_view<CharT, Traits>& view);
 
 	template <typename T,
-			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
+			  typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
 	basic_inplace_string& append(const T& t, size_type pos, size_type count = npos);
 
@@ -206,7 +212,7 @@ public:
 	basic_inplace_string& operator+=(value_type ch) { push_back(ch); return *this; }
 	basic_inplace_string& operator+=(const value_type* str) { return append(str); }
 	basic_inplace_string& operator+=(std::initializer_list<value_type> ilist) {return append(ilist); }
-	basic_inplace_string& operator+=(std::experimental::basic_string_view<CharT, Traits> view) { return append(view); }
+	basic_inplace_string& operator+=(basic_string_view<CharT, Traits> view) { return append(view); }
 
 	int compare(const basic_inplace_string& str) const noexcept;
 	int compare(size_type pos1, size_type count1, const basic_inplace_string& str) const;
@@ -214,11 +220,11 @@ public:
 	int compare(const value_type* str) const;
 	int compare(size_type pos1, size_type count1, const value_type* str) const;
 	int compare(size_type pos1, size_type count1, const value_type* str, size_type count2) const;
-	int compare(std::experimental::basic_string_view<CharT, Traits> sv) const noexcept;
-	int compare(size_type pos1, size_type count1, std::experimental::basic_string_view<CharT, Traits> sv) const;
+	int compare(basic_string_view<CharT, Traits> sv) const noexcept;
+	int compare(size_type pos1, size_type count1, basic_string_view<CharT, Traits> sv) const;
 
 	template <typename T,
-			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
+			  typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
 	int compare(size_type pos1, size_type count1, const T& t, size_type pos2, size_type count2 = npos) const;
 
@@ -236,11 +242,11 @@ public:
 	basic_inplace_string& replace(size_type pos, size_type count, size_type count2, value_type ch);
 	basic_inplace_string& replace(const_iterator first, const_iterator last, size_type count2, value_type ch);
 	basic_inplace_string& replace(const_iterator first, const_iterator last, std::initializer_list<value_type> ilist);
-	basic_inplace_string& replace(size_type pos, size_type count, std::experimental::basic_string_view<CharT, Traits> sv);
-	basic_inplace_string& replace(const_iterator first, const_iterator last, std::experimental::basic_string_view<CharT, Traits> sv);
+	basic_inplace_string& replace(size_type pos, size_type count, basic_string_view<CharT, Traits> sv);
+	basic_inplace_string& replace(const_iterator first, const_iterator last, basic_string_view<CharT, Traits> sv);
 
 	template <typename T,
-			  typename X = typename std::enable_if<std::is_convertible<const T&, std::experimental::basic_string_view<CharT, Traits>>::value
+			  typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value
 												   && !std::is_convertible<const T&, const CharT*>::value>::type>
 	basic_inplace_string& replace(size_type pos, size_type count, const T& t, size_type pos2, size_type count2 = npos);
 
@@ -257,7 +263,7 @@ public:
 	size_type find(const value_type* str, size_type pos, size_type count) const noexcept;
 	size_type find(const value_type* str, size_type pos = 0) const noexcept;
 	size_type find(value_type ch, size_type pos = 0) const noexcept;
-	size_type find(std::experimental::basic_string_view<CharT, Traits> sv, size_type pos = 0) const noexcept;
+	size_type find(basic_string_view<CharT, Traits> sv, size_type pos = 0) const noexcept;
 
 private:
 	template <typename InputIt>
@@ -371,7 +377,7 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const std::initiali
 }
 
 template <std::size_t N, typename CharT, typename Traits>
-basic_inplace_string<N, CharT, Traits>::basic_inplace_string(std::experimental::basic_string_view<CharT, Traits> sv) :
+basic_inplace_string<N, CharT, Traits>::basic_inplace_string(basic_string_view<CharT, Traits> sv) :
 	basic_inplace_string(sv.data(), sv.size())
 {
 }
@@ -380,7 +386,7 @@ template <std::size_t N, typename CharT, typename Traits>
 template <typename T, typename X>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const T& t, size_type pos, size_type n)
 {
-	std::experimental::basic_string_view<CharT, Traits> sv = t;
+	basic_string_view<CharT, Traits> sv = t;
 	sv = sv.substr(pos, n);
 	basic_inplace_string(sv.data(), sv.size());
 }
@@ -589,7 +595,7 @@ basic_inplace_string<N, CharT, Traits>::insert(const_iterator pos, std::initiali
 
 template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
-basic_inplace_string<N, CharT, Traits>::insert(size_type pos, std::experimental::basic_string_view<CharT, Traits> view)
+basic_inplace_string<N, CharT, Traits>::insert(size_type pos, basic_string_view<CharT, Traits> view)
 {
 	return insert(pos, view.data(), view.size());
 }
@@ -599,7 +605,7 @@ template <typename T, typename X>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::insert(size_type pos, const T& t, size_type index_str, size_type count)
 {
-	std::experimental::basic_string_view<CharT, Traits> view = t;
+	basic_string_view<CharT, Traits> view = t;
 
 	if (index_str > view.size())
 		detail::throw_helper<std::out_of_range>("basic_inplace_string::insert: out of range");
@@ -734,7 +740,7 @@ basic_inplace_string<N, CharT, Traits>::append(std::initializer_list<value_type>
 
 template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
-basic_inplace_string<N, CharT, Traits>::append(const std::experimental::basic_string_view<CharT, Traits>& view)
+basic_inplace_string<N, CharT, Traits>::append(const basic_string_view<CharT, Traits>& view)
 {
 	return append(view.data(), view.size());
 }
@@ -744,7 +750,7 @@ template <typename T, typename X>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::append(const T& t, size_type pos, size_type count)
 {
-	std::experimental::basic_string_view<CharT, Traits> view = t;
+	basic_string_view<CharT, Traits> view = t;
 	return append(view.data() + pos, std::min(view.size() - pos, count));
 }
 
@@ -789,13 +795,13 @@ int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type co
 }
 
 template <std::size_t N, typename CharT, typename Traits>
-int basic_inplace_string<N, CharT, Traits>::compare(std::experimental::basic_string_view<CharT, Traits> sv) const noexcept
+int basic_inplace_string<N, CharT, Traits>::compare(basic_string_view<CharT, Traits> sv) const noexcept
 {
 	return compare(0, size(), sv.data(), sv.size());
 }
 
 template <std::size_t N, typename CharT, typename Traits>
-int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1, std::experimental::basic_string_view<CharT, Traits> sv) const
+int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1, basic_string_view<CharT, Traits> sv) const
 {
 	return compare(pos1, count1, sv.data(), sv.size());
 }
@@ -804,7 +810,7 @@ template <std::size_t N, typename CharT, typename Traits>
 template <typename T, typename X>
 int basic_inplace_string<N, CharT, Traits>::compare(size_type pos1, size_type count1, const T& t, size_type pos2, size_type count2) const
 {
-	std::experimental::basic_string_view<CharT, Traits> view = t;
+	basic_string_view<CharT, Traits> view = t;
 
 	if (pos2  > view.size())
 		detail::throw_helper<std::out_of_range>("basic_inplace_string::replace: out of range");
@@ -999,14 +1005,14 @@ basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iter
 
 template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
-basic_inplace_string<N, CharT, Traits>::replace(size_type pos, size_type count, std::experimental::basic_string_view<CharT, Traits> sv)
+basic_inplace_string<N, CharT, Traits>::replace(size_type pos, size_type count, basic_string_view<CharT, Traits> sv)
 {
 	return replace(pos, count, sv.data(), sv.size());
 }
 
 template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>&
-basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, std::experimental::basic_string_view<CharT, Traits> sv)
+basic_inplace_string<N, CharT, Traits>::replace(const_iterator first, const_iterator last, basic_string_view<CharT, Traits> sv)
 {
 	const size_type pos1 = static_cast<size_type>(first - _data.data());
 	const size_type count1 = static_cast<size_type>(std::distance(first, last));
@@ -1018,7 +1024,7 @@ template <typename T, typename X>
 basic_inplace_string<N, CharT, Traits>&
 basic_inplace_string<N, CharT, Traits>::replace(size_type pos, size_type count, const T& t, size_type pos2, size_type count2)
 {
-	std::experimental::basic_string_view<CharT, Traits> view = t;
+	basic_string_view<CharT, Traits> view = t;
 
 	if (pos2 > view.size())
 		detail::throw_helper<std::out_of_range>("basic_inplace_string::replace: out of range");
@@ -1071,7 +1077,7 @@ basic_inplace_string<N, CharT, Traits>::find(value_type ch, size_type pos) const
 
 template <std::size_t N, typename CharT, typename Traits>
 typename basic_inplace_string<N, CharT, Traits>::size_type
-basic_inplace_string<N, CharT, Traits>::find(std::experimental::basic_string_view<CharT, Traits> sv, size_type pos) const noexcept
+basic_inplace_string<N, CharT, Traits>::find(basic_string_view<CharT, Traits> sv, size_type pos) const noexcept
 {
 	return find(sv.data(), pos, sv.size());
 }
@@ -1382,7 +1388,7 @@ struct hash<basic_inplace_string<N, CharT, Traits>>
 {
 	size_t operator()(const basic_inplace_string<N, CharT, Traits>& str) const
 	{
-		using view = typename std::experimental::basic_string_view<CharT, Traits>;
+		using view = basic_string_view<CharT, Traits>;
 
 		const view v(str.data(), str.size());
 		return std::hash<view>()(v);
