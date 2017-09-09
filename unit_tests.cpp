@@ -16,6 +16,19 @@ TEST(inplace_string, constructor)
 	}
 
 	{
+		my_string s("foobar");
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		std::string str = "foobar";
+		my_string  s(str.c_str());
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
 		my_string s(6, 'a');
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ(std::string(6, 'a'), std::string(s.c_str()));
@@ -124,13 +137,18 @@ TEST(inplace_string, constructor)
 	}
 
 	{
+		inplace_string<7> s("foobar");
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
 		inplace_string<6> s("foobar");
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
 
 	{
-		inplace_string<5> s("foobar");
-		EXPECT_EQ("foobar", std::string(s.c_str()));
+		inplace_string<6> s("foo");
+		EXPECT_EQ("foo", std::string(s.c_str()));
 	}
 }
 

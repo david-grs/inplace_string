@@ -303,8 +303,14 @@ template <std::size_t N, typename CharT, typename Traits>
 template <std::size_t M>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const value_type(&str)[M]) noexcept
 {
-	static_assert(M - 1 <= max_size(), "basic_inplace_string: size exceeds maximum capacity");
-	basic_inplace_string(str, M - 1);
+	constexpr size_type sz = M - 1;
+	static_assert(sz <= max_size(), "basic_inplace_string: size exceeds maximum capacity");
+
+	for (size_type i = 0; i < sz; ++i)
+		traits_type::assign(_data[i], str[i]);
+
+	traits_type::assign(_data[sz], value_type{});
+	set_size(sz);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
