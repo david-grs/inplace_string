@@ -122,6 +122,16 @@ TEST(inplace_string, constructor)
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
+
+	{
+		inplace_string<6> s("foobar");
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		inplace_string<5> s("foobar");
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
 }
 
 TEST(inplace_string, big_inplace_string)

@@ -90,13 +90,18 @@ public:
 
 	explicit basic_inplace_string() noexcept;
 
+	template <std::size_t M>
+	basic_inplace_string(const value_type(&str)[M]) noexcept;
+
+	template <typename ValueTypePtr, typename X = typename std::enable_if<std::is_same<ValueTypePtr, const value_type*>::value>::type>
+	basic_inplace_string(ValueTypePtr str);
+
 	basic_inplace_string(size_type count, value_type ch);
 	basic_inplace_string(const std::basic_string<CharT, Traits>& other, size_type pos);
 	basic_inplace_string(const basic_inplace_string& other, size_type pos);
 	basic_inplace_string(const std::basic_string<CharT, Traits>& other, size_type pos, size_type count);
 	basic_inplace_string(const basic_inplace_string& other, size_type pos, size_type count);
 	basic_inplace_string(const value_type* str, size_type count);
-	basic_inplace_string(const value_type* str);
 
 	template <typename InputIt>
 	basic_inplace_string(InputIt first, InputIt last);
@@ -295,6 +300,21 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string() noexcept
 }
 
 template <std::size_t N, typename CharT, typename Traits>
+template <std::size_t M>
+basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const value_type(&str)[M]) noexcept
+{
+	static_assert(M - 1 <= max_size(), "basic_inplace_string: size exceeds maximum capacity");
+	basic_inplace_string(str, M - 1);
+}
+
+template <std::size_t N, typename CharT, typename Traits>
+template <typename ValueTypePtr, typename X>
+basic_inplace_string<N, CharT, Traits>::basic_inplace_string(ValueTypePtr str) :
+	basic_inplace_string(str, traits_type::length(str))
+{
+}
+
+template <std::size_t N, typename CharT, typename Traits>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string(size_type count, value_type ch)
 {
 	set_size(0);
@@ -330,12 +350,6 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const value_type* s
 {
 	set_size(0);
 	insert(static_cast<size_type>(0), str, count);
-}
-
-template <std::size_t N, typename CharT, typename Traits>
-basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const value_type* str) :
-	basic_inplace_string(str, traits_type::length(str))
-{
 }
 
 template <std::size_t N, typename CharT, typename Traits>
