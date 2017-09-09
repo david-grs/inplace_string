@@ -278,13 +278,13 @@ private:
 	template <typename InputIt>
 	basic_inplace_string& replace(const_iterator first, const_iterator last, InputIt first2, InputIt last2, detail::is_input_iterator_tag);
 
-	void set_size(size_type sz)
+	void set_size(size_type sz) noexcept
 	{
 		assert(sz <= max_size());
 		_data[N] = static_cast<value_type>(N - sz);
 	}
 
-	size_type get_remaining_size() const
+	size_type get_remaining_size() const noexcept
 	{
 		return static_cast<size_type>(_data[N]);
 	}
