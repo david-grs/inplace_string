@@ -141,7 +141,7 @@ TEST(inplace_string, big_inplace_string)
 		EXPECT_EQ(std::string(255, 'z'), std::string(s.c_str()));
 	}
 	{
-		EXPECT_THROW(big_string s = big_string(256, 'z'), std::length_error);
+		EXPECT_THROW(big_string s = big_string(256, 'z'); (void)s, std::length_error);
 	}
 }
 
