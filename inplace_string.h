@@ -1122,7 +1122,7 @@ void basic_inplace_string<N, CharT, Traits>::swap(basic_inplace_string& other) n
 template <std::size_t N, typename CharT, typename Traits>
 inline std::basic_ostream<CharT, Traits>& operator<<(std::basic_ostream<CharT, Traits>& os, const basic_inplace_string<N, CharT, Traits>& str)
 {
-	return os.write(str.data(), str.size());
+	return os.write(str.data(), static_cast<std::streamsize>(str.size()));
 }
 
 template <std::size_t N, std::size_t M, typename CharT, typename Traits>
