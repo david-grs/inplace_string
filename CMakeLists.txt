@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 2.8)
 project(inplace_string)
 include(gtest.cmake)
 
+SET(COVERAGE OFF CACHE BOOL "Coverage")
+
 add_executable(tests unit_tests.cpp)
 target_link_libraries(tests gtest pthread)
 
@@ -19,9 +21,11 @@ else()
 
   if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     target_compile_options(tests PRIVATE -Weverything -Wno-c++98-compat -Wno-global-constructors)
-  else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage")
-    set(CMAKE_EXE_LINKER_FLAGS "--coverage")
+  endif()
+
+  if (COVERAGE)
+    target_compile_options(tests PRIVATE --coverage)
+    target_link_libraries(tests PRIVATE --coverage)
   endif()
 endif()
 
