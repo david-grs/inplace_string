@@ -5,9 +5,18 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
+      - llvm-toolchain-precise-3.7
     packages:
       - g++-5 
+      - clang-3.7
+
+before_install:
+  - pip install --user cpp-coveralls
 
 script:
   - CXX=/usr/bin/g++-5 CC=/usr/bin/gcc-5 cmake .
   - cmake --build . 
+  - ./tests
+
+after_success:
+  - coveralls --root . -E ".*external.*" -E ".*CMakeFiles.*" 
