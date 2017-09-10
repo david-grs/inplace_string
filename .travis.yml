@@ -6,16 +6,16 @@ addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
-      - llvm-toolchain-precise-3.7
+      - llvm-toolchain-precise-5.0
     packages:
-      - g++-5 
-      - clang-3.7
+      - g++-6
+      - clang-5.0
 
 before_install:
   - pip install --user cpp-coveralls
 
 script:
-  - CXX=/usr/bin/g++-5 CC=/usr/bin/gcc-5 cmake .
+  - CXX=/usr/bin/g++-6 CC=/usr/bin/gcc-6 cmake .
   - cmake --build . 
   - ./tests
 
