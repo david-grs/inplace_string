@@ -1,14 +1,10 @@
 cmake_minimum_required(VERSION 2.8)
 
 project(inplace_string)
-#include(gtest.cmake)
-
-
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
+include(gtest.cmake)
 
 add_executable(tests unit_tests.cpp)
-target_link_libraries(tests ${GTEST_BOTH_LIBRARIES}  pthread)
+target_link_libraries(tests gtest pthread)
 
 if (MSVC)
   target_compile_options(tests PRIVATE "/std:c++14 /W4 /WX")

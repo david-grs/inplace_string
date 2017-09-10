@@ -1,6 +1,6 @@
 dist: trusty
-language: cpp
 sudo: false
+language: cpp
 
 addons:
   apt:
@@ -10,8 +10,6 @@ addons:
     packages:
       - g++-5 
       - clang-3.7
-      - libgtest0
-      - libgtest-dev
 
 before_install:
   - pip install --user cpp-coveralls
