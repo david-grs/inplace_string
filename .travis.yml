@@ -19,4 +19,4 @@ script:
   - ./tests
 
 after_success:
-  - coveralls --root . -E ".*external.*" -E ".*CMakeFiles.*" 
+  - coveralls --root . -E ".*gtest.*" -E ".*CMakeFiles.*" 
