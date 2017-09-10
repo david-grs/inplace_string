@@ -10,7 +10,7 @@ addons:
     packages:
       - g++-5 
       - clang-3.7
-      - gtest
+      - libgtest0
       - libgtest-dev
 
 before_install:
