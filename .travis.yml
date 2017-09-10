@@ -1,8 +1,6 @@
 dist: trusty
 language: cpp
-
-install:
-  sudo apt-get install gtest libgtest-dev
+sudo: false
 
 addons:
   apt:
@@ -12,6 +10,8 @@ addons:
     packages:
       - g++-5 
       - clang-3.7
+      - gtest
+      - libgtest-dev
 
 before_install:
   - pip install --user cpp-coveralls
