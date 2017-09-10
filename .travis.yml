@@ -1,9 +1,13 @@
 dist: trusty
 language: cpp
 
-install:
-  - sudo apt-get install libgtest-dev
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - g++-5 
 
 script:
-  - cmake .
+  - CXX=/usr/bin/g++-5 CC=/usr/bin/gcc-5 cmake .
   - cmake --build . 
