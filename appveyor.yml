@@ -20,4 +20,4 @@ before_build:
     - cd ..
 
 build:
-    project: inplace_string.sln
+  project: inplace-string.sln
