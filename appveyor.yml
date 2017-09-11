@@ -19,4 +19,4 @@ before_build:
     - cmake -G "Visual Studio 15 2017" ..
 
 build:
-    project: inplace_string.sln
+    project: ../inplace_string.sln
