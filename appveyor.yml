@@ -7,7 +7,7 @@ install:
 
 before_build:
     - cmake -G "Visual Studio 15 2017 Win64" .
-    - cmake --build build64 --config Debug
+    - cmake --build inplace_string.sln --config Debug
 
 build:
   project: inplace_string.sln
