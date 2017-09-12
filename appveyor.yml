@@ -1,7 +1,6 @@
 version: '1.0.{build}'
 
 platform:
-    - x86
     - x64
 
 configuration:
