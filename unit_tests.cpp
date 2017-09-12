@@ -6,6 +6,16 @@
 
 using my_string = inplace_string<31>;
 
+
+#if __has_include(<string_view>)
+#include <string_view>
+using string_view = std::string_view;
+#else
+#include <experimental/string_view>
+using string_view = std::experimental::string_view;
+#endif
+
+
 TEST(inplace_string, constructor)
 {
 	{
@@ -131,7 +141,7 @@ TEST(inplace_string, constructor)
 	}
 
 	{
-		my_string s(std::experimental::string_view("foobarFOO", 6));
+		my_string s(string_view("foobarFOO", 6));
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
@@ -236,7 +246,7 @@ TEST(inplace_string, data)
 TEST(inplace_string, string_view)
 {
 	my_string s("foobar");
-	std::experimental::string_view sv = s;
+	string_view sv = s;
 	EXPECT_EQ("foobar", std::string(sv));
 }
 
@@ -437,12 +447,12 @@ TEST(inplace_string, compare)
 	}
 	{
 		my_string s("foobar");
-		EXPECT_EQ(s.compare(std::experimental::string_view("foobar")), 0);
+		EXPECT_EQ(s.compare(string_view("foobar")), 0);
 	}
 	{
-		struct A : std::experimental::string_view
+		struct A : string_view
 		{
-			A() : std::experimental::string_view("foobar") { }
+			A() : string_view("foobar") { }
 		};
 
 		A a;
@@ -630,7 +640,7 @@ TEST(inplace_string, append)
 
 	{
 		my_string s("foo");
-		s.append(std::experimental::string_view("bar"));
+		s.append(string_view("bar"));
 		EXPECT_EQ(6, s.size());
 		EXPECT_EQ("foobar", s);
 	}
@@ -657,9 +667,9 @@ TEST(inplace_string, append)
 	{
 		my_string s("foo");
 
-		struct A : std::experimental::string_view
+		struct A : string_view
 		{
-			A() : std::experimental::string_view("bar") { }
+			A() : string_view("bar") { }
 		};
 		A a;
 		s.append(a, 0);
@@ -693,7 +703,7 @@ TEST(inplace_string, append_operator)
 
 	{
 		my_string s("foo");
-		s += std::experimental::string_view("bar");
+		s += string_view("bar");
 		EXPECT_EQ(6, s.size());
 		EXPECT_EQ("foobar", s);
 	}
@@ -812,7 +822,7 @@ TEST(inplace_string, pop_back)
 TEST(inplace_string, insert)
 {
 	{
-		std::experimental::string_view view("FOOBAR", 6);
+		string_view view("FOOBAR", 6);
 		my_string s = "foobarfoobar";
 		s.insert(3, view);
 		EXPECT_EQ(18, s.size());
@@ -820,7 +830,7 @@ TEST(inplace_string, insert)
 	}
 
 	{
-		std::experimental::string_view view("FOOBAR", 6);
+		string_view view("FOOBAR", 6);
 		my_string s = "foobarfoobar";
 		EXPECT_THROW(s.insert(13, view), std::out_of_range);
 		s.insert(3, view);
@@ -831,13 +841,13 @@ TEST(inplace_string, insert)
 	{
 		my_string s = "foobarfoobar";
 		std::string ss(my_string::max_size() - s.size(), 'a');
-		EXPECT_NO_THROW(s.insert(3, std::experimental::string_view(ss.data(), ss.size())));
+		EXPECT_NO_THROW(s.insert(3, string_view(ss.data(), ss.size())));
 	}
 
 	{
 		my_string s = "foobarfoobar";
 		std::string ss(my_string::max_size() - s.size() + 1, 'a');
-		EXPECT_THROW(s.insert(3, std::experimental::string_view(ss.data(), ss.size())), std::length_error);
+		EXPECT_THROW(s.insert(3, string_view(ss.data(), ss.size())), std::length_error);
 	}
 
 	{
@@ -1062,12 +1072,12 @@ TEST(inplace_string, replace)
 	}
 	{
 		my_string s = "foobar";
-		s.replace(0, 3, std::experimental::string_view("FOOBAR"));
+		s.replace(0, 3, string_view("FOOBAR"));
 		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
 	}
 	{
 		my_string s = "foobar";
-		s.replace(s.cbegin(), s.cbegin() + 3, std::experimental::string_view("FOOBAR"));
+		s.replace(s.cbegin(), s.cbegin() + 3, string_view("FOOBAR"));
 		EXPECT_EQ("FOOBARbar", std::string(s.c_str()));
 	}
 }
@@ -1184,11 +1194,11 @@ TEST(inplace_string, find)
 	EXPECT_EQ(npos, s.find(std::string("barb"), 3));
 	EXPECT_EQ(npos, s.find(std::string("bar"), 4));
 
-	EXPECT_EQ(3, s.find(std::experimental::string_view("bar")));
-	EXPECT_EQ(3, s.find(std::experimental::string_view("bar"), 2));
-	EXPECT_EQ(3, s.find(std::experimental::string_view("bar"), 3));
-	EXPECT_EQ(npos, s.find(std::experimental::string_view("barb"), 3));
-	EXPECT_EQ(npos, s.find(std::experimental::string_view("bar"), 4));
+	EXPECT_EQ(3, s.find(string_view("bar")));
+	EXPECT_EQ(3, s.find(string_view("bar"), 2));
+	EXPECT_EQ(3, s.find(string_view("bar"), 3));
+	EXPECT_EQ(npos, s.find(string_view("barb"), 3));
+	EXPECT_EQ(npos, s.find(string_view("bar"), 4));
 
 	EXPECT_EQ(3, s.find(my_string("bar")));
 	EXPECT_EQ(3, s.find(my_string("bar"), 2));
