@@ -14,12 +14,7 @@ install:
     - git submodule update --init --recursive
 
 before_build:
-    - mkdir build
-    - cd build
-    - cmake -G "Visual Studio 15 2017" ..
-    - cd ..
-    - cd
-    - dir
+    - cmake -G "Visual Studio 15 2017" .
 
 build:
-  project: inplace-string.sln
+    - cmake .
