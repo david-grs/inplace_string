@@ -1153,15 +1153,16 @@ inline bool operator==(const CharT* lhs,
 	return rhs == lhs;
 }
 
-template <std::size_t N, typename CharT, typename Traits>
+template <std::size_t N, typename CharT, typename Traits, typename T, typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value>::type>
 inline bool operator==(const basic_inplace_string<N, CharT, Traits>& lhs,
-					   std::experimental::string_view rhs)
+					   T rhs)
 {
-	return lhs.size() == rhs.size() && Traits::compare(lhs.data(), rhs.data(), lhs.size()) == 0;
+	basic_string_view<CharT, Traits> sv = rhs;
+	return lhs.size() == sv.size() && Traits::compare(lhs.data(), sv.data(), lhs.size()) == 0;
 }
 
-template <std::size_t N, typename CharT, typename Traits>
-inline bool operator==(std::experimental::string_view lhs,
+template <std::size_t N, typename CharT, typename Traits, typename T, typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value>::type>
+inline bool operator==(T lhs,
 					   const basic_inplace_string<N, CharT, Traits>& rhs)
 {
 	return rhs == lhs;
@@ -1189,15 +1190,15 @@ inline bool operator!=(const CharT* lhs,
 	return rhs != lhs;
 }
 
-template <std::size_t N, typename CharT, typename Traits>
+template <std::size_t N, typename CharT, typename Traits, typename T, typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value>::type>
 inline bool operator!=(const basic_inplace_string<N, CharT, Traits>& lhs,
-					   std::experimental::string_view rhs)
+					   T rhs)
 {
 	return !(lhs == rhs);
 }
 
-template <std::size_t N, typename CharT, typename Traits>
-inline bool operator!=(std::experimental::string_view lhs,
+template <std::size_t N, typename CharT, typename Traits, typename T, typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value>::type>
+inline bool operator!=(T lhs,
 					   const basic_inplace_string<N, CharT, Traits>& rhs)
 {
 	return rhs != lhs;
@@ -1224,15 +1225,16 @@ inline bool operator<(const CharT* lhs,
 	return rhs.compare(lhs) > 0;
 }
 
-template <std::size_t N, typename CharT, typename Traits>
+template <std::size_t N, typename CharT, typename Traits, typename T, typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value>::type>
 inline bool operator<(const basic_inplace_string<N, CharT, Traits>& lhs,
-					  std::experimental::string_view rhs)
+					  T rhs)
 {
-	return lhs.compare(rhs) < 0;
+	basic_string_view<CharT, Traits> view = rhs;
+	return lhs.compare(view) < 0;
 }
 
-template <std::size_t N, typename CharT, typename Traits>
-inline bool operator<(std::experimental::string_view lhs,
+template <std::size_t N, typename CharT, typename Traits, typename T, typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value>::type>
+inline bool operator<(T lhs,
 					  const basic_inplace_string<N, CharT, Traits>& rhs)
 {
 	return rhs.compare(lhs) > 0;
@@ -1259,15 +1261,15 @@ inline bool operator>(const CharT* lhs,
 	return rhs < lhs;
 }
 
-template <std::size_t N, typename CharT, typename Traits>
+template <std::size_t N, typename CharT, typename Traits, typename T, typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value>::type>
 inline bool operator>(const basic_inplace_string<N, CharT, Traits>& lhs,
-					  std::experimental::string_view rhs)
+					  T rhs)
 {
 	return rhs < lhs;
 }
 
-template <std::size_t N, typename CharT, typename Traits>
-inline bool operator>(std::experimental::string_view lhs,
+template <std::size_t N, typename CharT, typename Traits, typename T, typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value>::type>
+inline bool operator>(T lhs,
 					  const basic_inplace_string<N, CharT, Traits>& rhs)
 {
 	return rhs < lhs;
@@ -1294,15 +1296,15 @@ inline bool operator<=(const CharT* lhs,
 	return !(rhs < lhs);
 }
 
-template <std::size_t N, typename CharT, typename Traits>
+template <std::size_t N, typename CharT, typename Traits, typename T, typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value>::type>
 inline bool operator<=(const basic_inplace_string<N, CharT, Traits>& lhs,
-					   std::experimental::string_view rhs)
+					   T rhs)
 {
 	return !(rhs < lhs);
 }
 
-template <std::size_t N, typename CharT, typename Traits>
-inline bool operator<=(std::experimental::string_view lhs,
+template <std::size_t N, typename CharT, typename Traits, typename T, typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value>::type>
+inline bool operator<=(T lhs,
 					   const basic_inplace_string<N, CharT, Traits>& rhs)
 {
 	return !(rhs < lhs);
@@ -1329,15 +1331,15 @@ inline bool operator>=(const CharT* lhs,
 	return !(lhs < rhs);
 }
 
-template <std::size_t N, typename CharT, typename Traits>
+template <std::size_t N, typename CharT, typename Traits, typename T, typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value>::type>
 inline bool operator>=(const basic_inplace_string<N, CharT, Traits>& lhs,
-					   std::experimental::string_view rhs)
+					   T rhs)
 {
 	return !(lhs < rhs);
 }
 
-template <std::size_t N, typename CharT, typename Traits>
-inline bool operator>=(std::experimental::string_view lhs,
+template <std::size_t N, typename CharT, typename Traits, typename T, typename X = typename std::enable_if<std::is_convertible<const T&, basic_string_view<CharT, Traits>>::value>::type>
+inline bool operator>=(T lhs,
 					   const basic_inplace_string<N, CharT, Traits>& rhs)
 {
 	return !(lhs < rhs);
