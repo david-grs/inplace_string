@@ -380,10 +380,10 @@ TEST(inplace_string, size)
 TEST(inplace_string, max_size)
 {
 	my_string s;
-	EXPECT_EQ(31, s.max_size());
+	EXPECT_EQ(31, my_string::max_size());
 
 	inplace_string<41> ss;
-	EXPECT_EQ(41, ss.max_size());
+	EXPECT_EQ(41, inplace_string<41>::max_size());
 }
 
 TEST(inplace_string, capacity)
@@ -633,9 +633,9 @@ TEST(inplace_string, append)
 	}
 
 	{
-		my_string s(s.max_size(), 'z');
+		my_string s(my_string::max_size(), 'z');
 		EXPECT_THROW(s.append("a"), std::length_error);
-		EXPECT_EQ(s.max_size(), s.size());
+		EXPECT_EQ(my_string::max_size(), s.size());
 	}
 
 	{
@@ -654,13 +654,13 @@ TEST(inplace_string, append)
 
 	{
 		my_string s("foo");
-		s.append(s.max_size() - s.size(), 'z');
-		EXPECT_EQ(s.max_size(), s.size());
+		s.append(my_string::max_size() - s.size(), 'z');
+		EXPECT_EQ(my_string::max_size(), s.size());
 	}
 
 	{
 		my_string s("foo");
-		EXPECT_THROW(s.append(s.max_size() - s.size() + 1, 'z'), std::length_error);
+		EXPECT_THROW(s.append(my_string::max_size() - s.size() + 1, 'z'), std::length_error);
 		EXPECT_EQ(3, s.size());
 	}
 
@@ -717,13 +717,13 @@ TEST(inplace_string, append_operator)
 
 	{
 		my_string s("foo");
-		s += std::string(s.max_size() - s.size(), 'z');
-		EXPECT_EQ(s.max_size(), s.size());
+		s += std::string(my_string::max_size() - s.size(), 'z');
+		EXPECT_EQ(my_string::max_size(), s.size());
 	}
 
 	{
 		my_string s("foo");
-		EXPECT_THROW(s += std::string(s.max_size() - s.size() + 1, 'z'), std::length_error);
+		EXPECT_THROW(s += std::string(my_string::max_size() - s.size() + 1, 'z'), std::length_error);
 		EXPECT_EQ(3, s.size());
 	}
 }
@@ -803,9 +803,9 @@ TEST(inplace_string, push_back)
 	}
 	{
 		my_string s(my_string::max_size(), 'z');
-		EXPECT_EQ(s.max_size(), s.size());
+		EXPECT_EQ(my_string::max_size(), s.size());
 		EXPECT_THROW(s.push_back('a'), std::length_error);
-		EXPECT_EQ(s.max_size(), s.size());
+		EXPECT_EQ(my_string::max_size(), s.size());
 	}
 }
 
@@ -985,12 +985,12 @@ TEST(inplace_string, replace)
 	}
 	{
 		my_string s = "foobar";
-		EXPECT_NO_THROW(s.replace(std::size_t(0), 3, std::string(s.max_size() - s.size() + 3, 'z')));
-		EXPECT_EQ(s.max_size(), s.size());
+		EXPECT_NO_THROW(s.replace(std::size_t(0), 3, std::string(my_string::max_size() - s.size() + 3, 'z')));
+		EXPECT_EQ(my_string::max_size(), s.size());
 	}
 	{
 		my_string s = "foobar";
-		EXPECT_THROW(s.replace(std::size_t(0), 3, std::string(s.max_size() - s.size() + 4, 'z')), std::length_error);
+		EXPECT_THROW(s.replace(std::size_t(0), 3, std::string(my_string::max_size() - s.size() + 4, 'z')), std::length_error);
 		EXPECT_EQ(6, s.size());
 	}
 	{
@@ -1143,11 +1143,11 @@ TEST(inplace_string, resize)
 	EXPECT_EQ(0, s.size());
 	EXPECT_EQ("", std::string(s.c_str()));
 
-	s.resize(s.max_size());
-	EXPECT_EQ(s.max_size(), s.size());
+	s.resize(my_string::max_size());
+	EXPECT_EQ(my_string::max_size(), s.size());
 	EXPECT_EQ("", std::string(s.c_str()));
 
-	EXPECT_THROW(s.resize(s.max_size() + 1), std::length_error);
+	EXPECT_THROW(s.resize(my_string::max_size() + 1), std::length_error);
 }
 
 TEST(inplace_string, swap)
