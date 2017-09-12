@@ -1,7 +1,6 @@
 version: '1.0.{build}'
 
-platform:
-    - x64
+platform: x64
 
 configuration:
     - Debug
