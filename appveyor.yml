@@ -15,8 +15,6 @@ install:
 
 before_build:
     - cmake -G "Visual Studio 15 2017" .
-    - cd
-    - dir
 
 build:
-  project: inplace-string.sln
+  project: inplace_string.sln
