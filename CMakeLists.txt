@@ -11,7 +11,7 @@ target_link_libraries(tests gtest pthread)
 if (MSVC)
   target_compile_options(tests PRIVATE /std:c++17 /W4 /WX)
 
-  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O3")
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Ox")
   set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od")
   
   # VS 2017 removed tr1
