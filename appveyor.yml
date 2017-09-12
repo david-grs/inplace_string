@@ -19,6 +19,5 @@ build:
   project: $(APPVEYOR_BUILD_FOLDER)\$(APPVEYOR_PROJECT_NAME).sln
 
 test_script:
-  - dir
   - '%APPVEYOR_BUILD_FOLDER%\%CONFIGURATION%\tests.exe'
 
