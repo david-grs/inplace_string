@@ -9,10 +9,10 @@ add_executable(tests unit_tests.cpp)
 target_link_libraries(tests gtest pthread)
 
 if (MSVC)
-  target_compile_options(tests PRIVATE "/std:c++14 /W4 /WX")
+  target_compile_options(tests PRIVATE /std:c++17 /W4 /WX)
   
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /O3")
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /O0")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od")
 else()
   target_compile_options(tests PRIVATE -std=c++14 -g -Wall -Werror -Wextra -Wpedantic -Wconversion -Wswitch-default -Wswitch-enum -Wunreachable-code -Wwrite-strings -Wcast-align -Wshadow -Wundef)
   
