@@ -26,7 +26,7 @@ Example
 
 {
   inplace_string<5> too_small;
-  too_small = "foobar"; // compiler error
+  too_small = "foobar"; // error: static_assert failed "basic_inplace_string: size exceeds maximum capacity"
 }
 ```
 
