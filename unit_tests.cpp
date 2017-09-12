@@ -1111,11 +1111,11 @@ TEST(inplace_string, copy)
 	char str[10];
 	my_string::size_type bytes = s.copy(str, my_string::npos, 0);
 	EXPECT_EQ(6, bytes);
-	EXPECT_EQ("foobar", std::string(str));
+	EXPECT_EQ("foobar", std::string(str, 6));
 
 	bytes = s.copy(str, 10, 3);
 	EXPECT_EQ(3, bytes);
-	EXPECT_EQ("barbar", std::string(str));
+	EXPECT_EQ("barbar", std::string(str, 6));
 
 	EXPECT_THROW(s.copy(str, 10, 7), std::out_of_range);
 }
