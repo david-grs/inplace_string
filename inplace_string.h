@@ -138,11 +138,11 @@ public:
 
 	operator basic_string_view<CharT, Traits>() const noexcept { return {_data.data(), size()}; }
 
-	iterator       begin() noexcept        { return std::begin(_data); }
-	const_iterator begin() const noexcept  { return std::begin(_data); }
+	iterator       begin() noexcept        { return &_data[0]; }
+	const_iterator begin() const noexcept  { return &_data[0]; }
 	const_iterator cbegin() const noexcept { return begin(); }
-	iterator       end() noexcept          { return std::begin(_data) + size(); }
-	const_iterator end() const noexcept    { return std::begin(_data) + size(); }
+	iterator       end() noexcept          { return &_data[size()]; }
+	const_iterator end() const noexcept    { return &_data[size()]; }
 	const_iterator cend() const noexcept   { return end(); }
 
 	reverse_iterator       rbegin() noexcept        { return reverse_iterator(end()); }

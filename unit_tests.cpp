@@ -6,7 +6,6 @@
 
 using my_string = inplace_string<31>;
 
-
 #if __has_include(<string_view>)
 #include <string_view>
 using string_view = std::string_view;
