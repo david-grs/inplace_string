@@ -36,6 +36,6 @@ Compatibility
 -------------
 inplace_string<N, CharT, Traits> implements C++17's std::string interface, plus:
   * `max_size()` and `capacity()` are `constexpr`
-  * `inplace_string` can be constructed from `const CharT(&)[M])`, allowing a compile-time error it the input exceeds the maximum capacity
+  * `inplace_string` can be constructed from `const CharT(&)[M])`, allowing a compile-time error if the input exceeds the maximum capacity
 
 Supports Clang >= 3.4, GCC >= 5, VS >= 2017
