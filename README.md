@@ -19,7 +19,7 @@ Example
 
   name += "bar";
   
-  std::string str(name); // implicit string_view construction
+  std::string str(name); // implicit std::string_view construction
 
   ....
 }
