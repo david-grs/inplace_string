@@ -14,6 +14,16 @@ using string_view = std::string_view;
 using string_view = std::experimental::string_view;
 #endif
 
+struct SomeString
+{
+	explicit SomeString(const std::string& str) : mStr(str)
+	{}
+
+	operator string_view() const { return mStr;}
+
+private:
+	std::string mStr;
+};
 
 TEST(inplace_string, constructor)
 {
@@ -46,6 +56,24 @@ TEST(inplace_string, constructor)
 	{
 		std::string str("ZZZfoobar");
 		my_string s(str, 3);
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		my_string s("ZZZfoobar", 3, 6);
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		my_string s(SomeString("ZZZfoobar"), 3, 6);
+		ASSERT_EQ(6, s.size());
+		EXPECT_EQ("foobar", std::string(s.c_str()));
+	}
+
+	{
+		my_string s("ZZZfoobar", 3, 6);
 		ASSERT_EQ(6, s.size());
 		EXPECT_EQ("foobar", std::string(s.c_str()));
 	}
