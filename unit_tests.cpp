@@ -188,6 +188,11 @@ TEST(inplace_string, constructor)
 		inplace_string<6> s("foo");
 		EXPECT_EQ("foo", std::string(s.c_str()));
 	}
+
+	{
+		std::string str("foobar");
+		EXPECT_THROW(my_string(str, 7), std::out_of_range);
+	}
 }
 
 TEST(inplace_string, big_inplace_string)

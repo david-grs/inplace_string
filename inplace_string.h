@@ -334,27 +334,43 @@ basic_inplace_string<N, CharT, Traits>::basic_inplace_string(size_type count, va
 }
 
 template <std::size_t N, typename CharT, typename Traits>
-basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const std::basic_string<CharT, Traits>& other, size_type pos) :
-	basic_inplace_string(other.data() + pos, other.size() - pos)
+basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const std::basic_string<CharT, Traits>& other, size_type pos)
 {
+	if (pos > other.size())
+		detail::throw_helper<std::out_of_range>("basic_inplace_string: out of range");
+
+	set_size(0);
+	insert(static_cast<size_type>(0), other, pos);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
-basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const basic_inplace_string& other, size_type pos) :
-	basic_inplace_string(other.data() + pos, other.size() - pos)
+basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const basic_inplace_string& other, size_type pos)
 {
+	if (pos > other.size())
+		detail::throw_helper<std::out_of_range>("basic_inplace_string: out of range");
+
+	set_size(0);
+	insert(static_cast<size_type>(0), other, pos);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
-basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const std::basic_string<CharT, Traits>& other, size_type pos, size_type count) :
-	basic_inplace_string(other.data() + pos, std::min(other.size() - pos, count))
+basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const std::basic_string<CharT, Traits>& other, size_type pos, size_type count)
 {
+	if (pos > other.size())
+		detail::throw_helper<std::out_of_range>("basic_inplace_string: out of range");
+
+	set_size(0);
+	insert(static_cast<size_type>(0), other, pos, count);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
-basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const basic_inplace_string& other, size_type pos, size_type count) :
-	basic_inplace_string(other.data() + pos, std::min(other.size() - pos, count))
+basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const basic_inplace_string& other, size_type pos, size_type count)
 {
+	if (pos > other.size())
+		detail::throw_helper<std::out_of_range>("basic_inplace_string: out of range");
+
+	set_size(0);
+	insert(static_cast<size_type>(0), other, pos, count);
 }
 
 template <std::size_t N, typename CharT, typename Traits>
