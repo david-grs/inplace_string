@@ -386,9 +386,11 @@ template <std::size_t N, typename CharT, typename Traits>
 template <typename T, typename X>
 basic_inplace_string<N, CharT, Traits>::basic_inplace_string(const T& t, size_type pos, size_type n)
 {
+	set_size(0);
+
 	basic_string_view<CharT, Traits> sv = t;
 	sv = sv.substr(pos, n);
-	basic_inplace_string(sv.data(), sv.size());
+	insert(static_cast<size_type>(0), sv.data(), sv.size());
 }
 
 template <std::size_t N, typename CharT, typename Traits>
